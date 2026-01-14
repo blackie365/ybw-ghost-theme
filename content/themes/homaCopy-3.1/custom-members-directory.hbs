@@ -1,0 +1,310 @@
+{{!< default}}
+{{#post}}
+<article class="post {{post_class}}">
+    <header class="post-header">
+        <section class="flex flex-col justify-center mx-auto max-w-lg items-center justify-center text-center gap-4 pb-10 pt-24">
+            <h1>{{title}}</h1>
+        </section>
+    </header>
+
+    <hr/>
+
+    <section class="section">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-16" id="membersDirectoryList">
+            <div class="text-center py-8 col-span-full">Loading members...</div>
+        </div>
+        
+        <div class="members-pagination">
+            <button onclick="loadMembersDirectory(currentMembersPage - 1)" id="membersPrevBtnBottom" disabled>Previous</button>
+            <span class="members-page-info" id="membersPageInfoBottom">Loading...</span>
+            <button onclick="loadMembersDirectory(currentMembersPage + 1)" id="membersNextBtnBottom">Next</button>
+        </div>
+    </section>
+</article>
+
+<style>
+    .members-pagination {
+        text-align: center;
+        margin: 40px 0;
+    }
+    
+    .members-pagination button {
+        background: #15171A;
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        margin: 0 6px;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+    
+    .members-pagination button:hover:not(:disabled) {
+        opacity: 0.9;
+    }
+    
+    .members-pagination button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    
+    .members-page-info {
+        display: inline-block;
+        margin: 0 20px;
+        font-size: 0.9rem;
+    }
+    
+    .member-card {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .member-image {
+        width: 100%;
+        aspect-ratio: 1;
+        overflow: hidden;
+        margin-bottom: 16px;
+        position: relative;
+    }
+    
+    .member-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+    
+    .member-card:hover .member-image img {
+        transform: scale(1.02);
+    }
+    
+    .member-tag {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 500;
+        color: #9ca3af;
+        margin-bottom: 4px;
+    }
+    
+    .member-name {
+        font-family: var(--font-family-heading, 'Noto Serif', serif);
+        font-size: 1.5rem;
+        font-weight: 400;
+        color: #15171A;
+        margin: 0 0 8px 0;
+        line-height: 1.3;
+    }
+    
+    .member-headline {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    
+    .member-location {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 12px;
+    }
+    
+    .member-bio {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: #4b5563;
+        margin-bottom: 12px;
+    }
+    
+    .member-bio.truncated {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .read-more-btn {
+        background: none;
+        border: none;
+        color: #B02376;
+        font-size: 0.875rem;
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 0;
+        margin-bottom: 12px;
+        font-family: var(--font-family-body, 'Inter', sans-serif);
+    }
+    
+    .read-more-btn:hover {
+        color: #15171A;
+    }
+    
+    .member-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: auto;
+    }
+    
+    .member-links a {
+        display: inline-block;
+        padding: 8px 16px;
+        background: #15171A;
+        color: white;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 4px;
+        transition: opacity 0.2s;
+    }
+    
+    .member-links a:hover {
+        opacity: 0.9;
+    }
+    
+    /* Use theme color variables for both modes */
+    .member-name {
+        color: var(--text-color-0) !important;
+    }
+    
+    .member-headline {
+        color: var(--text-color-1) !important;
+    }
+    
+    .member-location {
+        color: var(--text-color-2) !important;
+    }
+    
+    .member-bio {
+        color: var(--text-color-1) !important;
+    }
+    
+    h1 {
+        color: var(--text-color-0) !important;
+    }
+</style>
+
+{{{{raw}}}}
+<script>
+(function() {
+    const membersApiUrl = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/getMembersV2';
+    const membersPageSize = 12;
+    window.currentMembersPage = 0;
+    window.currentSearch = '';
+    window.currentCategory = '';
+    window.currentSort = 'alphabetical';
+    
+    window.toggleBio = function(memberId) {
+        const bioDiv = document.getElementById('bio-' + memberId);
+        const btn = document.getElementById('btn-' + memberId);
+        
+        if (bioDiv && btn) {
+            if (bioDiv.classList.contains('truncated')) {
+                bioDiv.classList.remove('truncated');
+                btn.textContent = 'Read less';
+            } else {
+                bioDiv.classList.add('truncated');
+                btn.textContent = 'Read more';
+            }
+        }
+    };
+    
+    window.loadMembersDirectory = async function(page) {
+        try {
+            page = page || 0;
+            const membersDiv = document.getElementById('membersDirectoryList');
+            if (!membersDiv) return;
+            
+            membersDiv.innerHTML = '<div class="text-center py-8 col-span-full">Loading...</div>';
+            
+            // Fetch all data if not already loaded
+            if (allMembersData.length === 0) {
+                const response = await fetch(membersApiUrl);
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                const result = await response.json();
+                if (result.status === 'success' && result.data) {
+                    allMembersData = result.data;
+                }
+            }
+            
+            page = parseInt(page) || 0;
+            window.currentMembersPage = page;
+            
+            const startIndex = page * membersPageSize;
+            const endIndex = startIndex + membersPageSize;
+            const pageMembers = allMembersData.slice(startIndex, endIndex);
+            const totalMembers = allMembersData.length;
+            
+            // Update pagination
+            const prevBtnBottom = document.getElementById('membersPrevBtnBottom');
+            const nextBtnBottom = document.getElementById('membersNextBtnBottom');
+            const pageInfoBottom = document.getElementById('membersPageInfoBottom');
+            
+            if (prevBtnBottom) prevBtnBottom.disabled = page === 0;
+            if (nextBtnBottom) nextBtnBottom.disabled = endIndex >= totalMembers;
+            if (pageInfoBottom) {
+                const start = startIndex + 1;
+                const end = Math.min(endIndex, totalMembers);
+                pageInfoBottom.textContent = 'Showing ' + start + ' - ' + end + ' of ' + totalMembers;
+            }
+
+            // Populate members
+            membersDiv.innerHTML = '';
+            pageMembers.forEach(function(member) {
+                const firstName = member['First Name'] || '';
+                const lastName = member['Last Name'] || '';
+                const fullName = (firstName + ' ' + lastName).trim() || 'Member';
+                const headline = member['Headline'] || '';
+                const location = member['Location'] || 'Yorkshire';
+                const bio = member['Bio'] || '';
+                const avatarUrl = member['Avatar URL'] || '';
+                const linkedinUrl = member['LinkedIn URL'] || '';
+                const websiteUrl = member['Website'] || '';
+                
+                const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+                const fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=B02376&color=fff&size=600';
+                
+                const memberCard = document.createElement('article');
+                memberCard.className = 'post-card post-card--column member-card';
+                
+                let cardHTML = '<figure class="member-image relative">';
+                cardHTML += '<img src="' + (avatarUrl || fallbackAvatar) + '" alt="' + fullName + '" loading="lazy" onerror="this.src=\'' + fallbackAvatar + '\'">';
+                cardHTML += '</figure>';
+                cardHTML += '<div class="post-card-content">';
+                cardHTML += '<div class="member-tag">Members</div>';
+                cardHTML += '<h3 class="member-name mt-0">' + fullName + '</h3>';
+                if (headline) cardHTML += '<div class="member-headline">' + headline + '</div>';
+                cardHTML += '<div class="member-location">' + location + '</div>';
+                if (bio) {
+                    cardHTML += '<div class="member-bio truncated" id="bio-' + member.id + '">' + bio + '</div>';
+                    cardHTML += '<button class="read-more-btn" onclick="toggleBio(\'' + member.id + '\')" id="btn-' + member.id + '">Read more</button>';
+                }
+                cardHTML += '<div class="member-links">';
+                if (linkedinUrl) cardHTML += '<a href="' + linkedinUrl + '" target="_blank" rel="noopener noreferrer">LinkedIn</a>';
+                if (websiteUrl) cardHTML += '<a href="' + websiteUrl + '" target="_blank" rel="noopener noreferrer">Website</a>';
+                cardHTML += '</div></div>';
+                
+                memberCard.innerHTML = cardHTML;
+                membersDiv.appendChild(memberCard);
+            });
+        } catch (error) {
+            console.error('Error loading members:', error);
+            const membersDiv = document.getElementById('membersDirectoryList');
+            if (membersDiv) {
+                membersDiv.innerHTML = '<div class="text-center py-8 col-span-full">Error loading members. Please try again later.</div>';
+            }
+        }
+    };
+    
+    // Initial load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { loadMembersDirectory(0); });
+    } else {
+        loadMembersDirectory(0);
+    }
+})();
+</script>
+{{{{/raw}}}}
+{{/post}}

@@ -1,0 +1,32 @@
+<div class="featured-posts-section">
+    <div class="container">
+        <div class="row clearfix">
+            {{#get "posts" limit="3" include="tags,authors" filter="tag:main-sponsors"}}
+            {{#foreach posts visibility="all"}}
+            {{#if @first}}
+            <div class="col-lg-12 large-post post-wrap {{post_class}}">
+                
+                    <div class="featured-image-wrap">
+                        <div class="featured-image">
+                            <img srcset="{{img_url feature_image size="m"}} 600w,
+                                        {{img_url feature_image size="l"}} 1000w"
+                                sizes="(min-width: 768px) and (max-width: 991px) 1000px, 600px"
+                                src="{{img_url feature_image size="m"}}"
+                                alt="{{title}}"
+                            />
+                        </div>
+                      
+                    </div>
+                </a>
+               
+            </div>
+            {{else}}
+            
+                </div>
+            </div>
+            {{/if}}
+            {{/foreach}}
+            {{/get}}
+        </div>
+    </div>
+</div>

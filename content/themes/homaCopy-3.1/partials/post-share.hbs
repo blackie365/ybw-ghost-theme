@@ -1,0 +1,19 @@
+{{!--
+  Post Share
+  ----------
+  Social media sharing buttons for posts.
+
+  Parameters: 
+  * class: Additional CSS classes for the share section
+--}}
+
+<div class="flex gap-4 justify-between items-center {{class}}">
+  <h4>{{t "Share this post"}}</h4>
+  <div class="flex gap-4 items-center">
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{url absolute="true"}}" target="_blank" rel="noopener noreferrer" title="{{t "Share on"}} Facebook" data-icon="facebook" class="social-icon" title="{{t "Share on"}} Facebook"></a>
+    <a href="https://x.com/intent/post?url={{url absolute="true"}}&text={{encode title}}" target="_blank" rel="noopener noreferrer" title="{{t "Share on"}} X" data-icon="x" class="social-icon" title="{{t "Share on"}} X"></a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{url absolute="true"}}&title={{encode title}}&summary={{encode excerpt}}" target="_blank" rel="noopener noreferrer" title="{{t "Share on"}} LinkedIn" data-icon="linkedin" class="social-icon" title="{{t "Share on"}} LinkedIn"></a>
+    <a href="https://t.me/share/url?url={{url absolute="true"}}&text={{encode title}}" target="_blank" rel="noopener noreferrer" title="{{t "Share on"}} Telegram" data-icon="telegram" class="social-icon" title="{{t "Share on"}} Telegram"></a>
+    <a href="https://bsky.app/intent/compose?text={{encode title}}%20{{url absolute="true"}}" target="_blank" rel="noopener noreferrer" title="{{t "Share on"}} Bluesky" data-icon="bluesky" class="social-icon scale-[85%] hover:scale-[90%] transition-all duration-300" title="{{t "Share on"}} Bluesky"></a>
+  </div>
+</div>

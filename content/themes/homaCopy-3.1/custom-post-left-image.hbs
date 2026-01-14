@@ -1,0 +1,31 @@
+{{!--
+  Post template with featured image on the left side.
+--}}
+
+{{!< default}}
+
+{{#post}}
+<article class="{{post_class}}">
+  {{#match @page.show_title_and_feature_image}}
+    <div class="w-screen h-[var(--screen-height-without-header)] relative left-1/2 -translate-x-1/2 -mt-8 grid grid-cols-1 lg:grid-cols-2">
+      {{> "feature-image" class="overflow-hidden" caption_class="!hidden"}}
+
+      <div class="flex flex-col justify-center gap-4 p-6 md:p-16">
+        <h1 class="!text-5xl leading-[1.15]">{{title}}</h1>
+        {{#if custom_excerpt}}
+          <p class="opacity-80 text-lg">{{custom_excerpt}}</p>
+        {{/if}}
+
+        {{#is "post"}}
+          {{> "post-meta"}}
+          <hr/>
+          {{> "post-share"}}
+        {{/is}}
+      </div>
+    </div>
+  {{/match}}
+
+  {{> "post-content" class="mt-12"}}
+
+</article>
+{{/post}}

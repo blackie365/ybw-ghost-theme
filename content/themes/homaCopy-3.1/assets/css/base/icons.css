@@ -1,0 +1,32 @@
+/*
+  Icons
+  -----
+  Icon font setup and basic styles.
+  Uses data-icon attribute for icon display.
+*/
+
+@font-face {
+  font-weight: normal;
+  font-display: block;
+  font-family: "icon-font";
+  src: url("../fonts/icons.ttf") format("truetype"),
+    url("../fonts/icons.svg") format("svg");
+}
+
+[data-icon]:before {
+  display: flex;
+  direction: ltr;
+  line-height: 1;
+  word-wrap: normal;
+  font-style: normal;
+  white-space: nowrap;
+  text-transform: none;
+  letter-spacing: normal;
+  content: attr(data-icon);
+  font-family: "icon-font";
+  font-feature-settings: "liga";
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-size: 1.25em;
+}

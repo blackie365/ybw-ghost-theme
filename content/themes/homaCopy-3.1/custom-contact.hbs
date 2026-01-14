@@ -1,0 +1,37 @@
+{{!--
+  Contact page with form handling and dynamic status messages.
+--}}
+
+{{!< default}}
+
+{{#post}}
+  <section class="w-screen relative left-1/2 -translate-x-1/2 grid grid-cols-1 md:grid-cols-2 -mt-8 h-fit">
+      {{> "feature-image" class="w-full h-full justify-self-center" img_class="object-cover max-h-96 sm:max-h-full lg:aspect-square w-full"}}
+
+      <form class="flex flex-col gap-4 px-4 py-8 md:p-16 justify-self-center justify-center w-full max-w-160" method="POST"action="{{@custom.contact_form_url}}" data-form>
+        <h1>{{title}}</h1>
+        {{content}}
+        <input type="text" placeholder="{{t "Name"}}" required name="name" />
+
+        <input type="email" placeholder="{{t "Email"}}" required name="email" />
+
+        <textarea placeholder="{{t "Message"}}" required rows="5" name="message"></textarea>
+
+        <button type="submit">
+          {{t "Send"}}
+        </button>
+
+        <div data-content="loading">
+          {{t "Sending your message..."}}
+        </div>
+
+        <div data-content="success">
+          {{t "Your message was sent."}}
+        </div>
+
+        <div data-content="error">
+          {{t "Couldn't send message. Please try again."}}
+        </div>
+      </form>
+  </section>
+{{/post}}

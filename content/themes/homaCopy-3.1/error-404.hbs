@@ -1,0 +1,48 @@
+{{!--
+  404 error page with custom message and suggested content.
+--}}
+
+{{!< default}}
+
+<section class="section">
+  <div class="flex flex-col items-center justify-center text-center h-[50vh]">
+    <h1 class="!text-9xl font-bold">{{statusCode}}</h1>
+    <p class="text-2xl">{{message}}</p>
+    <a href="{{@site.url}}" class="button mt-4 gap-2">
+      <span data-icon="arrow_left"></span>
+      {{t "Go Home"}}
+    </a>
+  </div>
+
+  {{#if errorDetails}}
+    <div class="error-view__stack">
+      <h3>Theme errors</h3>
+      <ul>
+        {{#foreach errorDetails}}
+          <li>
+            <em>{{{rule}}}</em>
+
+            {{#foreach failures}}
+              <p><strong>Ref:</strong> {{ref}}</p>
+              <p><strong>Message:</strong> {{message}}</p>
+            {{/foreach}}
+          </li>
+        {{/foreach}}
+      </ul>
+    </div>
+  {{/if}}
+</section>
+
+<h2 class="mb-6">{{t "Explore recent stories"}}</h2>
+
+<hr class="-mb-6"/>
+
+<section class="section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+  {{#get "posts" limit="4" filter="feature_image:-null" include="tags,authors" order="published_at desc" }}
+      {{#foreach posts}}
+        {{> "post-card"
+          layout="column"
+        }}
+    {{/foreach}}
+  {{/get}}
+</section>

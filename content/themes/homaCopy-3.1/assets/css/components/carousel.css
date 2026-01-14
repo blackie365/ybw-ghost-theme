@@ -1,0 +1,113 @@
+/*
+  Carousel Component
+  -----------------
+  Web component for horizontal scrollable carousel with navigation buttons.
+  Uses scroll-snap for smooth sliding between items.
+  Shows gradient fade on edges and hides scrollbar.
+*/
+
+/* Styles for the web component wrapper */
+carousel-component {
+  position: relative;
+  width: 100%;
+  display: block;
+  
+  * {
+    -webkit-user-drag: none;
+  }
+}
+
+/* Styles for the carousel container */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  background-color: inherit;
+
+  &:before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: inherit;
+    z-index: -1;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(2rem);
+  }
+
+  /* Scrollable content container */
+  .carousel-content {
+    display: flex;
+    position: relative;
+    width: 100%;
+    padding-inline-start: calc((100vw - var(--content-max-width)) / 2 + var(--content-padding-x)) !important;
+
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+
+    & > * {
+      scroll-snap-align: start;
+    }
+  }
+
+  /* Navigation buttons */
+  .carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 100%;
+    background-color: var(--bg-color-0);
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    z-index: 10;
+    transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+    cursor: pointer;
+
+    &.disabled, &[disabled] {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &:hover {
+      background-color: var(--bg-color-1);
+    }
+
+    &[data-carousel-prev] {
+      left: 0;
+      padding-left: 0.05rem;
+      transform: translateY(-50%) translateX(-50%);
+    }
+
+    &[data-carousel-next] {
+      right: 0;
+      padding-right: 0.05rem;
+      transform: translateY(-50%) translateX(50%);
+    }
+
+    @media (max-width: 640px) {
+      width: 2.5rem;
+      height: 2.5rem;
+
+      &[data-carousel-prev] {
+        left: 0.5rem;
+        transform: translateY(-50%);
+      }
+
+      &[data-carousel-next] {
+        right: 0.5rem;
+        transform: translateY(-50%);
+      }
+    }
+  }
+}

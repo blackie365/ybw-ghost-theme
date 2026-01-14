@@ -1,0 +1,397 @@
+{{!--
+  Home page template displaying featured posts, latest articles,
+  and optional newsletter signup.
+--}}
+
+{{!< default}}
+
+{{#get "posts" limit="4" filter="featured:true+feature_image:-null" include="tags,authors" as |featured_posts|}}
+  <main class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <div class="flex flex-col col-span-1 md:col-span-3 {{#unless featured_posts}}lg:col-span-4{{/unless}}">
+      {{!-- Featured Posts Section --}} 
+      {{#if featured_posts}}
+        {{> "featured-posts" posts=featured_posts}}
+      {{/if}}
+      
+
+      {{!-- Latest Articles Section on smaller screens --}}
+      <div class="{{#if featured_posts}}lg:hidden col-span-1 border-t border-b0 pt-8 my-8 {{else}}col-span-3{{/if}}">
+        <h2 class="text-2xl font-black mb-6 leading-tight">{{t "Latest Articles"}}</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {{#foreach ../posts to="8"}}
+            {{> "post-card"
+              layout="row"
+              titleClass="!text-h4"
+              featureImageClass="!h-32 !w-32 !aspect-square"
+              contentClass="!flex-1"
+            }}
+          {{/foreach}}
+        </div>
+      </div>
+
+      {{!-- Homepage Tags Sections --}}
+      {{#if @custom.homepage_tags}}        
+        {{#get "tags" filter="slug:[{{@custom.homepage_tags}}]"}}
+          {{#foreach tags as |tag|}}
+            {{#if @custom.show_featured_posts_in_homepage_tags}}
+              {{#get "posts" filter="tags:{{slug}}" limit="4" include="tags,authors" order="published_at desc" as |posts|}}
+                <div class="pt-8 mb-8 border-t border-b0 {{#match posts.length '=' 0}}hidden{{/match}}" data-tag="{{../slug}}">
+                  {{#match posts.length ">" 1}}
+                    <a href="{{tag.url}}" class="block mb-8">
+                      <h2 class="text-2xl font-black leading-tight flex items-center gap-2 group">
+                        {{tag.name}}
+                        <span data-icon="arrow_right" class="text-lg mt-1 vertical-align-middle font-light opacity-0 group-hover:translate-x-1 group-hover:opacity-40 transition duration-200"></span>
+                      </h2>
+                      {{#if tag.description}}
+                        <p class="opacity-60">{{tag.description}}</p>
+                      {{/if}}
+                    </a>
+                  {{/match}}
+                  {{> "posts-group" posts=posts }}
+                </div>
+              {{/get}}
+            {{else}}
+              {{#get "posts" filter="tags:{{slug}}+featured:false" limit="4" include="tags,authors" order="published_at desc" as |posts|}}
+                <div class="pt-8 mb-8 border-t border-b0 {{#match posts.length '=' 0}}hidden{{/match}}" data-tag="{{../slug}}">
+                  {{#match posts.length ">" 1}}
+                    <a href="{{tag.url}}" class="block mb-8">
+                      <h2 class="text-2xl font-black leading-tight flex items-center gap-2 group">
+                        {{tag.name}}
+                        <span data-icon="arrow_right" class="text-lg mt-1 vertical-align-middle font-light opacity-0 group-hover:translate-x-1 group-hover:opacity-40 transition duration-200"></span>
+                      </h2>
+                      {{#if tag.description}}
+                        <p class="opacity-60">{{tag.description}}</p>
+                      {{/if}}
+                    </a>
+                  {{/match}}
+                  {{> "posts-group" posts=posts }}
+                </div>
+              {{/get}}
+            {{/if}}
+              
+          {{/foreach}}
+        {{/get}}
+      {{/if}}
+    </div>
+
+    {{!-- Latest Articles Sidebar is only visible on larger screens if there are featured posts --}}
+    {{#if featured_posts}}
+      <div class="hidden lg:flex col-span-1 md:pl-8 md:border-l border-b0 {{#match ../posts.length ">" 6}}items-end{{else}}items-start{{/match}}">
+        <div class="sticky  {{#match ../posts.length ">" 6}}bottom-0{{else}}top-8{{/match}}">
+          <h3 class="mb-4">{{t "Latest Articles"}}</h3>
+          {{#foreach ../posts to="8"}}
+            {{> "post-card"
+              layout="row-reverse"
+              featureImageClass="w-15 h-15 flex-shrink-0"
+              excerptClass="!hidden"
+              tagsClass="!hidden"
+              titleClass="!text-h6 !font-medium"
+              class="pb-3 mb-3 border-b border-b0 !items-start"
+              contentClass="!gap-1 flex-1"
+            }}
+          {{/foreach}}
+          {{> "subscribe-form" class="mb-8"}}
+        </div>
+      </div>
+    {{/if}}
+  </main>
+{{/get}}
+
+
+{{!-- Highlighted Tag Section --}}
+{{#if @custom.highlighted_tag}}
+  {{#get "tags" filter="slug:{{@custom.highlighted_tag}}" limit="1"}}
+    {{#foreach tags}}        
+      <carousel-component 
+        class="w-screen left-1/2 -translate-x-1/2 bg-cover bg-center" 
+        content-class="px-8 py-16 gap-8"
+        left-arrow-class="hidden md:flex ml-8"
+        right-arrow-class="hidden md:flex mr-8"
+        style="
+          {{#if feature_image}}
+            background-image: url({{img_url feature_image size="xxxl"}});
+          {{else if color}} 
+            background-color: {{color}};
+          {{else}}
+            background-color: var(--accent-color);
+          {{/if}}
+        
+        "
+      >
+        <div class="flex flex-col justify-center text-white flex-1 z-10 flex-1 min-w-[320px] pl-[var(--content-padding-x)] xl:pl-0">
+          <h2 class="
+            font-bold mb-2 leading-tight
+            {{#match name.length ">" 7}}!text-5xl{{else}}!text-6xl{{/match}}
+          ">{{name}}</h2>
+          <p class=" text-white/90 leading-relaxed">
+            {{description}}
+          </p>
+        </div>
+        {{#get "posts" limit="10" filter="tags:{{slug}}+featured:false" include="tags,authors" order="published_at desc" as |highlighted_posts|}}
+          {{#foreach highlighted_posts}}
+            {{> "post-card"
+              layout="column"
+              class="bg-0 p-4 shadow-xl flex-1 min-w-[300px] max-w-screen flex-shrink-0 snap-center last:mr-16"
+              tagsClass="hidden"
+              featureImageClass="aspect-square"
+            }}
+          {{/foreach}}
+        {{/get}}
+      </carousel-component>
+    {{/foreach}}
+  {{/get}}
+{{/if}}
+
+{{!-- Main Content Grid --}}
+<section class="section">
+  <a href="/page/2" class="block mb-8"> 
+    <h2 class="text-2xl font-black leading-tight flex items-center gap-2 group">
+      {{t "Read More"}}
+      <span data-icon="arrow_right" class="text-lg mt-1 vertical-align-middle font-light opacity-0 group-hover:translate-x-1 group-hover:opacity-40 transition duration-200"></span>
+    </h2>
+    <p class="mb-8 mt-1 opacity-50">{{t "Explore our archive of articles, interviews, and creative projects"}}</p>
+  </a>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8" data-posts>
+    {{#foreach posts from="9"}}
+      {{> "post-card"
+        layout="column"
+      }}
+    {{/foreach}}
+  </div>
+</section>
+
+{{pagination class="mb-16"}}
+{{!-- 
+    MEMBERS WIDGET FOR HOMEPAGE
+    Insert this code into your home.hbs or index.hbs template
+    Place it just above the authors section or wherever you want the widget
+--}}
+
+<style>
+    .members-widget {
+        margin: 60px 0;
+    }
+    
+    .members-widget-title {
+        font-family: var(--font-family-heading, 'Noto Serif', serif);
+        font-size: 2rem;
+        font-weight: 400;
+        color: var(--text-color, #15171A);
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .members-widget-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    @media (max-width: 1024px) {
+        .members-widget-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 640px) {
+        .members-widget-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .member-thumb {
+        text-align: center;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.3s;
+    }
+    
+    .member-thumb:hover {
+        transform: translateY(-5px);
+    }
+    
+    .member-thumb-image {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .member-thumb-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .member-thumb-name {
+        font-family: var(--font-family-heading, 'Noto Serif', serif);
+        font-size: 1.1rem;
+        font-weight: 400;
+        color: var(--color-darkgrey, var(--text-color, #15171A)) !important;
+        margin-bottom: 4px;
+    }
+    
+    .member-thumb-headline {
+        font-size: 0.875rem;
+        color: var(--color-midgrey, #6b7280);
+        line-height: 1.4;
+        opacity: 0.8;
+    }
+    
+    /* Use theme color variables for both modes */
+    .member-thumb-name {
+        color: var(--text-color-0) !important;
+    }
+    
+    .member-thumb-headline {
+        color: var(--text-color-1) !important;
+    }
+    
+    .members-widget-title {
+        color: var(--text-color-0) !important;
+    }
+    
+    .members-widget-cta {
+        text-align: center;
+        margin-top: 40px;
+    }
+    
+    .members-widget-cta a {
+        display: inline-block;
+        padding: 12px 32px;
+        background: var(--accent-color, #15171A);
+        color: var(--bg-color, white);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        border-radius: 4px;
+        transition: opacity 0.2s;
+    }
+    
+    .members-widget-cta a:hover {
+        opacity: 0.9;
+    }
+</style>
+
+<div class="members-widget">
+    <h2 class="members-widget-title">Meet Our Members</h2>
+    <div class="members-widget-grid" id="homepageMembersWidget">
+        <div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: #6b7280;">
+            Loading members...
+        </div>
+    </div>
+    <div class="members-widget-cta">
+        <a href="/members-directory/">View All Members</a>
+    </div>
+</div>
+
+{{{{raw}}}}
+<script>
+(function() {
+    // Use new API v2 with newest members
+    var apiUrl = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/getMembersV2?limit=4&sort=newest';
+    
+    function loadHomepageMembers() {
+        fetch(apiUrl)
+            .then(function(response) {
+                if (!response.ok) throw new Error('Failed to load members');
+                return response.json();
+            })
+            .then(function(result) {
+                var members = result.members || [];
+                var container = document.getElementById('homepageMembersWidget');
+                
+                if (members.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: #6b7280;">No members found</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                members.forEach(function(member) {
+                    var firstName = member['First Name'] || '';
+                    var lastName = member['Last Name'] || '';
+                    var fullName = (firstName + ' ' + lastName).trim() || 'Member';
+                    var headline = member['Headline'] || '';
+                    var avatarUrl = member['Avatar URL'] || '';
+                    
+                    var initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+                    var fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=B02376&color=fff&size=400';
+                    
+                    var memberThumb = document.createElement('a');
+                    memberThumb.className = 'member-thumb';
+                    memberThumb.href = '/members-directory/';
+                    
+                    memberThumb.innerHTML = 
+                        '<div class="member-thumb-image">' +
+                        '<img src="' + (avatarUrl || fallbackAvatar) + '" alt="' + fullName + '" loading="lazy" onerror="this.src=\'' + fallbackAvatar + '\'">' +
+                        '</div>' +
+                        '<div class="member-thumb-name">' + fullName + '</div>' +
+                        (headline ? '<div class="member-thumb-headline">' + headline + '</div>' : '');
+                    
+                    container.appendChild(memberThumb);
+                });
+            })
+            .catch(function(error) {
+                console.error('Error loading homepage members:', error);
+                document.getElementById('homepageMembersWidget').innerHTML = 
+                    '<div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: #6b7280;">Unable to load members</div>';
+            });
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadHomepageMembers);
+    } else {
+        loadHomepageMembers();
+    }
+})();
+</script>
+{{{{/raw}}}}
+
+{{!-- Authors List Section --}}
+{{#if @custom.show_authors_list_on_home_page}}
+  <section class="w-screen relative left-1/2 -translate-x-1/2 bg-1 py-16">
+    <div class="container">
+      <a href="/authors" class="block mb-8">
+        <h2 class="text-2xl font-black leading-tight flex items-center gap-2 group">
+          {{t "Meet Our Authors"}}
+          <span data-icon="arrow_right" class="text-lg mt-1 vertical-align-middle font-light opacity-0 group-hover:translate-x-1 group-hover:opacity-40 transition duration-200"></span>
+        </h2>
+        <p class="mb-8 mt-1 opacity-50">{{t "The journalists and editors behind our stories"}}</p>
+      </a>
+
+      {{#get "authors" limit="9" filter="profile_image:-null, bio:-null" include="count.posts" order="count.posts desc"}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {{#foreach authors}}
+            <div class="flex gap-4 border-b items-center border-b0 pb-4 nth-last-3:border-none nth-last-2:border-none nth-last-1:border-none">
+              <div class="relative block overflow-hidden h-28 w-28 shrink-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+                <a href="{{url}}">
+                  <img src="{{img_url profile_image size="m"}}" alt="{{name}}"
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                </a>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <h5 class="font-bold"><a href="{{url}}">{{name}}</a></h5>
+                  <div class="flex gap-2 text-xs opacity-50">
+                    {{> "author-social-links" itemClass="hover:underline"}}
+                  </div>
+                </div>
+                <p class="text-xs opacity-90 line-clamp-2"><a href="{{url}}">{{bio}}</a></p>
+                <a href="{{url}}" class="flex items-center gap-2 text-sm opacity-50 mt-1">
+                  <span class="hover:underline">{{t "View all"}}</span> <span data-icon="arrow_right"></span>
+                </a>
+                
+              </div>
+            </div>  
+          {{/foreach}}
+        </div>
+      </div>
+    {{/get}}
+  </section>
+{{/if}}

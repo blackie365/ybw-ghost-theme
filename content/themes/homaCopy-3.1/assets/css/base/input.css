@@ -1,0 +1,84 @@
+/*
+  Form Inputs
+  ----------
+  Global input field styles.
+  Includes focus states and validation styles.
+*/
+
+.input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+textarea {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: var(--input-height);
+  font-family: var(--font-family-body);
+  font-size: var(--input-font-size);
+  padding: var(--input-padding);
+  color: var(--input-color);
+  background: var(--input-background-color);
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  transition: all 0.2s ease;
+  outline: none;
+
+  /* File input specific styles */
+  &::file-selector-button {
+    border: 0;
+    background: transparent;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--input-color);
+  }
+
+  &::placeholder {
+    color: var(--input-placeholder-color);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 0 0 var(--input-ring-offset-width) var(--bg-color-0),
+                0 0 0 calc(var(--input-ring-offset-width) + var(--input-ring-width)) var(--input-ring-color);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--input-disabled-opacity);
+  }
+}
+
+/* Media query for smaller font size on md breakpoint */
+@media (width <= 768px) {
+  .input,
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  textarea {
+    font-size: var(--input-font-size-md);
+  }
+}
+
+/* Keep existing checkbox and textarea styles */
+input[type="checkbox"] {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+textarea {
+  resize: none;
+  border-radius: var(--textarea-border-radius);
+  height: auto;
+  width: 100%;
+  padding: var(--textarea-padding);
+}

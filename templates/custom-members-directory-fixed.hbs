@@ -13,13 +13,21 @@
         <div class="max-w-4xl mx-auto mb-8">
             <div class="flex flex-col md:flex-row gap-4 mb-6">
                 <!-- Search Bar -->
-                <div class="flex-1">
+                <div class="md:flex-1">
                     <input 
                         type="text" 
                         id="memberSearch" 
                         placeholder="Search members by name..." 
                         class="search-input"
                     >
+                </div>
+                
+                <!-- Keyword Filter -->
+                <div class="md:w-48">
+                    <select id="keywordFilter" class="search-select">
+                        <option value="">All Keywords</option>
+                        <option value="Members">Members</option>
+                    </select>
                 </div>
                 
                 <!-- Sort Filter -->
@@ -275,6 +283,7 @@
     
     let currentPage = 0;
     let currentSearch = '';
+    let currentKeyword = '';
     let currentSort = 'alphabetical';
     let isLoading = false;
     let hasMore = true;
@@ -282,6 +291,7 @@
     
     // DOM elements
     const searchInput = document.getElementById('memberSearch');
+    const keywordFilter = document.getElementById('keywordFilter');
     const sortFilter = document.getElementById('sortFilter');
     const membersGrid = document.getElementById('membersDirectoryList');
     const loadMoreBtn = document.getElementById('loadMoreBtn');
@@ -308,6 +318,13 @@
             currentSearch = e.target.value.trim();
             resetAndLoad();
         }, 500));
+    }
+    
+    if (keywordFilter) {
+        keywordFilter.addEventListener('change', function(e) {
+            currentKeyword = e.target.value;
+            resetAndLoad();
+        });
     }
     
     if (sortFilter) {
@@ -353,6 +370,9 @@
         
         if (currentSearch) {
             apiUrl += '&search=' + encodeURIComponent(currentSearch);
+        }
+        if (currentKeyword) {
+            apiUrl += '&keyword=' + encodeURIComponent(currentKeyword);
         }
         
         // Fetch data
@@ -450,7 +470,7 @@
         const showing = allLoadedMembers.length;
         
         let text = 'Showing ' + showing + ' of ' + total + ' members';
-        if (currentSearch) {
+        if (currentSearch || currentKeyword) {
             text += ' (filtered)';
         }
         

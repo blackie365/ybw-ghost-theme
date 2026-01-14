@@ -1,0 +1,43 @@
+<div class="featured-posts-section">
+    <div class="container">
+        <div class="row clearfix">
+            {{#get "posts" limit="5" include="tags,authors" filter="featured:true"}}
+            {{#foreach posts visibility="all"}}
+            {{#if @first}}
+            <div class="col-lg-6 large-post post-wrap {{post_class}}">
+                <a href="{{url}}" title="{{{title}}}">
+                    <div class="featured-image-wrap">
+                        <div class="featured-image" {{#if feature_image}}style="background-image:url({{feature_image}});"{{/if}}></div>
+                        <div class="overlay">
+                            <h2 class="title h3">{{title}}</h2>
+                            <time class="date" datetime="{{date format="YYYY-MM-DD"}}" title="{{date format="DD MMMM, YYYY"}}">{{date format="MMMM DD, YYYY"}}</time>
+                        </div>
+                    </div>
+                </a>
+                <div class="excerpt">
+                    {{excerpt}}
+                </div>
+            </div>
+            {{else}}
+            <div class="col-lg-6 small-post post-wrap">
+                {{#if feature_image}} 
+                <a href="{{url}}">
+                    <div class="featured-image-wrap">
+                        <div class="featured-image" style="background-image:url({{feature_image}});"></div>
+                    </div>
+                </a>
+                {{/if}}
+                <div class="content-wrap{{^if feature_image}} no-image{{/if}}">
+                    {{#primary_tag}}
+                    <div class="tag"><a href="{{url}}">{{name}}</a></div>
+                    {{/primary_tag}}
+                    <h2 class="title h4"><a href="{{url}}">{{title}}</a></h2>
+                    <time class="date" datetime="{{date format="YYYY-MM-DD"}}" title="{{date format="DD MMMM, YYYY"}}">{{date format="MMMM DD, YYYY"}}</time>
+                </div>
+            </div>
+            {{/if}}
+            {{/foreach}}
+            {{/get}}
+        </div>
+    </div>
+</div>

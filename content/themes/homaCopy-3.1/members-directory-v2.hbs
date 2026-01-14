@@ -1,0 +1,485 @@
+{{!< default}}
+
+{{#post}}
+<article class="post {{post_class}}">
+    <header class="post-header">
+        <section class="flex flex-col justify-center mx-auto max-w-lg items-center justify-center text-center gap-4 pb-10 pt-24">
+            <h1>{{title}}</h1>
+        </section>
+    </header>
+
+    <!-- Search and Filters -->
+    <section class="section">
+        <div class="max-w-4xl mx-auto mb-8">
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <!-- Search Bar -->
+                <div class="flex-1">
+                    <input 
+                        type="text" 
+                        id="memberSearch" 
+                        placeholder="Search members by name..." 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                </div>
+                
+                <!-- Category Filter -->
+                <div class="md:w-48">
+                    <select id="categoryFilter" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">All Categories</option>
+                        <option value="Business">Business</option>
+                        <option value="Tech">Tech</option>
+                        <option value="Creative">Creative</option>
+                        <option value="Health">Health</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <!-- Sort Filter -->
+                <div class="md:w-48">
+                    <select id="sortFilter" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="alphabetical">A-Z</option>
+                        <option value="newest">Newest First</option>
+                        <option value="mostViewed">Most Viewed</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Results Info -->
+            <div class="text-center text-gray-600 mb-4">
+                <span id="resultsInfo">Loading...</span>
+            </div>
+        </div>
+    </section>
+
+    <hr/>
+
+    <!-- Members Grid -->
+    <section class="section">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-16" id="membersDirectoryList">
+            <div class="text-center py-8 col-span-full">Loading members...</div>
+        </div>
+        
+        <!-- Load More Button -->
+        <div class="text-center mt-12">
+            <button id="loadMoreBtn" class="load-more-btn" style="display: none;">
+                Load More Members
+            </button>
+            <div id="loadingMore" class="text-gray-500" style="display: none;">
+                Loading more members...
+            </div>
+        </div>
+    </section>
+</article>
+
+<style>
+    /* Search and Filter Styling */
+    .load-more-btn {
+        background: #15171A;
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .load-more-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+    
+    .load-more-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    
+    /* Member Card Styling */
+    .member-card {
+        display: flex;
+        flex-direction: column;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+    
+    .member-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .member-image {
+        width: 100%;
+        aspect-ratio: 1;
+        overflow: hidden;
+        margin-bottom: 16px;
+        position: relative;
+        border-radius: 8px;
+    }
+    
+    .member-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+    
+    .member-card:hover .member-image img {
+        transform: scale(1.02);
+    }
+    
+    .member-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #B02376;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    
+    .member-tag {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 500;
+        color: #9ca3af;
+        margin-bottom: 4px;
+    }
+    
+    .member-name {
+        font-family: var(--font-family-heading, 'Noto Serif', serif);
+        font-size: 1.5rem;
+        font-weight: 400;
+        margin: 0 0 8px 0;
+        line-height: 1.3;
+    }
+    
+    .member-headline {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    
+    .member-location {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 12px;
+    }
+    
+    .member-bio {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: #4b5563;
+        margin-bottom: 12px;
+        flex-grow: 1;
+    }
+    
+    .member-bio.truncated {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .member-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: auto;
+    }
+    
+    .member-links a {
+        display: inline-block;
+        padding: 8px 16px;
+        background: #15171A;
+        color: white;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 4px;
+        transition: opacity 0.2s;
+    }
+    
+    .member-links a:hover {
+        opacity: 0.9;
+    }
+    
+    /* Theme compatibility */
+    .member-name {
+        color: var(--text-color-0, #15171A) !important;
+    }
+    
+    .member-headline {
+        color: var(--text-color-1, #4b5563) !important;
+    }
+    
+    .member-location {
+        color: var(--text-color-2, #6b7280) !important;
+    }
+    
+    .member-bio {
+        color: var(--text-color-1, #4b5563) !important;
+    }
+    
+    h1 {
+        color: var(--text-color-0, #15171A) !important;
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .load-more-btn {
+            background: var(--accent-color, #B02376);
+        }
+    }
+</style>
+
+{{{{raw}}}}
+<script>
+(function() {
+    const API_URL = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/getMembersV2';
+    const PAGE_SIZE = 12;
+    
+    let currentPage = 0;
+    let currentSearch = '';
+    let currentCategory = '';
+    let currentSort = 'alphabetical';
+    let isLoading = false;
+    let hasMore = true;
+    let allLoadedMembers = [];
+    
+    // DOM elements
+    const searchInput = document.getElementById('memberSearch');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    const membersGrid = document.getElementById('membersDirectoryList');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const loadingMore = document.getElementById('loadingMore');
+    const resultsInfo = document.getElementById('resultsInfo');
+    
+    // Event listeners
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(handleSearch, 500));
+    }
+    
+    if (categoryFilter) {
+        categoryFilter.addEventListener('change', handleFilterChange);
+    }
+    
+    if (sortFilter) {
+        sortFilter.addEventListener('change', handleSortChange);
+    }
+    
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', loadMoreMembers);
+    }
+    
+    // Debounce function for search
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = function() {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    
+    // Event handlers
+    function handleSearch(event) {
+        currentSearch = event.target.value.trim();
+        resetAndLoad();
+    }
+    
+    function handleFilterChange(event) {
+        currentCategory = event.target.value;
+        resetAndLoad();
+    }
+    
+    function handleSortChange(event) {
+        currentSort = event.target.value;
+        resetAndLoad();
+    }
+    
+    // Reset and load from beginning
+    function resetAndLoad() {
+        currentPage = 0;
+        allLoadedMembers = [];
+        hasMore = true;
+        loadMembers(true);
+    }
+    
+    // Load more members
+    function loadMoreMembers() {
+        currentPage++;
+        loadMembers(false);
+    }
+    
+    // Main load function
+    async function loadMembers(isReset = false) {
+        if (isLoading) return;
+        
+        isLoading = true;
+        
+        if (isReset) {
+            membersGrid.innerHTML = '<div class="text-center py-8 col-span-full">Loading...</div>';
+            loadMoreBtn.style.display = 'none';
+        } else {
+            loadingMore.style.display = 'block';
+            loadMoreBtn.style.display = 'none';
+        }
+        
+        try {
+            // Build API URL
+            const offset = currentPage * PAGE_SIZE;
+            let apiUrl = `${API_URL}?limit=${PAGE_SIZE}&offset=${offset}&sort=${currentSort}`;
+            
+            if (currentSearch) {
+                apiUrl += `&search=${encodeURIComponent(currentSearch)}`;
+            }
+            if (currentCategory) {
+                apiUrl += `&category=${encodeURIComponent(currentCategory)}`;
+            }
+            
+            // Fetch data
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            const members = result.members || [];
+            const metadata = result.metadata || {};
+            
+            // Update state
+            hasMore = metadata.hasMore || false;
+            
+            if (isReset) {
+                allLoadedMembers = members;
+                renderMembers(members, true);
+            } else {
+                allLoadedMembers = [...allLoadedMembers, ...members];
+                renderMembers(members, false);
+            }
+            
+            // Update UI
+            updateResultsInfo(metadata);
+            updateLoadMoreButton();
+            
+        } catch (error) {
+            console.error('Error loading members:', error);
+            if (isReset) {
+                membersGrid.innerHTML = '<div class="text-center py-8 col-span-full text-red-500">Error loading members. Please try again.</div>';
+            }
+        } finally {
+            isLoading = false;
+            loadingMore.style.display = 'none';
+        }
+    }
+    
+    // Render members to grid
+    function renderMembers(members, isReset = false) {
+        if (isReset) {
+            membersGrid.innerHTML = '';
+        }
+        
+        if (members.length === 0 && isReset) {
+            membersGrid.innerHTML = '<div class="text-center py-8 col-span-full text-gray-500">No members found matching your criteria.</div>';
+            return;
+        }
+        
+        members.forEach(function(member) {
+            const memberCard = createMemberCard(member);
+            membersGrid.appendChild(memberCard);
+        });
+    }
+    
+    // Create individual member card
+    function createMemberCard(member) {
+        const firstName = member['First Name'] || '';
+        const lastName = member['Last Name'] || '';
+        const fullName = (firstName + ' ' + lastName).trim() || 'Member';
+        const headline = member['Headline'] || '';
+        const location = member['Location'] || 'Yorkshire';
+        const bio = member['Bio'] || '';
+        const avatarUrl = member['Avatar URL'] || '';
+        const linkedinUrl = member['LinkedIn URL'] || '';
+        const websiteUrl = member['Website'] || '';
+        const category = member['category'] || 'Other';
+        const featured = member['featured'] || false;
+        
+        const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=B02376&color=fff&size=600`;
+        
+        const article = document.createElement('article');
+        article.className = 'post-card post-card--column member-card';
+        
+        let cardHTML = `
+            <figure class="member-image relative">
+                ${featured ? '<div class="member-badge">Featured</div>' : ''}
+                <img src="${avatarUrl || fallbackAvatar}" alt="${fullName}" loading="lazy" onerror="this.src='${fallbackAvatar}'">
+            </figure>
+            <div class="post-card-content">
+                <div class="member-tag">${category}</div>
+                <h3 class="member-name mt-0">${fullName}</h3>
+        `;
+        
+        if (headline) cardHTML += `<div class="member-headline">${headline}</div>`;
+        cardHTML += `<div class="member-location">${location}</div>`;
+        
+        if (bio) {
+            cardHTML += `<div class="member-bio truncated">${bio}</div>`;
+        }
+        
+        cardHTML += '<div class="member-links">';
+        if (linkedinUrl) cardHTML += `<a href="${linkedinUrl}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`;
+        if (websiteUrl) cardHTML += `<a href="${websiteUrl}" target="_blank" rel="noopener noreferrer">Website</a>`;
+        cardHTML += '</div></div>';
+        
+        article.innerHTML = cardHTML;
+        return article;
+    }
+    
+    // Update results info
+    function updateResultsInfo(metadata) {
+        if (!resultsInfo) return;
+        
+        const total = metadata.total || 0;
+        const showing = allLoadedMembers.length;
+        
+        let text = `Showing ${showing} of ${total} members`;
+        if (currentSearch || currentCategory) {
+            text += ' (filtered)';
+        }
+        
+        resultsInfo.textContent = text;
+    }
+    
+    // Update load more button
+    function updateLoadMoreButton() {
+        if (!loadMoreBtn) return;
+        
+        if (hasMore && allLoadedMembers.length > 0) {
+            loadMoreBtn.style.display = 'inline-block';
+            loadMoreBtn.disabled = false;
+        } else {
+            loadMoreBtn.style.display = 'none';
+        }
+    }
+    
+    // Initial load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMembers(true);
+        });
+    } else {
+        loadMembers(true);
+    }
+})();
+</script>
+{{{{/raw}}}}
+{{/post}}

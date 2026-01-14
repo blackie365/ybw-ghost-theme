@@ -1,0 +1,134 @@
+{{!< default}}
+{{! The tag above means - insert everything in this file into the {body} of the default.hbs template }}
+<div class="main-content-area">
+    <div class="container">
+        <div class="single-post-wrap page-wrap">
+            <div class="post-head d-flex">
+                <div class="header-inner align-self-center">
+                    <h1 class="title">{{t "Choose your subscription plan"}}</h1>
+                    <div class="members-page-subtitile">
+                        {{t "Membership of"}} {{@site.title}} {{t "£25 per month. Member plus, also includes a half page advert in Yorkshire Businesswoman Magazine."}}
+                    </div>
+                </div>
+            </div>
+            {{!-- <div class="post-content m-auto"> --}}
+                {{#if @member.paid}}
+
+                    {{!-- Logged in, paying member: Redirect home --}}
+                    <script>window.location = '{{@site.url}}/';</script>
+                {{/if}}
+                <div class="membership-switch" id="membership-duration" data-active-duration="yearly">
+                    <button class="btn" data-duration="monthly">Monthly</button>
+                    <button class="btn" data-duration="yearly">Yearly</button>
+                </div>
+
+                {{#if @member}}
+                {{!-- Logged in, not paying: Check out --}}
+                <div class="pricing-table-wrap">
+                {{#get "tiers" include="monthly_price,yearly_price,benefits" filter="visibility:public+type:paid" limit="all" as |tiers|}}
+                {{#foreach tiers}}
+                <div class="pricing-table" data-active-duration="yearly"
+                    {{#if monthly_price}}data-m="{{price monthly_price}}"{{/if}}
+                    {{#if yearly_price}}data-y="{{price yearly_price}}"{{/if}}>
+                    <div class="table-header text-center">
+                        <h3 class="pricing-table-title h4">{{name}}</h3>
+                        {{#if monthly_price}}
+                        <div class="price" data-price="monthly">
+                            <span class="currency">{{price currency=currency}}</span><span class="value">{{price monthly_price}}</span>
+                            <span class="duration">{{t "/ Month"}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if yearly_price}}
+                        <div class="price" data-price="yearly">
+                            <span class="currency">{{price currency=currency}}</span><span class="value">{{price yearly_price}}</span>
+                            <span class="duration">{{t "/ Year"}}</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                    {{#if benefits}}
+                    <ul class="table-details">
+                        {{#foreach benefits as |benefit|}}
+                        <li>{{>icons/check-mark}} {{benefit}}</li>
+                        {{/foreach}}
+                    </ul>
+                    {{/if}}
+                    <div class="table-footer text-center">
+                        {{#if monthly_price}}
+                        <a class="btn btn-primary" href="javascript:" data-portal="signup/{{id}}/monthly" data-price="monthly"><span>{{t
+                                "Subscribe now"}}</span></a>
+                        {{/if}}
+                        {{#if yearly_price}}
+                        <a class="btn btn-primary" href="javascript:" data-portal="signup/{{id}}/yearly" data-price="yearly"><span>{{t
+                                "Subscribe now"}}</span></a>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/foreach}}
+                {{/get}}
+                </div>
+
+                {{else}}
+                {{!-- Logged in, not paying: Check out --}}
+                <div class="pricing-table-wrap">
+                {{#get "tiers" include="monthly_price,yearly_price,benefits" filter="visibility:public" limit="all" as |tiers|}}
+                {{#foreach tiers}}
+                <div class="pricing-table" data-active-duration="yearly"
+                    {{#if monthly_price}}data-m="{{price monthly_price}}"{{/if}}
+                    {{#if yearly_price}}data-y="{{price yearly_price}}"{{/if}}>
+                    <div class="table-header text-center">
+                        <h3 class="pricing-table-title h4">{{name}}</h3>
+                        {{#match type "=" "free"}}
+                        <div class="price">
+                            <span class="currency">$</span><span class="value">0</span>
+                            <span class="duration">{{t "Forever"}}</span>
+                        </div>
+                        {{/match}}
+                        {{#if monthly_price}}
+                        <div class="price" data-price="monthly">
+                            <span class="currency">{{price currency=currency}}</span><span class="value">{{price monthly_price}}</span>
+                            <span class="duration">{{t "/ Month"}}</span>
+                        </div>
+                        {{/if}}
+                        {{#if yearly_price}}
+                        <div class="price" data-price="yearly">
+                            <span class="currency">{{price currency=currency}}</span><span class="value">{{price yearly_price}}</span>
+                            <span class="duration">{{t "/ Year"}}</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                    {{#if benefits}}
+                    <ul class="table-details">
+                        {{#foreach benefits as |benefit|}}
+                        <li>{{>icons/check-mark}} {{benefit}}</li>
+                        {{/foreach}}
+                    </ul>
+                    {{/if}}
+                    <div class="table-footer text-center">
+                        {{#match type "=" "free"}}
+                        <a class="btn btn-primary" href="{{@site.url}}/signup/free/">{{t "Subscribe now"}}</a>
+                        {{/match}}
+                        {{#if monthly_price}}
+                        <a class="btn btn-primary" href="javascript:" data-portal="signup/{{id}}/monthly" data-price="monthly"><span>{{t
+                                "Subscribe now"}}</span></a>
+                        {{/if}}
+                        {{#if yearly_price}}
+                        <a class="btn btn-primary" href="javascript:" data-portal="signup/{{id}}/yearly" data-price="yearly"><span>{{t
+                                "Subscribe now"}}</span></a>
+                        {{/if}}
+                    </div>
+                </div>
+                {{/foreach}}
+                {{/get}}
+                </div>
+                <div class="text-center sign-in-link">
+                    {{t "Already have an account?"}} <a href="{{@site.url}}/signin/">{{t "Sign in"}}</a>
+                </div>
+
+                {{/if}}
+            {{!-- </div> --}}
+        </div>
+    </div>
+</div>
+{{#contentFor "scripts"}}
+{{> members/pricing-duration-switch-script}}
+{{/contentFor}}

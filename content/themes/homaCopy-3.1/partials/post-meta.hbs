@@ -1,0 +1,29 @@
+{{!--
+  Post Meta
+  ----------
+  Post meta information including authors, publishing date and reading time.
+
+  Parameters: 
+  * class: Additional CSS classes for the meta sectionå
+--}}
+
+<div class="flex items-center {{class}}">
+  <div class="flex items-center shrink-0">
+    {{#foreach authors}}
+      {{#if profile_image}}
+        <img src="{{profile_image}}" alt="{{name}}" class="w-12 h-12 rounded-full object-cover border border-0 border-2 {{#unless @first}}-ml-2{{/unless}}">
+      {{/if}}
+    {{/foreach}}
+  </div>
+  <div class="flex flex-col pl-4">
+    <div class="opacity-80 leading-1">
+      {{#foreach authors}}
+        <a href="{{url}}" class="text-sm hover:underline">{{name}}</a>{{#unless @last}}, {{/unless}}
+      {{/foreach}}
+    </div>
+    <div class="text-xs opacity-60">
+      <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="MMMM DD, YYYY"}}</time>
+      – {{reading_time}} 
+    </div>
+  </div>
+</div>

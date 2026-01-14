@@ -1,0 +1,26 @@
+<div class="related-post-wrap">
+    <div class="section-title">
+        <span>{{t "More in"}} {{post.primary_tag.name}}</span>
+    </div>
+    <div class="row">
+        {{#get "posts" limit="3" filter="id:-{{post.id}}+tag:{{post.primary_tag.slug}}"}}
+        {{#foreach posts visibility="all"}}
+        <div class="col-md-4 post-wrap clearfix">
+            {{#if feature_image}}
+            <a href="{{url}}">
+                <div class="featured-image-wrap">
+                    <div class="featured-image">
+                        <img src="{{img_url feature_image size="xs"}}" alt="{{title}}" />
+                    </div>
+                </div>
+            </a>
+            {{/if}}
+            <div class="content-wrap{{^if feature_image}} no-image{{/if}}">
+                <h2 class="title h5"><a href="{{url}}">{{title}}</a></h2>
+                <time class="date" datetime="{{date format="YYYY-MM-DD"}}" title="{{date format="DD MMMM, YYYY"}}">{{date format="MMMM DD, YYYY"}}</time>
+            </div>
+        </div>
+        {{/foreach}}
+        {{/get}}
+    </div>
+</div>

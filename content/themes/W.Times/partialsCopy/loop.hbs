@@ -1,0 +1,27 @@
+{{#foreach posts visibility="all"}}
+<div class="post-item clearfix">
+    <div class="row">
+        {{#if feature_image}}
+        <div class="col-md-6">
+            <a href="{{url}}">
+                <div class="featured-image-wrap">
+                    <div class="featured-image"style="background-image:url({{feature_image}});"></div>
+                </div>
+            </a>
+        </div>
+        {{/if}}
+        <div class="{{#if feature_image}}col-md-6{{else}}col{{/if}} content-wrap">
+            {{#primary_tag}}
+            <div class="primary-tag">
+                <a href="{{url}}">{{name}}</a>
+            </div>
+            {{/primary_tag}}
+            <h2 class="title"><a href="{{url}}">{{title}}</a></h2>
+            <time class="date" datetime="{{date format="YYYY-MM-DD"}}" title="{{date format="DD MMMM, YYYY"}}">{{date format="MMMM DD, YYYY"}}</time>
+            <div class="excerpt">
+                {{excerpt}}
+            </div>
+        </div>
+    </div>
+</div>
+{{/foreach}}

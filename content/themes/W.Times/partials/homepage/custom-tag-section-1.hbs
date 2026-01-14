@@ -1,0 +1,30 @@
+{{#get "posts" limit="4" filter="tag:ybw-awards"}}
+<div class="col-lg-12">
+    <div class="column-post-section post-group">
+        <div class="post-group-title">
+            <span>Business</span>
+        </div>
+        <a href="/tag/business" class="all-post-link">{{t "See all"}} {{> icons/arrow-right}}</a>
+        {{#foreach posts visibility="all"}}
+        {{#if @first}}
+        {{else}}
+        <div class="small-post clearfix">
+            {{#if feature_image}}
+            <a href="{{url}}">
+                <div class="featured-image-wrap">
+                    <div class="featured-image">
+                        <img src="{{img_url feature_image size="xs"}}" alt="{{title}}" />
+                    </div>
+                </div>
+            </a>
+            {{/if}}
+            <div class="content-wrap{{^if feature_image}} no-image{{/if}}">
+                <h2 class="title h5"><a href="{{url}}">{{title}}</a></h2>
+                <time class="date" datetime="{{date format="YYYY-MM-DD"}}" title="{{date format="DD MMMM, YYYY"}}">{{date format="MMMM DD, YYYY"}}</time>
+            </div>
+        </div>
+        {{/if}}
+        {{/foreach}}
+    </div>
+</div>
+{{/get}}

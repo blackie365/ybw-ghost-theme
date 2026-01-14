@@ -1,0 +1,58 @@
+/*
+  Buttons
+  -------
+  Global button styles and variants.
+  Includes hover states and disabled styles.
+*/
+
+button, 
+.button,
+.kg-btn,
+.gh-post-upgrade-cta .gh-post-upgrade-cta-content a.gh-btn,
+[class$="-card-button"] {
+  display: flex;
+  font-family: var(--font-family-body);
+  font-size: 1em;
+  font-weight: 500;
+  letter-spacing: .01em;
+  padding: var(--button-padding);
+  height: var(--button-height);
+  border-radius: var(--button-border-radius);
+  border: var(--button-border);
+  cursor: pointer;
+  background: var(--button-background-color);
+  text-decoration: none;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25em;
+  white-space: nowrap;
+  transition:  0.15s ease-in-out;
+
+  /* This swaps between white or black based on the background color. */
+  /* After testing against all RGB background colors, 49.44 minimizes the number of WCAG 4.5:1 contrast failures. */
+  color: lch(from var(--button-background-color) calc((49.44 - l) * infinity) 0 0) !important;
+
+  &:hover {
+    opacity: 0.7;
+  }
+
+  &.button--alt {
+    color: var(--button-secondary-color) !important;
+    background: var(--button-secondary-background-color);
+    border: var(--button-secondary-border);
+  }
+
+  &.button--destructive {
+    color: var(--button-destructive-color);
+    background: var(--button-destructive-background-color);
+    border: var(--button-destructive-border);
+  }
+
+  &[disabled] {
+    color: var(--button-disabled-color);
+    background: var(--button-disabled-background-color);
+    border: var(--button-disabled-border);
+    cursor: not-allowed;
+  }
+}

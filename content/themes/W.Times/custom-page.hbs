@@ -1,0 +1,24 @@
+{{!< custom-default}}
+{{! The tag above means - insert everything in this file into the {body} of the default.hbs template }}
+<main class="site-main">
+
+    {{#post}}
+    <article class="gh-article {{post_class}}">
+
+        <header class="gh-article-header gh-canvas">
+            <h1 class="gh-article-title">{{title}}</h1>
+
+            {{#if custom_excerpt}}
+                <p class="gh-article-excerpt">{{custom_excerpt}}</p>
+            {{/if}}
+
+            {{> "post-image"}}
+        </header>
+
+        <div class="gh-content gh-canvas">
+            {{content}}
+        </div>
+
+    </article>
+    {{/post}}
+</main>

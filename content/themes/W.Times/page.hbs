@@ -1,0 +1,27 @@
+{{!< default}}
+{{! The tag above means - insert everything in this file into the {body} of the default.hbs template }}
+<div class="main-content-area">
+    <div class="container">
+        {{#post}}
+        <div class="single-post-wrap page-wrap">
+            <div class="post-head d-flex{{#if feature_image}} has-image{{/if}}">
+                {{#if feature_image}}
+                <img srcset="{{img_url feature_image size="m"}} 600w,
+                            {{img_url feature_image size="l"}} 1000w,
+                            {{img_url feature_image size="xl"}} 1600w"
+                    sizes="(max-width: 991px) 690px, (max-width: 1199px) 930px, 1200px"
+                    src="{{img_url feature_image size="xl"}}"
+                    alt="{{title}}"
+                />
+                {{/if}}
+                <div class="header-inner align-self-center">
+                    <h1 class="title">{{title}}</h1>
+                </div>
+            </div>
+            <div class="post-content m-auto">
+                {{content}}
+            </div>
+        </div>
+        {{/post}}
+    </div>
+</div>

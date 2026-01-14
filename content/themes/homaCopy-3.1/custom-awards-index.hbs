@@ -1,0 +1,73 @@
+{{! custom-awards-index.hbs }}
+{{!< default}}
+
+<section class="awards-index">
+  {{!-- Full-width, deep hero with awards image --}}
+  <div class="w-screen relative left-1/2 -translate-x-1/2 -mt-8">
+    <div
+      class="min-h-[70vh] md:min-h-[80vh] bg-cover bg-center flex items-end"
+      style="background-image: url('https://yorkshirebusinesswoman.co.uk/content/images/size/w2000/2025/12/YBW_Awards_070325_212.jpg');"
+    >
+      <div class="w-full bg-gradient-to-t from-black/75 via-black/45 to-transparent">
+        <div class="max-w-[var(--post-content-max-width)] mx-auto px-6 md:px-0 py-12 md:py-16 text-white">
+          <h1 class="!text-5xl leading-[1.15] mb-4">YBW Awards</h1>
+          <p class="opacity-90 text-lg max-w-2xl">
+            Celebrating outstanding women and businesses from the Yorkshire Businesswoman community.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{!-- Awards grid: 1 / 2 / 3 / 4 columns, matching Events layout --}}
+  <div class="mt-16 px-6 md:px-0 max-w-[var(--post-content-max-width)] mx-auto pb-16">
+    {{#if posts}}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
+        {{#foreach posts}}
+          <article class="{{post_class}}">
+            {{!-- Featured image, no rounded corners or zoom to match screenshot --}}
+            {{#if feature_image}}
+              <a href="{{url}}" class="block mb-4">
+                <img
+                  src="{{feature_image}}"
+                  alt="{{title}}"
+                  class="w-full aspect-[3/2] object-cover"
+                >
+              </a>
+            {{/if}}
+
+            {{!-- Category label (like EVENTS in the screenshot) --}}
+            <div class="text-xs tracking-[0.2em] uppercase mb-2 opacity-70">
+              Awards
+            </div>
+
+            {{!-- Title --}}
+            <h2 class="text-2xl font-semibold leading-snug mb-2">
+              <a href="{{url}}" class="hover:underline">
+                {{title}}
+              </a>
+            </h2>
+
+            {{!-- Excerpt --}}
+            {{#if custom_excerpt}}
+              <p class="text-sm opacity-80 mb-3">
+                {{custom_excerpt}}
+              </p>
+            {{/if}}
+
+            {{!-- Meta line (date / author) --}}
+            {{> "post-meta"}}
+          </article>
+        {{/foreach}}
+      </div>
+
+      <div class="mt-12">
+        {{pagination}}
+      </div>
+    {{else}}
+      <p class="opacity-80">
+        No awards have been published yet.
+      </p>
+    {{/if}}
+  </div>
+</section>

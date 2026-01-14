@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="{{@site.locale}}">
+	<head>
+		{{! Document Settings }}
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0 shrink-to-fit=no">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+		{{! Page Meta }}
+		<title>{{meta_title}}</title>
+		{{! Styles'n'Scripts }}
+		<style id="custom-bundle-members-css">
+            {{> custom-bundle-members-css}}
+        </style>
+		{{! Ghost outputs important style and meta data with this tag }}
+		{{ghost_head}}
+	</head>
+	<body class="{{body_class}}">
+		{{! insert header partial}}
+		{{> header}}
+		<center><iframe style="border: 0; box-shadow: none; width: 100%; height: 150vh;" src="https://businesswoman-network.yorkshirebusinesswoman.co.uk/"></iframe></center>
+		{{{body}}}
+		{{! insert footer partial}}
+		{{> custom-footer}}
+		{{> members/notifications}}
+		{{! scripts}}
+		{{!-- The #block helper will pull in data from the #contentFor other template files. --}}
+		{{{block "scripts"}}}
+		<script>var apiKey = "{{>api_key}}";</script>
+		<script src="{{asset "js/app.bundle.min.js"}}"></script>
+        {{ghost_foot}}
+	</body>
+</html>

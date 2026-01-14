@@ -1,0 +1,15 @@
+<div class="col text-center">
+    <div class="pagination-wrap clearfix" role="navigation">
+        {{#if prev}}
+        <a class="newer-posts" href="{{page_url prev}}">{{> icons/arrow-left}} <span>{{t "Newer Posts"}}</span></a>
+        {{/if}}
+       {{#if prev}}
+        <span class="page-number">{{t "Page {page} of {pages}" page=page pages=pages}}</span>
+        {{else if next}}
+        <span class="page-number">{{t "Page {page} of {pages}" page=page pages=pages}}</span>
+        {{/if}}
+        {{#if next}}
+        <a class="older-posts" href="{{page_url next}}"><span>{{t "Older Posts"}}</span> {{> icons/arrow-right}}</a>
+        {{/if}}
+    </div>
+</div>

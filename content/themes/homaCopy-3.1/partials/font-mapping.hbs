@@ -1,0 +1,26 @@
+{{! 
+    This is a fallback font mapping for Ghost versions older than 5.104.0
+    It converts user-friendly font names to Bunny Fonts format for proper font loading
+}}
+
+{{#match font "Cardo"}}cardo:400,700
+{{else match font "Manrope"}}manrope:300,500,700
+{{else match font "Merriweather"}}merriweather:300,700
+{{else match font "Nunito"}}nunito:400,600,700
+{{else match font "Old Standard TT"}}old-standard-tt:400,700
+{{else match font "Roboto"}}roboto:400,500,700
+{{else match font "Rufina"}}rufina:400,500,700
+{{else match font "Tenor Sans"}}tenor-sans:400
+{{else match font "Space Grotesk"}}space-grotesk:700
+{{else match font "Chakra Petch"}}chakra-petch:400
+{{else match font "Noto Sans"}}noto-sans:400,700
+{{else match font "Poppins"}}poppins:400,500,600
+{{else match font "Fira Sans"}}fira-sans:400,500,600
+{{else match font "Inter"}}inter:400,500,600
+{{else match font "Noto Serif"}}noto-serif:400,700
+{{else match font "Lora"}}lora:400,700
+{{else match font "IBM Plex Serif"}}ibm-plex-serif:400,500,600
+{{else match font "Space Mono"}}space-mono:400,700
+{{else match font "Fira Mono"}}fira-mono:400,700
+{{else match font "JetBrains Mono"}}jetbrains-mono:400,700
+{{else match font "Libre Baskerville"}}libre-baskerville:700{{/match}}

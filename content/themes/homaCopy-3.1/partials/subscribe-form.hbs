@@ -1,0 +1,65 @@
+{{!--
+  Subscribe Form
+  -------------
+  Newsletter subscription form with state feedback.
+
+  Parameters:
+  * class: Additional CSS classes
+
+  States:
+  * default: Initial prompt
+  * loading: Processing
+  * success: Subscription complete
+  * error: Subscription failed
+
+  Note: Requires Ghost Members API and active newsletters
+--}}
+
+<form class="relative flex gap-8 z-10 h-fit bg-1 p-4 {{class}}" data-members-form="subscribe">
+  {{#get "newsletters"}}
+    {{#foreach newsletters}}
+      <input type="hidden" value="{{name}}" data-members-newsletter />
+    {{/foreach}}
+  {{/get}}
+
+  <div class="relative flex flex-col gap-4 flex-1 max-w-3xl z-10">
+    <div class="flex gap-4 items-center flex-1">
+      {{!-- <div data-icon="mail" class="text-6xl opacity-30"></div> --}}
+    <div class="flex flex-col">
+      <h5>{{t "Be the first to know"}}</h3>
+      <p class="text-xs opacity-50" data-content="default">
+        {{t "Get the latest stories delivered to your inbox."}}
+      </p>
+
+      <div data-content="loading" class="text-xs">
+        {{t "Subscribing..."}}
+      </div>
+
+      <div data-content="success" class="text-xs">
+        {{t "You've been subscribed!"}}
+      </div>
+
+      <div data-content="error" class="text-red-500 text-xs">
+        {{t "Could not subscribe. Please try again."}}
+      </div>
+    </div>
+  </div>
+
+  <div class="relative flex flex-col gap-4">
+    <input
+      id="email"
+      type="email"
+      placeholder="{{t 'Your email address'}}"
+      required
+      data-members-email
+      aria-label="{{t 'Your email address'}}"
+      class="!px-4 w-full !text-sm"
+    />
+
+    <button type="submit" class="flex items-center gap-2 !text-sm">
+      <span data-icon="send"></span>
+        {{t "Subscribe"}}
+      </button>
+    </div>
+  </div>
+</form>

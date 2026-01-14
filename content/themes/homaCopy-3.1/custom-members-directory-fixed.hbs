@@ -1,0 +1,483 @@
+{{!< default}}
+
+{{#post}}
+<article class="post {{post_class}}">
+    <header class="post-header">
+        <section class="flex flex-col justify-center mx-auto max-w-lg items-center justify-center text-center gap-4 pb-10 pt-24">
+            <h1>{{title}}</h1>
+        </section>
+    </header>
+
+    <!-- Search and Filters -->
+    <section class="section">
+        <div class="max-w-4xl mx-auto mb-8">
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <!-- Search Bar -->
+                <div class="flex-1">
+                    <input 
+                        type="text" 
+                        id="memberSearch" 
+                        placeholder="Search members by name..." 
+                        class="search-input"
+                    >
+                </div>
+                
+                <!-- Sort Filter -->
+                <div class="md:w-48">
+                    <select id="sortFilter" class="search-select">
+                        <option value="alphabetical">A-Z</option>
+                        <option value="newest">Newest First</option>
+                        <option value="mostViewed">Most Viewed</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Results Info -->
+            <div class="results-info">
+                <span id="resultsInfo">Loading...</span>
+            </div>
+        </div>
+    </section>
+
+    <hr/>
+
+    <!-- Members Grid -->
+    <section class="section">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-16" id="membersDirectoryList">
+            <div class="text-center py-8 col-span-full">Loading members...</div>
+        </div>
+        
+        <!-- Load More Button -->
+        <div class="text-center mt-12">
+            <button id="loadMoreBtn" class="load-more-btn" style="display: none;">
+                Load More Members
+            </button>
+            <div id="loadingMore" class="text-gray-500" style="display: none;">
+                Loading more members...
+            </div>
+        </div>
+    </section>
+</article>
+
+<style>
+    /* Search and Filter Inputs */
+    .search-input,
+    .search-select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--color-border, #e5e7eb);
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-family: var(--font-family-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif);
+        background: var(--bg-color, #ffffff);
+        color: var(--text-color-0, #15171A);
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    .search-input:focus,
+    .search-select:focus {
+        outline: none;
+        border-color: var(--accent-color, #B02376);
+        box-shadow: 0 0 0 3px var(--accent-color-alpha, rgba(176, 35, 118, 0.1));
+    }
+    
+    .search-input::placeholder {
+        color: var(--color-midgrey, #738a94);
+    }
+    
+    .search-select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23738a94' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 36px;
+    }
+    
+    /* Results Info */
+    .results-info {
+        text-align: center;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+        color: var(--color-midgrey, #738a94);
+    }
+    
+    /* Load More Button Styling */
+    .load-more-btn {
+        background: var(--accent-color, var(--color-darkgrey, #15171A));
+        color: var(--bg-color, white);
+        border: none;
+        padding: 12px 32px;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: var(--font-family-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    }
+    
+    .load-more-btn:hover:not(:disabled) {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+    
+    .load-more-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    
+    .member-card {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .member-image {
+        width: 100%;
+        aspect-ratio: 1;
+        overflow: hidden;
+        margin-bottom: 16px;
+        position: relative;
+    }
+    
+    .member-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+    
+    .member-card:hover .member-image img {
+        transform: scale(1.02);
+    }
+    
+    .member-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #B02376;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+    
+    .member-tag {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 500;
+        color: #9ca3af;
+        margin-bottom: 4px;
+    }
+    
+    .member-name {
+        font-family: var(--font-family-heading, 'Noto Serif', serif);
+        font-size: 1.5rem;
+        font-weight: 400;
+        color: #15171A;
+        margin: 0 0 8px 0;
+        line-height: 1.3;
+    }
+    
+    .member-headline {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    
+    .member-location {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 12px;
+    }
+    
+    .member-bio {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: #4b5563;
+        margin-bottom: 12px;
+    }
+    
+    .member-bio.truncated {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .read-more-btn {
+        background: none;
+        border: none;
+        color: #B02376;
+        font-size: 0.875rem;
+        text-decoration: underline;
+        cursor: pointer;
+        padding: 0;
+        margin-bottom: 12px;
+        font-family: var(--font-family-body, 'Inter', sans-serif);
+    }
+    
+    .read-more-btn:hover {
+        color: #15171A;
+    }
+    
+    .member-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: auto;
+    }
+    
+    .member-links a {
+        display: inline-block;
+        padding: 8px 16px;
+        background: #15171A;
+        color: white;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 4px;
+        transition: opacity 0.2s;
+    }
+    
+    .member-links a:hover {
+        opacity: 0.9;
+    }
+    
+    /* Use theme color variables for both modes */
+    .member-name {
+        color: var(--text-color-0) !important;
+    }
+    
+    .member-headline {
+        color: var(--text-color-1) !important;
+    }
+    
+    .member-location {
+        color: var(--text-color-2) !important;
+    }
+    
+    .member-bio {
+        color: var(--text-color-1) !important;
+    }
+    
+    h1 {
+        color: var(--text-color-0) !important;
+    }
+</style>
+
+{{{{raw}}}}
+<script>
+(function() {
+    const API_URL = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/getMembersV2';
+    const PAGE_SIZE = 12;
+    
+    let currentPage = 0;
+    let currentSearch = '';
+    let currentSort = 'alphabetical';
+    let isLoading = false;
+    let hasMore = true;
+    let allLoadedMembers = [];
+    
+    // DOM elements
+    const searchInput = document.getElementById('memberSearch');
+    const sortFilter = document.getElementById('sortFilter');
+    const membersGrid = document.getElementById('membersDirectoryList');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const loadingMore = document.getElementById('loadingMore');
+    const resultsInfo = document.getElementById('resultsInfo');
+    
+    // Debounce function
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction() {
+            const args = arguments;
+            const later = function() {
+                clearTimeout(timeout);
+                func.apply(this, args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    
+    // Event listeners
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(function(e) {
+            currentSearch = e.target.value.trim();
+            resetAndLoad();
+        }, 500));
+    }
+    
+    if (sortFilter) {
+        sortFilter.addEventListener('change', function(e) {
+            currentSort = e.target.value;
+            resetAndLoad();
+        });
+    }
+    
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            currentPage++;
+            loadMembers(false);
+        });
+    }
+    
+    // Reset and load from beginning
+    function resetAndLoad() {
+        currentPage = 0;
+        allLoadedMembers = [];
+        hasMore = true;
+        loadMembers(true);
+    }
+    
+    // Main load function
+    function loadMembers(isReset) {
+        if (isLoading) return;
+        
+        isReset = isReset || false;
+        isLoading = true;
+        
+        if (isReset) {
+            membersGrid.innerHTML = '<div class="text-center py-8 col-span-full">Loading...</div>';
+            if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+        } else {
+            if (loadingMore) loadingMore.style.display = 'block';
+            if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+        }
+        
+        // Build API URL
+        const offset = currentPage * PAGE_SIZE;
+        let apiUrl = API_URL + '?limit=' + PAGE_SIZE + '&offset=' + offset + '&sort=' + currentSort;
+        
+        if (currentSearch) {
+            apiUrl += '&search=' + encodeURIComponent(currentSearch);
+        }
+        
+        // Fetch data
+        fetch(apiUrl)
+            .then(function(response) {
+                if (!response.ok) throw new Error('HTTP error! status: ' + response.status);
+                return response.json();
+            })
+            .then(function(result) {
+                const members = result.members || [];
+                const metadata = result.metadata || {};
+                
+                hasMore = metadata.hasMore || false;
+                
+                if (isReset) {
+                    allLoadedMembers = members;
+                    renderMembers(members, true);
+                } else {
+                    allLoadedMembers = allLoadedMembers.concat(members);
+                    renderMembers(members, false);
+                }
+                
+                updateResultsInfo(metadata);
+                updateLoadMoreButton();
+            })
+            .catch(function(error) {
+                console.error('Error loading members:', error);
+                if (isReset) {
+                    membersGrid.innerHTML = '<div class="text-center py-8 col-span-full text-red-500">Error loading members. Please try again.</div>';
+                }
+            })
+            .finally(function() {
+                isLoading = false;
+                if (loadingMore) loadingMore.style.display = 'none';
+            });
+    }
+    
+    // Render members
+    function renderMembers(members, isReset) {
+        if (isReset) {
+            membersGrid.innerHTML = '';
+        }
+        
+        if (members.length === 0 && isReset) {
+            membersGrid.innerHTML = '<div class="text-center py-8 col-span-full text-gray-500">No members found matching your criteria.</div>';
+            return;
+        }
+        
+        members.forEach(function(member) {
+            const firstName = member['First Name'] || '';
+            const lastName = member['Last Name'] || '';
+            const fullName = (firstName + ' ' + lastName).trim() || 'Member';
+            const headline = member['Headline'] || '';
+            const location = member['Location'] || 'Yorkshire';
+            const bio = member['Bio'] || '';
+            const avatarUrl = member['Avatar URL'] || '';
+            const linkedinUrl = member['LinkedIn URL'] || '';
+            const websiteUrl = member['Website'] || '';
+            const category = member['category'] || 'Other';
+            const featured = member['featured'] || false;
+            
+            const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+            const fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=B02376&color=fff&size=600';
+            
+            const memberCard = document.createElement('article');
+            memberCard.className = 'post-card post-card--column member-card';
+            
+            let cardHTML = '<figure class="member-image relative">';
+            if (featured) cardHTML += '<div class="member-badge">Featured</div>';
+            cardHTML += '<img src="' + (avatarUrl || fallbackAvatar) + '" alt="' + fullName + '" loading="lazy" onerror="this.src=\'' + fallbackAvatar + '\'">';
+            cardHTML += '</figure>';
+            cardHTML += '<div class="post-card-content">';
+            cardHTML += '<div class="member-tag">' + category + '</div>';
+            cardHTML += '<h3 class="member-name mt-0">' + fullName + '</h3>';
+            if (headline) cardHTML += '<div class="member-headline">' + headline + '</div>';
+            cardHTML += '<div class="member-location">' + location + '</div>';
+            if (bio) {
+                cardHTML += '<div class="member-bio truncated">' + bio + '</div>';
+            }
+            cardHTML += '<div class="member-links">';
+            if (linkedinUrl) cardHTML += '<a href="' + linkedinUrl + '" target="_blank" rel="noopener noreferrer">LinkedIn</a>';
+            if (websiteUrl) cardHTML += '<a href="' + websiteUrl + '" target="_blank" rel="noopener noreferrer">Website</a>';
+            cardHTML += '</div></div>';
+            
+            memberCard.innerHTML = cardHTML;
+            membersGrid.appendChild(memberCard);
+        });
+    }
+    
+    // Update results info
+    function updateResultsInfo(metadata) {
+        if (!resultsInfo) return;
+        
+        const total = metadata.total || 0;
+        const showing = allLoadedMembers.length;
+        
+        let text = 'Showing ' + showing + ' of ' + total + ' members';
+        if (currentSearch) {
+            text += ' (filtered)';
+        }
+        
+        resultsInfo.textContent = text;
+    }
+    
+    // Update load more button
+    function updateLoadMoreButton() {
+        if (!loadMoreBtn) return;
+        
+        if (hasMore && allLoadedMembers.length > 0) {
+            loadMoreBtn.style.display = 'inline-block';
+            loadMoreBtn.disabled = false;
+        } else {
+            loadMoreBtn.style.display = 'none';
+        }
+    }
+    
+    // Initial load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMembers(true);
+        });
+    } else {
+        loadMembers(true);
+    }
+})();
+</script>
+{{{{/raw}}}}
+{{/post}}

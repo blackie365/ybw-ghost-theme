@@ -1,0 +1,356 @@
+/*
+  Ghost Cards
+  ----------
+  Styles for Ghost's built-in card components.
+  Includes image, gallery, audio, video, and other
+  content block variations.
+*/
+
+body {
+  /* Image Card */
+  .kg-image-card:not(.kg-width-full) {
+    width: 100%;
+
+    img {
+      border-radius: var(--border-radius-2);
+    }
+  }
+
+  .kg-image-card {
+    position: relative;
+    z-index: 1;
+
+    img {
+      width: 100%;
+      height: auto;
+      cursor: zoom-in;
+    }
+  }
+
+  .kg-width-wide {
+    width: 75vw !important;
+    min-width: 100%;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+
+    @media (width < 50rem) {
+      width: 100vw !important;
+    }
+  }
+
+  .kg-width-full {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50vw);
+  }
+
+  /* Gallery Card */
+  .kg-gallery-card {
+    figcaption p {
+      margin: auto;
+    }
+  }
+
+  .kg-gallery-container {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    border-radius: var(--border-radius-2);
+
+    img {
+      cursor: zoom-in;
+    }
+
+    @media (width < 50rem) {
+      border-radius: 0;
+    }
+  }
+
+  /* Blockquote Card */
+  blockquote:not(.kg-blockquote-alt),
+  blockquote.kg-blockquote-alt {
+    font-family: var(--font-family-heading);
+    font-size: 1.5rem;
+    line-height: 1.5;
+    font-weight: 500;
+    font-style: italic;
+    
+    margin: 1rem auto;
+  }
+  
+  blockquote:not(.kg-blockquote-alt) {
+    padding: 1rem 1rem 1rem 3rem;
+    border-left: .25rem solid var(--accent-color);
+  }
+
+  blockquote.kg-blockquote-alt {
+    padding: 1rem 3rem;
+    position: relative;
+    border: none;
+    text-align: center;
+
+    &:before,
+    &:after {
+      font-family: 'Arial Black', 'Arial Bold', sans-serif;
+      position: absolute;
+      font-size: 4rem;
+      width: 4rem;
+      line-height: 0;
+    }
+
+    &:before {
+      top: 1.5rem;
+      left: -1rem;
+      content: "“";
+    }
+
+    &:after {
+      bottom: 0.5rem;
+      right: -0.5rem;
+      content: "”";
+      text-align: left;
+    }
+  }
+
+  /* Audio Card */
+  .kg-audio-card {
+    width: 100%;
+    border-radius: var(--border-radius-2);
+    overflow: hidden;
+    padding: 1.5rem;
+
+    .kg-audio-thumbnail {
+      width: 15rem;
+      max-width: 15rem;
+      aspect-ratio: 1;
+      margin: 0;
+      border-radius: var(--border-radius-1);
+    }
+
+    button {
+      color: var(--text-color-0) !important;
+    }
+
+    .kg-audio-player-container {
+      padding: 1rem 0 1rem 2rem;
+      justify-content: space-around;
+      gap: 1rem;
+    }
+
+    .kg-audio-title,
+    .kg-audio-player {
+      padding: 0;
+      margin: 0;
+    }
+
+    .kg-audio-title {
+      font-size: 2rem;
+    }
+
+    .kg-audio-player {
+      flex-grow: initial;
+    }
+
+    button {
+      height: auto;
+    }
+  }
+
+  /* Callout Card */
+  .kg-callout-card {
+    padding: 1.5rem;
+    border-radius: var(--border-radius-2);
+
+    div.kg-callout-emoji {
+      font-size: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    div.kg-callout-text {
+      font-size: 1rem;
+    }
+  }
+
+  /* Video Card */
+  .kg-video-card {
+    .kg-video-container {
+      overflow: hidden;
+      border-radius: var(--border-radius-2);
+    }
+
+    .kg-video-player {
+      padding: 1rem 1.5rem;
+    }
+  }
+
+  /* Header Card */
+  .kg-header-card {
+    picture {
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+    }
+  }
+
+  /* Bookmark Card */
+  .kg-bookmark-card {
+    a.kg-bookmark-container {
+      border-radius: var(--border-radius-2) !important;
+      border-color: var(--border-color-0);
+    }
+
+    .kg-bookmark-content {
+      padding: 1.5rem;
+    }
+
+    .kg-bookmark-thumbnail img {
+      margin: auto;
+    }
+
+    .kg-bookmark-metadata {
+      font-size: 1rem;
+      height: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    figcaption p {
+      margin: auto;
+    }
+  }
+
+  /* Product Card */
+  .kg-product-card {
+    font-family: var(--font-family-body);
+
+    .kg-product-card-container {
+      border-radius: var(--border-radius-2);
+      padding: 1.5rem;
+      grid-row-gap: 1.5rem;
+      border-color: var(--border-color-0);
+      font-family: inherit;
+      max-width: 30rem;
+
+      img {
+        margin: auto;
+        width: 100%;
+        border-radius: var(--border-radius-1);
+      }
+    }
+
+    h4.kg-product-card-title {
+      font-size: var(--font-size-h3);
+      line-height: var(--line-height-h3);
+      margin: 0;
+    }
+
+    .kg-product-card-rating {
+      align-self: center;
+    }
+  }
+
+  /* File Card */
+  .kg-file-card {
+    a.kg-file-card-container {
+      border-radius: var(--border-radius-2);
+      padding: 1.5rem;
+    }
+
+    .kg-file-card-icon {
+      width: 10rem;
+      aspect-ratio: 1;
+
+      svg {
+        color: inherit;
+      }
+
+      &:before {
+        border-radius: var(--border-radius-1);
+      }
+    }
+  }
+
+  /* Toggle Card */
+  .kg-toggle-card {
+    padding: 1.5rem;
+    border-radius: var(--border-radius-2);
+    box-shadow: none;
+    border: 1px solid var(--border-color-0);
+
+    .kg-toggle-heading {
+      transition: margin-bottom 0.2s ease-in-out;
+    }
+
+    &[data-kg-toggle-state="close"] .kg-toggle-heading-text {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  /* Post upgrade CTA Card */
+  .gh-post-upgrade-cta {
+    position: relative;
+    margin-bottom: 4rem;
+    box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
+    transition: box-shadow .3s ease-in-out;
+    border: 1px solid var(--border-color-0);
+    border-radius: var(--border-radius-2);
+
+    .gh-post-upgrade-cta-content {
+      padding: 2.5rem 2rem 2rem;
+      border-radius: inherit;
+      background: none !important;
+      color: var(--text-color-0);
+      margin: auto;
+
+      h2 {
+        color: var(--text-color-0);
+        font-size: var(--font-size-h4);
+        line-height: var(--line-height-h4);
+        letter-spacing: var(--letter-spacing-heading);
+      }
+
+      p small {
+        color: var(--text-color-1);
+        font-size: var(--font-size-base);
+        line-height: 1;
+        letter-spacing: var(--letter-spacing-body);
+      }
+
+      a:not(.gh-btn) {
+        color: var(--accent-color);
+      }
+    }
+
+    &:hover {
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: -10.5rem;
+      left: 0;
+      right: 0;
+      height: 10rem;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, var(--bg-color-0) 85%);
+      pointer-events: none;
+    }
+  }
+
+  /* Spotify HTML embed card */
+  iframe[src*="open.spotify.com"] {
+    margin-bottom: 2rem !important;
+  }
+
+  /* Common Card Styles */
+  .kg-bookmark-container,
+  .kg-product-card-container,
+  .kg-audio-card,
+  .kg-file-card-container,
+  .kg-toggle-card,
+  .gh-post-upgrade-cta,
+  .kg-file-card-container {
+    background: var(--bg-color-1) !important;
+    color: var(--text-color-0) !important;
+  }
+}

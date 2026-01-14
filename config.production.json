@@ -1,0 +1,31 @@
+{
+  "url": "https://yorkshirebusinesswoman.co.uk",
+  "server": {
+    "port": 2369,
+    "host": "127.0.0.1"
+  },
+  "database": {
+    "client": "mysql",
+    "connection": {
+      "host": "localhost",
+      "user": "ghost-983",
+      "password": "VN%ZdUZfps@Z{rp}ix,6",
+      "database": "ghost_prod"
+    }
+  },
+  "mail": {
+    "transport": "Direct"
+  },
+  "logging": {
+    "transports": [
+      "file",
+      "stdout"
+    ]
+  },
+  "process": "systemd",
+  "paths": {
+    "contentPath": "/var/www/ghost/content"
+  },
+  "accepts": "two",
+  "key": "[value]"
+}

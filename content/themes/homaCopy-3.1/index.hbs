@@ -1,0 +1,13 @@
+{{!< default}}
+
+<section class="section grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8" data-posts>
+  {{#foreach posts }}
+    {{> "post-card"
+      layout="column"
+      class="fade-in-up"
+      style=(concat "animation-delay: calc(0.05s * " @index ")")
+    }}
+  {{/foreach}}
+</section>
+
+{{pagination class="mb-16"}}

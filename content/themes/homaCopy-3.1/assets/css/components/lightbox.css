@@ -1,0 +1,35 @@
+/*
+  Lightbox
+  --------
+  Modal image viewer with overlay.
+  Handles image zoom and close actions.
+*/
+
+@import '../../../node_modules/photoswipe/dist/photoswipe.css';
+
+.pswp__button--arrow--next,
+.pswp__button--arrow--prev {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+
+  svg {
+    display: none;
+  }
+
+  &:before {
+    font-family: 'icon-font';
+    font-weight: 600;
+    font-size: 1.5rem;
+  }
+}
+
+.pswp__button--arrow--next:before {
+  content: 'arrow_right';
+}
+
+.pswp__button--arrow--prev:before {
+  content: 'arrow_left';
+}

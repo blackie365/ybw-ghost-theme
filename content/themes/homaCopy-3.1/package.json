@@ -1,0 +1,191 @@
+{
+  "name": "homa",
+  "version": "1.0.3",
+  "description": "Homa Ghost Theme",
+  "keywords": [
+    "ghost-theme",
+    "ghost",
+    "theme",
+    "homa"
+  ],
+  "author": {
+    "name": "Homa",
+    "email": "support@luxethemes.com"
+  },
+  "engines": {
+    "ghost": ">=5.0.0"
+  },
+  "screenshots": {
+    "desktop": "assets/screenshots/desktop.jpg",
+    "mobile": "assets/screenshots/mobile.jpg"
+  },
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.0.17",
+    "infinite-scroll": "^5.0.0",
+    "photoswipe": "^5.4.4",
+    "reframe.js": "^4.0.2"
+  },
+  "devDependencies": {
+    "@bravobit/icon-font-generator": "^1.1.3",
+    "@tailwindcss/typography": "^0.5.16",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^4.0.17",
+    "vite": "^5.4.10"
+  },
+  "type": "module",
+  "config": {
+    "custom": {
+      "heading_font": {
+        "type": "select",
+        "options": [
+          "Cardo",
+          "Chakra Petch",
+          "Fira Mono",
+          "Fira Sans",
+          "IBM Plex Serif",
+          "Inter",
+          "JetBrains Mono",
+          "Libre Baskerville",
+          "Lora",
+          "Manrope",
+          "Merriweather",
+          "Noto Sans",
+          "Noto Serif",
+          "Nunito",
+          "Old Standard TT",
+          "Poppins",
+          "Roboto",
+          "Rufina",
+          "Space Grotesk",
+          "Space Mono",
+          "Tenor Sans"
+        ],
+        "default": "Noto Serif",
+        "description": "Sets heading font. Ghost's native font settings override this if available."
+      },
+      "body_font": {
+        "type": "select",
+        "options": [
+          "Fira Mono",
+          "Fira Sans",
+          "IBM Plex Serif",
+          "Inter",
+          "JetBrains Mono",
+          "Lora",
+          "Manrope",
+          "Merriweather",
+          "Noto Sans",
+          "Noto Serif",
+          "Nunito",
+          "Poppins",
+          "Roboto",
+          "Space Mono"
+        ],
+        "default": "Inter",
+        "description": "Sets body text font. Ghost's native font settings override this if available."
+      },
+      "color_scheme": {
+        "type": "select",
+        "options": [
+          "light",
+          "dark",
+          "system"
+        ],
+        "default": "system",
+        "description": "Choose light, dark, or system-based color scheme for your site."
+      },
+      "show_color_scheme_switcher": {
+        "type": "boolean",
+        "default": true,
+        "description": "Show a button in the header to toggle between light and dark modes."
+      },
+      "logo_for_dark_color_scheme": {
+        "type": "image",
+        "description": "Logo which will be displayed in dark mode."
+      },
+      "use_dark_color_scheme_for_header_footer": {
+        "type": "boolean",
+        "default": false,
+        "group": "site-wide",
+        "description": "Always use the dark color scheme for the site header and footer, regardless of the global setting."
+      },
+      "enable_app_mode": {
+        "type": "boolean",
+        "default": false,
+        "description": "Allow users to install your site as a mobile app (PWA) and add it to their home screen."
+      },
+      "copyright_text": {
+        "type": "text",
+        "default": "",
+        "description": "Custom footer copyright text. Default is 'Published with Ghost'."
+      },
+      "contact_form_url": {
+        "type": "text",
+        "default": "",
+        "description": "URL for your contact form service. Leave empty to disable."
+      },
+      "show_scroll_indicator": {
+        "type": "boolean",
+        "default": true,
+        "description": "Show circular reading progress bar at the bottom right of the screen."
+      },
+      "homepage_tags": {
+        "type": "text",
+        "default": "",
+        "description": "Tags used to display sections on the home page. The sections are displayed in the order of the tags.",
+        "group": "homepage"
+      },
+      "show_featured_posts_in_homepage_tags": {
+        "type": "boolean",
+        "default": false,
+        "description": "Show featured posts in the homepage tags sections.",
+        "group": "homepage"
+      },
+      "highlighted_tag": {
+        "type": "text",
+        "default": "",
+        "description": "Tag used to mark editor's picks for the home page.",
+        "group": "homepage"
+      },
+      "show_authors_list_on_home_page": {
+        "type": "boolean",
+        "default": true,
+        "description": "Display all authors list on home page.",
+        "group": "homepage"
+      },
+      "show_post_suggestions": {
+        "type": "boolean",
+        "default": true,
+        "group": "post",
+        "description": "Show related posts at the bottom of each post."
+      }
+    },
+    "card_assets": true,
+    "posts_per_page": 12,
+    "image_sizes": {
+      "xs": {
+        "width": 160
+      },
+      "s": {
+        "width": 320
+      },
+      "m": {
+        "width": 600
+      },
+      "l": {
+        "width": 960
+      },
+      "xl": {
+        "width": 1200
+      },
+      "xxl": {
+        "width": 2000
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+/*
+  Animations
+  ---------
+  Global animation keyframes and transitions.
+  Used across various interactive components.
+*/
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Only animate if the user has not disabled animations */
+@media (prefers-reduced-motion: no-preference) {
+  .fade-in-up {
+    opacity: 0;
+    transform: translateY(1rem);
+    animation: fade-in-up .3s ease-in-out forwards;
+  }
+}

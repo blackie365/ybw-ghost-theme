@@ -1,0 +1,70 @@
+{{!< default}}
+{{! The tag above means - insert everything in this file into the {body} of the default.hbs template }}
+<div class="main-content-area">
+    {{#unless @custom.hide_featured_posts_section}}
+    {{> homepage/featured-section}}
+    {{/unless}}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="latest-post-section post-group">
+                    <div class="post-group-title">
+                        <span>{{t "Latest News"}}</span>
+                    </div>
+                    {{#foreach posts visibility="all"}}
+                    {{#if @first}}
+                    <div class="large-post clearfix">
+                        {{#if feature_image}}
+                        <a href="{{url}}">
+                            <div class="featured-image-wrap">
+                                <div class="featured-image">
+                                    <img srcset="{{img_url feature_image size="s"}} 300w,
+                                                {{img_url feature_image size="m"}} 600w"
+                                        sizes="(max-width: 330px)300px, 600px"
+                                        src="{{img_url feature_image size="m"}}"
+                                        alt="{{title}}"
+                                    />
+                                </div>
+                            </div>
+                        </a>
+                        {{/if}}
+                        <div class="content-wrap{{^if feature_image}} no-image{{/if}}">
+                            <h2 class="title h4"><a href="{{url}}">{{title}}</a></h2>
+                            <time class="date" datetime="{{date format="YYYY-MM-DD"}}" title="{{date format="DD MMMM, YYYY"}}">{{date format="MMMM DD, YYYY"}}</time>
+                            <div class="excerpt">{{excerpt words="40"}}</div>
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{/foreach}}
+                    <div class="row">
+                        {{#foreach posts visibility="all"}}
+                        {{^if @first}}
+                        <div class="col-md-6 small-post">
+                            {{#if feature_image}}
+                            <a href="{{url}}">
+                                <div class="featured-image-wrap">
+                                    <div class="featured-image">
+                                        <img src="{{img_url feature_image size="xs"}}" alt="{{title}}" />
+                                    </div>
+                                </div>
+                            </a>
+                            {{/if}}
+                            <div class="content-wrap{{^if feature_image}} no-image{{/if}}">
+                                <h2 class="title h5"><a href="{{url}}">{{title}}</a></h2>
+                                <time class="date" datetime="{{date format="YYYY-MM-DD"}}" title="{{date format="DD MMMM, YYYY"}}">{{date format="MMMM DD, YYYY"}}</time>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{/foreach}}
+                    </div>
+                </div>
+            </div>
+            {{> homepage/tag-section-1}}
+            {{> homepage/tag-section-2}}
+            {{> homepage/tag-section-3}}
+            {{> homepage/tag-section-4}}
+            {{> homepage/tag-section-5}}
+            {{> homepage/tag-section-6}}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,655 @@
+{{!--
+  Members directory page
+  Uses client-side fetch to render external directory from Cloud Run.
+--}}
+
+{{!< default}}
+
+<section class="w-screen relative left-1/2 -translate-x-1/2 bg-1 py-16">
+  <div class="container">
+    <header class="ybm-members-header">
+      <h1>Members directory</h1>
+      <p class="ybm-members-intro">
+        Discover Yorkshire Businesswoman members and their businesses.
+      </p>
+    </header>
+
+    <div class="ybm-members-controls">
+      <div class="ybm-search">
+        <label class="ybm-search-label" for="ybm-filter-search">Search</label>
+        <input
+          id="ybm-filter-search"
+          class="ybm-search-input"
+          type="search"
+          placeholder="Search members by name, business, or services"
+          autocomplete="off"
+        />
+      </div>
+      <div class="ybm-filter">
+        <label class="ybm-filter-label" for="ybm-filter-location">Location</label>
+        <select id="ybm-filter-location" class="ybm-filter-select">
+          <option value="all">All locations</option>
+        </select>
+      </div>
+      <div class="ybm-filter">
+        <label class="ybm-filter-label" for="ybm-filter-sector">Sector</label>
+        <select id="ybm-filter-sector" class="ybm-filter-select">
+          <option value="all">All sectors</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="ybm-members-root" class="ybm-members-root">
+      <div class="ybm-spinner" aria-hidden="true"></div>
+      <p class="ybm-status-text">Loading members…</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var API_URL = 'https://getdata-bd3qt5x3dq-uc.a.run.app/getData?collection=myCollection';
+
+    var members = [];
+    var filters = {
+      query: '',
+      location: 'all',
+      sector: 'all'
+    };
+    var rootEl = null;
+    var searchInputEl = null;
+    var locationSelectEl = null;
+    var sectorSelectEl = null;
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function buildMemberCard(doc) {
+      var firstName = doc['First Name'] || '';
+      var lastName = doc['Last Name'] || '';
+      var fullName = (firstName + ' ' + lastName).trim() || 'Member';
+
+      var avatarUrl = doc['Avatar URL'] || '';
+      var headline = doc['Headline'] || '';
+      var location = doc['Location'] || '';
+      var email = doc.email || '';
+      var phone = doc.phone || '';
+      var website = doc['Website'] || '';
+
+      var businessName = doc['Business Name'] || doc['Business'] || doc['Company Name'] || doc['Organisation'] || doc['Organization'] || '';
+
+      var linkedin = doc['LinkedIn URL'] || '';
+      var twitter = doc['Twitter URL'] || '';
+      var facebook = doc['Facebook URL'] || '';
+      var instagram = doc['Instagram URL'] || '';
+
+      var rawBio = (doc['Bio'] || '').trim();
+      var MAX_BIO_LENGTH = 260;
+      var isLongBio = rawBio.length > MAX_BIO_LENGTH;
+      var shortBio = rawBio;
+      if (isLongBio) {
+        shortBio = rawBio.slice(0, MAX_BIO_LENGTH);
+        var lastSpace = shortBio.lastIndexOf(' ');
+        if (lastSpace > 50) {
+          shortBio = shortBio.slice(0, lastSpace);
+        }
+      }
+
+      var servicesRaw = doc['Services'] || doc['Skills'] || '';
+      var primarySector = '';
+      if (servicesRaw) {
+        var parts = servicesRaw.split(/[;,/]/);
+        for (var i = 0; i < parts.length; i++) {
+          var s = parts[i].trim();
+          if (s) {
+            primarySector = s;
+            break;
+          }
+        }
+      }
+      var services = servicesRaw;
+
+      var card = document.createElement('article');
+      card.className = 'ybm-card';
+
+      var socialsHtml = '';
+      function linkIf(url, label, className, icon) {
+        if (!url) return '';
+        var safeUrl = url;
+        var safeLabel = label;
+        return '<a class=\"ybm-social-link ' + className + '\" href=\"' + safeUrl + '\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"' + safeLabel + '\">' +
+                 '<span data-icon=\"' + icon + '\"></span>' +
+               '</a>';
+      }
+
+      socialsHtml += linkIf(linkedin, 'LinkedIn', 'ybm-social-link--linkedin', 'linkedin');
+      socialsHtml += linkIf(twitter, 'X', 'ybm-social-link--twitter', 'x');
+      socialsHtml += linkIf(facebook, 'Facebook', 'ybm-social-link--facebook', 'facebook');
+      socialsHtml += linkIf(instagram, 'Instagram', 'ybm-social-link--instagram', 'instagram');
+
+      card.innerHTML =
+        '<div class="ybm-card-header">' +
+          (avatarUrl
+            ? '<div class="ybm-avatar-wrapper">' +
+                '<img class="ybm-avatar" src="' + avatarUrl + '" alt="' + escapeHtml(fullName) + '">' +
+              '</div>'
+            : ''
+          ) +
+          '<div class="ybm-card-title">' +
+            '<h2 class="ybm-name">' + escapeHtml(fullName) + '</h2>' +
+            (businessName ? '<p class="ybm-business-name">' + escapeHtml(businessName) + '</p>' : '') +
+            (headline ? '<p class="ybm-headline">' + escapeHtml(headline) + '</p>' : '') +
+            ((location || primarySector)
+              ? '<div class="ybm-meta-row">' +
+                  (location ? '<p class="ybm-location">' + escapeHtml(location) + '</p>' : '') +
+                  (primarySector ? '<span class="ybm-sector-pill">' + escapeHtml(primarySector) + '</span>' : '') +
+                '</div>'
+              : ''
+            ) +
+          '</div>' +
+        '</div>' +
+        '<div class=\"ybm-card-body\">' +
+          (rawBio
+            ? '<p class=\"ybm-bio\">' + escapeHtml(isLongBio ? shortBio + '…' : rawBio) + '</p>' +
+              (isLongBio ? '<button type=\"button\" class=\"ybm-bio-toggle\" aria-expanded=\"false\">Read more</button>' : '')
+            : ''
+          ) +
+          (services ? '<p class=\"ybm-services\"><span class=\"ybm-services-label\">Services:</span> ' + escapeHtml(services) + '</p>' : '') +
+        '</div>' +
+        '<div class="ybm-card-footer">' +
+          (email ? '<a class="ybm-contact-link" href="mailto:' + email + '">' + escapeHtml(email) + '</a>' : '') +
+          (phone ? '<span class="ybm-contact-text">' + escapeHtml(phone) + '</span>' : '') +
+          (website ? '<a class="ybm-contact-link" href="' + website + '" target="_blank" rel="noopener noreferrer">Website</a>' : '') +
+        '</div>' +
+        (socialsHtml
+          ? '<div class=\"ybm-card-socials\">' + socialsHtml + '</div>'
+          : ''
+        );
+
+      if (isLongBio) {
+        var bioEl = card.querySelector('.ybm-bio');
+        var toggleEl = card.querySelector('.ybm-bio-toggle');
+        if (bioEl && toggleEl) {
+          var expanded = false;
+          toggleEl.addEventListener('click', function () {
+            expanded = !expanded;
+            if (expanded) {
+              bioEl.textContent = rawBio;
+              toggleEl.textContent = 'Read less';
+              toggleEl.setAttribute('aria-expanded', 'true');
+            } else {
+              bioEl.textContent = shortBio + '…';
+              toggleEl.textContent = 'Read more';
+              toggleEl.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+      }
+
+      return card;
+    }
+
+    function applyFilters() {
+      if (!rootEl) return;
+      if (!members || !members.length) {
+        renderError(rootEl, 'No members found yet.');
+        return;
+      }
+
+      var q = ((searchInputEl && searchInputEl.value) || '').toLowerCase();
+      var loc = (locationSelectEl && locationSelectEl.value) || 'all';
+      var sector = (sectorSelectEl && sectorSelectEl.value) || 'all';
+
+      rootEl.innerHTML = '';
+
+      var filtered = members.filter(function (doc) {
+        if (loc && loc !== 'all') {
+          var docLoc = (doc['Location'] || '').trim();
+          if (docLoc !== loc) {
+            return false;
+          }
+        }
+
+        if (sector && sector !== 'all') {
+          var servicesField = (doc['Services'] || doc['Skills'] || '').toLowerCase();
+          if (!servicesField || servicesField.indexOf(sector.toLowerCase()) === -1) {
+            return false;
+          }
+        }
+
+        if (q) {
+          var haystack = [
+            doc['First Name'] || '',
+            doc['Last Name'] || '',
+            doc['Business Name'] || '',
+            doc['Business'] || '',
+            doc['Company Name'] || '',
+            doc['Organisation'] || doc['Organization'] || '',
+            doc['Headline'] || '',
+            doc['Location'] || '',
+            doc['Bio'] || '',
+            doc['Services'] || '',
+            doc['Skills'] || ''
+          ].join(' ').toLowerCase();
+
+          if (haystack.indexOf(q) === -1) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      if (!filtered.length) {
+        renderError(rootEl, 'No members match your filters.');
+        return;
+      }
+
+      filtered.forEach(function (doc) {
+        var card = buildMemberCard(doc);
+        rootEl.appendChild(card);
+      });
+    }
+
+    function renderError(root, message) {
+      root.innerHTML = '<p class="ybm-status-text ybm-status-text--error">' + message + '</p>';
+    }
+
+    function init() {
+      rootEl = document.getElementById('ybm-members-root');
+      if (!rootEl) return;
+
+      searchInputEl = document.getElementById('ybm-filter-search');
+      locationSelectEl = document.getElementById('ybm-filter-location');
+      sectorSelectEl = document.getElementById('ybm-filter-sector');
+
+      if (searchInputEl) {
+        searchInputEl.addEventListener('input', function () {
+          filters.query = searchInputEl.value || '';
+          applyFilters();
+        });
+      }
+
+      if (locationSelectEl) {
+        locationSelectEl.addEventListener('change', function () {
+          filters.location = locationSelectEl.value || 'all';
+          applyFilters();
+        });
+      }
+
+      if (sectorSelectEl) {
+        sectorSelectEl.addEventListener('change', function () {
+          filters.sector = sectorSelectEl.value || 'all';
+          applyFilters();
+        });
+      }
+
+      rootEl.innerHTML =
+        '<div class=\"ybm-spinner\" aria-hidden=\"true\"></div>' +
+        '<p class=\"ybm-status-text\">Loading members…</p>';
+
+      fetch(API_URL)
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(function (payload) {
+          var items = (payload && (payload.data || payload.documents || payload.items)) || [];
+          if (!items.length) {
+            renderError(rootEl, 'No members found yet.');
+            return;
+          }
+
+          members = items.slice();
+
+          if (locationSelectEl) {
+            var seenLocations = {};
+            var locations = [];
+            members.forEach(function (doc) {
+              var loc = (doc['Location'] || '').trim();
+              if (!loc) return;
+              var key = loc.toLowerCase();
+              if (!seenLocations[key]) {
+                seenLocations[key] = loc;
+                locations.push(loc);
+              }
+            });
+            locations.sort();
+            var optionsHtml = '<option value="all">All locations</option>';
+            locations.forEach(function (loc) {
+              var optValue = loc.replace(/"/g, '&quot;');
+              var optLabel = loc.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              optionsHtml += '<option value="' + optValue + '">' + optLabel + '</option>';
+            });
+            locationSelectEl.innerHTML = optionsHtml;
+          }
+
+          if (sectorSelectEl) {
+            var seenSectors = {};
+            var sectors = [];
+            members.forEach(function (doc) {
+              var raw = (doc['Services'] || doc['Skills'] || '').trim();
+              if (!raw) return;
+              var parts = raw.split(/[;,/]/);
+              for (var i = 0; i < parts.length; i++) {
+                var s = parts[i].trim();
+                if (!s) continue;
+                var key = s.toLowerCase();
+                if (!seenSectors[key]) {
+                  seenSectors[key] = true;
+                  sectors.push(s);
+                }
+              }
+            });
+            sectors.sort(function (a, b) {
+              var al = a.toLowerCase();
+              var bl = b.toLowerCase();
+              if (al < bl) return -1;
+              if (al > bl) return 1;
+              return 0;
+            });
+            var sectorOptions = '<option value="all">All sectors</option>';
+            sectors.forEach(function (s) {
+              var optValue = s.replace(/"/g, '&quot;');
+              var optLabel = s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              sectorOptions += '<option value="' + optValue + '">' + optLabel + '</option>';
+            });
+            sectorSelectEl.innerHTML = sectorOptions;
+          }
+
+          rootEl.innerHTML = '';
+          rootEl.classList.add('ybm-members-root--ready');
+
+          applyFilters();
+        })
+        .catch(function (err) {
+          console.error('Error loading members directory', err);
+          renderError(rootEl, 'Sorry, there was a problem loading the members directory.');
+        });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
+
+<style>
+  .ybm-members-header {
+    text-align: center;
+    margin: 0 auto 2.5rem;
+    max-width: 40rem;
+  }
+
+  .ybm-members-intro {
+    margin-top: 0.75rem;
+    opacity: 0.8;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .ybm-members-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .ybm-search,
+  .ybm-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .ybm-search {
+    flex: 1 1 220px;
+  }
+
+  .ybm-filter {
+    flex: 0 0 200px;
+  }
+
+  .ybm-search-label,
+  .ybm-filter-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.6;
+  }
+
+  .ybm-search-input,
+  .ybm-filter-select {
+    border-radius: 999px;
+    border: 1px solid rgba(15, 23, 42, 0.14);
+    padding: 0.5rem 0.9rem;
+    font-size: 0.9rem;
+    background-color: #fff;
+  }
+
+  .ybm-search-input:focus,
+  .ybm-filter-select:focus {
+    outline: none;
+    border-color: rgba(15, 23, 42, 0.3);
+  }
+
+  .ybm-members-root {
+    display: grid;
+    gap: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .ybm-members-root {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .ybm-members-root {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .ybm-spinner {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top-color: rgba(0, 0, 0, 0.6);
+    animation: ybm-spin 0.75s linear infinite;
+    margin: 1.5rem auto 0.5rem;
+  }
+
+  .ybm-status-text {
+    text-align: center;
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+
+  .ybm-status-text--error {
+    color: #b91c1c;
+  }
+
+  .ybm-card {
+    border-radius: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.96);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .ybm-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .ybm-card-header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .ybm-avatar-wrapper {
+    flex-shrink: 0;
+  }
+
+  .ybm-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 999px;
+    object-fit: cover;
+    background: #e5e7eb;
+  }
+
+  .ybm-card-title {
+    min-width: 0;
+  }
+
+  .ybm-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.1rem;
+  }
+
+  .ybm-business-name {
+    margin: 0 0 0.15rem;
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+
+  .ybm-headline {
+    margin: 0 0 0.15rem;
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+
+  .ybm-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.15rem;
+  }
+
+  .ybm-location {
+    margin: 0;
+    font-size: 0.85rem;
+    opacity: 0.7;
+  }
+
+  .ybm-sector-pill {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.12rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.04);
+  }
+
+  .ybm-card-body {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .ybm-bio {
+    margin: 0 0 0.25rem;
+  }
+
+  .ybm-bio-toggle {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    cursor: pointer;
+  }
+
+  .ybm-bio-toggle:hover {
+    opacity: 0.8;
+  }
+
+  .ybm-services {
+    margin: 0;
+  }
+
+  .ybm-services-label {
+    font-weight: 600;
+  }
+
+  .ybm-card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    font-size: 0.85rem;
+  }
+
+  .ybm-contact-link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .ybm-contact-text {
+    opacity: 0.8;
+  }
+
+  .ybm-card-socials {
+    margin-top: 0.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .ybm-social-link {
+    color: inherit;
+    opacity: 0.85;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.04);
+  }
+
+  .ybm-social-link:hover {
+    text-decoration: none;
+    background: rgba(15, 23, 42, 0.08);
+  }
+
+  .ybm-social-link [data-icon] {
+    font-size: 1rem;
+  }
+
+  @keyframes ybm-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

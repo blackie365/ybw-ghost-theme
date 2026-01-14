@@ -1,0 +1,44 @@
+{{!--
+  Post Card
+  ---------
+  Displays a preview of a post in a card format.
+
+  Parameters:
+  * layout: "row" | "column" | "row-reverse" | "column-reverse" | "full_image"
+  * featureImageClass: Classes for the feature image (use "hidden" to hide)
+  * contentClass: Classes for the content section (use "hidden" to hide)
+  * titleClass: Classes for the title
+  * excerptClass: Classes for the excerpt (use "hidden" to hide)
+  * tagsClass: Classes for tags section (use "hidden" to hide)
+  * authorsClass: Classes for authors section (use "hidden" to hide)
+  * class: Additional CSS classes for the card itself
+  * style: Inline CSS styles
+
+  Usage:
+  {{> "post-card" layout="row" authorsClass="text-sm"}}
+  {{> "post-card" layout="row" excerptClass="hidden" class="my-custom-size"}}
+--}}
+
+<article class="post-card post-card--{{layout}} {{^feature_image}}post-card--no-image{{/feature_image}} {{class}} {{post_class}}" {{#if style}}style="{{style}}"{{/if}}>
+  {{> "feature-image" class=featureImageClass href=url}}
+
+  <div class="post-card-content {{contentClass}}">
+    {{#if primary_tag}}
+      <div class="text-xs uppercase tracking-wide font-medium text-gray-500 -mb-1 {{tagsClass}}">
+        <a href="{{primary_tag.url}}">{{primary_tag.name}}</a>
+      </div>
+    {{/if}}
+
+    <h3 class="mt-0 {{titleClass}}"><a href="{{url}}">{{title}}</a></h3>
+    
+    <a href="{{url}}" class="post-card-excerpt {{excerptClass}}">
+      {{excerpt words="50"}}
+    </a>
+
+    <div class="font-light text-xs opacity-50 {{authorsClass}}">
+      By <a href="{{primary_author.url}}" class="hover:underline">{{primary_author.name}}</a>
+      <span>•</span>
+      <span>{{reading_time}}</span>
+    </div>
+  </div>
+</article>

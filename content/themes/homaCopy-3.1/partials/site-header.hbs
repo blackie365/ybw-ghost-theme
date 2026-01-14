@@ -1,0 +1,79 @@
+{{!--
+Site Header
+----------
+Main navigation component with site branding and user actions.
+
+Components:
+* Site logo
+* Navigation menu (from Ghost settings)
+* Search button
+* Member actions (sign in/up or user info)
+* Mobile menu toggle
+
+Note: Navigation items with "#" as URL are treated as dropdown triggers
+--}}
+
+<header 
+  class="site-header text-xl md:text-sm"
+  {{#if @custom.use_dark_color_scheme_for_header_footer}}data-color-scheme="dark"{{/if}}
+>
+  {{> "site-logo"}}
+
+
+  <div data-nav-container class="font-light">
+    <primary-nav></primary-nav>
+
+    {{#if @site.members_enabled}}
+      <div class="flex flex-col md:hidden gap-3 px-4 border-t border-b0 py-4 starting:opacity-0 transition-opacity duration-400 delay-400">
+        {{#if @member}}
+          <a href="#/portal" class="block h-8">{{t "My Account"}}</a>
+        {{else}}
+          <a href="#/portal/signin" class="block h-8">{{t "Sign In"}}</a>
+          <a href="#/portal/signup" class="block h-8">{{t "Sign Up"}}</a>
+        {{/if}}
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="nav-actions text-nowrap flex items-center gap-2" role="navigation" aria-label="{{t "User actions"}}">
+    <div 
+      role="button" 
+      tabindex="0" 
+      class="hover:bg-1 p-2 rounded-full cursor-pointer touch-manipulation" 
+      data-icon="search" 
+      data-ghost-search 
+      aria-label="{{t "Search"}}"
+    ></div>
+
+    {{#if @custom.show_color_scheme_switcher}}
+      <color-scheme-switcher
+        class="hover:bg-1 p-2 rounded-full touch-manipulation"
+        icon-class="flex"
+        aria-label="{{t "Toggle color scheme"}}"
+      ></color-scheme-switcher>
+    {{/if}}
+
+    <div class="hidden md:flex items-center gap-6 ml-2">
+      {{#if @site.members_enabled}}
+        {{#if @member}}
+          <a href="#/portal" class="nav-action">{{t "My Account"}}</a>
+        {{else}}
+          <a href="#/portal/signin" class="nav-action">{{t "Sign In"}}</a>
+          <a href="#/portal/signup" class="nav-action button">{{t "Sign Up"}}</a>
+        {{/if}}
+      {{/if}}
+    </div>  
+
+    <div 
+      data-nav-toggle 
+      role="button" 
+      tabindex="0" 
+      class="md:hidden touch-manipulation" 
+      aria-label="{{t "Menu"}}" 
+      aria-expanded="false" 
+      aria-controls="mobile-menu"
+    >
+      <span/>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,112 @@
+{
+  "name": "world-times",
+  "description": "",
+  "demo": "http://world-times.gbjsolution.com",
+  "version": "4.0.0",
+  "engines": {
+    "ghost": ">=5.0.0"
+  },
+  "ghost-api": "v5",
+  "supports": ["email-templates"],
+  "screenshots": {
+    "desktop": "assets/screenshot-desktop.jpg",
+    "mobile": "assets/screenshot-mobile.jpg"
+  },
+  "author": {
+    "name": "Ghost Publishing",
+    "email": "rob@topicuk.co.uk",
+    "url": "https://topicuk.co.uk"
+  },
+  "gpm": {
+    "type": "theme",
+    "categories": [
+      "Minimal",
+      "Personal Blogs",
+      "Magazine Layouts",
+      "Business Blogs",
+      "Masonry Style"
+    ],
+    "keywords": [
+      "ghost",
+      "theme",
+      "ghost-theme",
+      "magazine",
+      "news",
+      "personal",
+      "minimal"
+    ]
+  },
+  "config": {
+    "posts_per_page": 7,
+    "card_assets": {
+      "exclude": [
+        "bookmark",
+        "gallery"
+      ]
+    },
+    "custom": {
+      "navigation_bar_type": {
+        "type": "select",
+        "options": [
+          "sticky",
+          "normal"
+        ],
+        "default": "sticky"
+      },
+      "copyright_text_override": {
+        "type": "text",
+        "default": ""
+      },
+      "hide_featured_posts_section": {
+        "type": "boolean",
+        "default": false,
+        "group": "homepage"
+      },
+      "show_share_buttons": {
+        "type": "boolean",
+        "default": true,
+        "group": "post"
+      },
+      "show_related_posts": {
+        "type": "boolean",
+        "default": true,
+        "group": "post"
+      },
+      "disqus_shortname": {
+        "type": "text",
+        "group": "post"
+      }
+    },
+    "image_sizes": {
+      "xs": {
+        "width": 150
+      },
+      "s": {
+        "width": 300
+      },
+      "m": {
+        "width": 600
+      },
+      "l": {
+        "width": 1000
+      },
+      "xl": {
+        "width": 1600
+      }
+    }
+  },
+  "devDependencies": {
+    "browser-sync": "^2.27.10",
+    "del": "^6.1.1",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^8.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^5.1.0",
+    "gulp-uglify": "^3.0.2",
+    "gulp-zip": "^5.1.0",
+    "merge2": "^1.4.1",
+    "sass": "^1.52.1"
+  }
+}

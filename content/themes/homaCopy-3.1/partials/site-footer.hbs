@@ -1,0 +1,44 @@
+{{!--
+  Site Footer
+  ----------
+  Footer with secondary navigation and site info.
+--}}
+
+<footer 
+  class="border-t border-b0 py-8 text-[var(--text-color-0)] bg-[var(--bg-color-0)]"
+  data-footer
+  {{#if @custom.use_dark_color_scheme_for_header_footer}}data-color-scheme="dark"{{/if}}
+>
+  <div class="container">
+  
+    <div class="flex justify-between flex-wrap md:flex-nowrap w-full pb-8 mb-8 border-b border-b0">
+      <secondary-nav
+        class="w-full md:w-fit"
+        header-class="font-bold opacity-50 mb-1 text-sm" 
+        item-class="font-light hover:underline"
+      ></secondary-nav>
+    
+      <div class="flex flex-col mt-8 md:items-end md:mt-0 gap-4">
+        {{> "site-logo"}}
+
+        {{#if @site.description}}
+          <p class="text-sm">
+            {{@site.description}}
+          </p>
+        {{/if}}
+
+        <social-icons></social-icons>
+      </div>
+    </div>
+    <div class="flex justify-center items-center">
+      <p class="text-sm">
+        {{#if @custom.copyright_text}}
+          {{@custom.copyright_text}}
+        {{else}}
+          &copy; {{date format="YYYY"}} {{t "Published with"}}
+          <a href="https://ghost.org" target="_blank" rel="noopener" class="underline">Ghost</a>
+        {{/if}}
+      </p>
+    </div>
+  </div>
+</footer>

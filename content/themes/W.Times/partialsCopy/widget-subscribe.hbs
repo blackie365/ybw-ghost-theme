@@ -1,0 +1,26 @@
+<div class="widget">
+    <h4 class="widget-title">{{t "Subscribe"}}</h4>
+    <div class="content subscribe-widget">
+        {{#if @member}}
+        <p>{{t "You have already subscribed to"}} {{@site.title}}</p>
+        {{else}}
+        <p>{{t "Get all the latest posts delivered straight to your inbox."}}</p>
+        <form class="members-form" data-members-form="signin">
+            <div class="input-group pb-3">
+                <input data-members-email type="email" class="form-control" placeholder="{{t "Your email address"}}" required/>
+                <div class="input-group-append">
+                    <button class="btn btn-secondary" type="submit"><span class="loading-spinner"></span>{{t "Subscribe"}}</button>
+                </div>
+            </div>
+            <div class="messages-wrap text-center">
+                <div class="message-success">
+                    <strong>{{t "Great!"}}</strong> {{t "Check your inbox and click the link to complete subscription"}}
+                </div>
+                <div class="message-error">
+                    <strong>{{t "Error!"}}</strong> {{t "Please enter a valid email address!"}}
+                </div>
+            </div>
+        </form>
+        {{/if}}
+    </div>
+</div>

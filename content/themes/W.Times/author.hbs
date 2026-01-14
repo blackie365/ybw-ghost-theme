@@ -1,0 +1,55 @@
+{{!< default}}
+{{! The tag above means - insert everything in this file into the {body} of the default.hbs template }}
+<div class="main-content-area">
+    <div class="container">
+        {{#author}}
+        <div class="cover-wrap text-center{{#if cover_image}} has-image{{/if}}">
+            {{#if cover_image}}
+            <img srcset="{{img_url cover_image size="m"}} 600w,
+                        {{img_url cover_image size="l"}} 1000w,
+                        {{img_url cover_image size="xl"}} 1600w"
+                sizes="(max-width: 991px) 690px, (max-width: 1199px) 930px, 1200px"
+                src="{{img_url cover_image size="xl"}}"
+                alt="{{title}}"
+            />
+            {{/if}}
+            <div class="cover-inner m-auto">
+                {{#if profile_image}}
+                    <img src="{{img_url profile_image size="xs"}}" alt="{{name}}" class="avatar">
+                    {{else}}
+                    <div class="avatar no-image">{{> icons/user}}</div>
+                {{/if}}
+                <h1 class="name h2">
+                    {{name}}
+                </h1>
+                <div class="post-count">
+                    {{t "Total"}} {{plural ../pagination.total empty=(t "0 Post") singular=(t "1 Post") plural=(t "% Posts")}}
+                </div>
+                <ul class="meta-info text-center">
+                    {{#if twitter}}
+                    <li><a href="{{twitter_url}}" target="_blank">{{> icons/twitter}}</a></li>
+                    {{/if}}
+                    {{#if facebook}}
+                    <li><a href="{{facebook_url}}" target="_blank">{{> icons/facebook}}</a></li>
+                    {{/if}}
+                    {{#if website}}
+                    <li><a href="{{website}}" target="_blank">{{> icons/link}}</a></li>
+                    {{/if}}
+                    {{#if location}}
+                    <li class="location">{{> icons/location}}{{location}}</li>
+                    {{/if}}
+                </ul>
+                {{#if bio}}
+                <div class="author-bio">
+                    {{bio}}
+                </div>
+                {{/if}}
+            </div>
+        </div>
+        {{/author}}
+        {{> loop}}
+        <div class="row">
+            {{pagination}}
+        </div>
+    </div>
+</div>

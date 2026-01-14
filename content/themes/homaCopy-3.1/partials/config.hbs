@@ -1,0 +1,70 @@
+{{!--
+  Config
+  ------
+  Global configuration variables and theme settings.
+--}}
+
+{{!-- Load Bunny Fonts if the theme is not using the Ghost font system --}}
+<script>
+  const computedStyle = getComputedStyle(document.documentElement);
+  const headingFont = computedStyle.getPropertyValue('--gh-font-heading');
+  const bodyFont = computedStyle.getPropertyValue('--gh-font-body');
+
+  if (!headingFont || !bodyFont) {
+    let fontsLinks = '<link rel="preconnect" href="https://fonts.bunny.net">';
+
+    if (!headingFont && !bodyFont) {
+      fontsLinks += `<link rel="stylesheet" href="https://fonts.bunny.net/css?family={{> "font-mapping" font=@custom.heading_font}}|{{> "font-mapping" font=@custom.body_font}}">`;
+    } else if (!headingFont) {
+      fontsLinks += `<link rel="stylesheet" href="https://fonts.bunny.net/css?family={{> "font-mapping" font=@custom.heading_font}}">`;
+    } else if (!bodyFont) {
+      fontsLinks += `<link rel="stylesheet" href="https://fonts.bunny.net/css?family={{> "font-mapping" font=@custom.body_font}}">`;
+    }
+
+    document.write(fontsLinks);
+  }
+</script>
+
+{{!-- Set theme CSS variables --}}
+<style>
+  :root {
+    --accent-color: {{@site.accent_color}};
+    --cover-image: url({{@site.cover_image}});
+    --font-family-heading: var(--gh-font-heading, {{@custom.heading_font}});
+    --font-family-body: var(--gh-font-body, {{@custom.body_font}});
+  }
+</style>
+
+{{!-- Set theme configuration variables --}}
+<script>
+  window.themeConfig = {
+    enableAppMode: {{@custom.enable_app_mode}},
+    colorScheme: "{{@custom.color_scheme}}",
+    homepageTags: "{{@custom.homepage_tags}}",
+    site: {
+      url: "{{@site.url}}",
+      title: "{{@site.title}}",
+      description: "{{@site.description}}",
+      accentColor: "{{@site.accent_color}}",
+      icon: "{{@site.icon}}",
+      facebook: "{{@site.facebook}}",
+      twitter: "{{@site.twitter}}",
+      primaryNavigation: [
+        {{#foreach @site.navigation}}
+          {
+            label: "{{label}}",
+            url: "{{this.url}}"
+          },
+        {{/foreach}}
+      ],
+      secondaryNavigation: [
+        {{#foreach @site.secondary_navigation}}
+          {
+            label: "{{label}}",
+            url: "{{this.url}}"
+          },
+        {{/foreach}}
+      ]
+    }
+  }
+</script>

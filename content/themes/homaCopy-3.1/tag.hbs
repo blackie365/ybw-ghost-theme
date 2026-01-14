@@ -1,0 +1,31 @@
+{{!--
+  Tag archive page displaying posts filtered by tag.
+--}}
+
+{{!< default}}
+
+
+
+{{#tag}}
+  <section class="flex flex-col justify-center mx-auto max-w-lg items-center justify-center text-center gap-4 pb-10 pt-24 {{slug}} ">
+    <h1>{{name}}</h1>
+    {{#if description}}
+      <p>{{description}}</p>
+    {{/if}}
+  </section>
+{{/tag}}
+
+<hr/>
+
+<section class="section">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-16" data-posts>
+    {{#foreach posts}}
+      {{> "post-card"
+        layout="column"
+        class="fade-in-up"
+        style=(concat "animation-delay: calc(0.05s * " @index ")")
+      }}
+    {{/foreach}}
+  </div>
+  {{pagination}}
+</section>

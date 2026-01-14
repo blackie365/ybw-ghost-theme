@@ -194,10 +194,11 @@ function generateSlug(firstName, lastName) {
  * Query parameters:
  * - limit: number of results (default 20, max 100)
  * - offset: pagination offset (default 0)
- * - category: filter by category
+ * - keyword: filter by tag/keyword
  * - featured: filter featured members (true/false)
  * - search: search by name
  * - sort: alphabetical|newest|mostViewed (default alphabetical)
+ * - includeNoAvatar: include members without avatars (default false)
  */
 exports.getMembersV2 = onRequest({cors: true}, async (req, res) => {
   try {
@@ -209,10 +210,11 @@ exports.getMembersV2 = onRequest({cors: true}, async (req, res) => {
     // Parse query parameters
     const limit = Math.min(parseInt(req.query.limit) || 20, 100);
     const offset = parseInt(req.query.offset) || 0;
-    const category = req.query.category;
+    const keyword = req.query.keyword;
     const featured = req.query.featured === "true";
     const search = req.query.search;
     const sort = req.query.sort || "alphabetical";
+    const includeNoAvatar = req.query.includeNoAvatar === "true";
 
     // Get all members (we'll do filtering/sorting client-side)
     // This is fine for 210 members, but would need optimization for 1000+
@@ -225,9 +227,26 @@ exports.getMembersV2 = onRequest({cors: true}, async (req, res) => {
       ...doc.data(),
     }));
 
-    // Apply category filter (client-side since most don't have category)
-    if (category) {
-      members = members.filter((m) => m.category === category);
+    // Filter out members without avatars (unless explicitly requested)
+    if (!includeNoAvatar) {
+      members = members.filter((m) => {
+        const avatar = m["Avatar URL"] || "";
+        // Keep if has non-empty avatar and not a gravatar default
+        return avatar && !avatar.includes("?d=blank");
+      });
+    }
+
+    // Apply keyword/tag filter
+    if (keyword) {
+      members = members.filter((m) => {
+        try {
+          const tags = m.Tags ? JSON.parse(m.Tags) : [];
+          return tags.some((tag) =>
+            tag.toLowerCase().includes(keyword.toLowerCase()));
+        } catch (e) {
+          return false;
+        }
+      });
     }
 
     // Apply featured filter

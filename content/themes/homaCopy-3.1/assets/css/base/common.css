@@ -1,0 +1,17 @@
+/*
+  Common Utilities
+  --------------
+  Shared utility classes and layout helper styles.
+*/
+
+.container {
+  max-width: var(--content-max-width);
+  padding: 0 var(--content-padding-x);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.section {
+  position: relative;
+  padding: 4rem 0;
+}

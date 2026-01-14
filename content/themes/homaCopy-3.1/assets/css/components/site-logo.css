@@ -1,0 +1,47 @@
+/*
+  Site Logo
+  ---------
+  Logo component with dark mode variant support.
+  Handles both image and text-based logos.
+*/
+
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--site-logo-height);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  height: var(--site-logo-height);
+  line-height: var(--site-logo-height);
+  width: auto;
+  text-decoration: none;
+  flex-shrink: 0;
+
+  .logo-dark {
+    display: none;
+  }
+}
+
+.site-logo img {
+  min-height: var(--site-logo-height);
+  height: var(--site-logo-height);
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.site-title {
+  display: inline-block;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+[data-color-scheme="dark"] .site-logo:has(img.logo-dark) {
+  .logo {
+    display: none;
+  }
+
+  .logo-dark {
+    display: block;
+  }
+}

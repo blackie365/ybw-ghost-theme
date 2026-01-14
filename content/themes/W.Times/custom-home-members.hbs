@@ -1,0 +1,22 @@
+{{!< custom-default-members}}
+{{! The tag above means - insert everything in this file into the {body} of the default.hbs template }}
+<div class="main-content-area">
+<div class="content">
+</div>
+    {{#unless @custom.hide_featured_posts_section}}
+	{{> homepage/custom-featured-section}}
+    {{/unless}}
+    <div class="container">
+        <div class="row">
+            {{> homepage/custom-tag-section-2}}
+			<script async
+  src="https://js.stripe.com/v3/buy-button.js">
+</script>
+
+<stripe-buy-button
+  buy-button-id="buy_btn_1NpQvILZwCrAHQYPWEViEGzK"
+  publishable-key="pk_live_51IblrlLZwCrAHQYP79S2wQmATIdY7Sw2RfwvQDxAU0oAibMeuKB7wIzq8U0XjfW3dwnyaYQgHy6c7ngd3sxWMX0f00Z8PuwmZz">
+</stripe-buy-button>
+        </div>
+    </div>
+</div>

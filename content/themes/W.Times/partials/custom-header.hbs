@@ -1,0 +1,46 @@
+<header class="site-header">
+    <div class="container">
+        <div class="header-wrapper text-center">
+<img
+  src="https://yorkshirebusinesswoman.co.uk/content/images/2025/09/Asset-5@3x.png" width = "40%" alt="yorkshire BusinessWoman"/>      
+        </div>
+    </div>
+    <nav class="site-navbar-wrap">
+        <div class="container">
+            <div class="navbar-inner d-flex">
+                <span class="menu-button d-inline-flex menu-open">
+                    {{> icons/menu}}
+                </span>
+                <ul class="navbar-nav m-auto text-center main-menu d-none d-xl-flex">
+                {{navigation}}
+                </ul>
+                <span class="search-button d-inline-flex search-open">
+                    {{> icons/search}}
+                </span>
+                <nav class="mobile-menu" id="mobile-menu"><ul>{{navigation}}</ul></nav>
+                <div class="backdrop hidden-md hidden-lg" id="backdrop">
+                    <span class="menu-close align-center">{{> icons/close}}</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {{#match @custom.navigation_bar_type "sticky"}}
+    <div class="fixed-nav-wrap">
+        <nav class="site-navbar-wrap">
+            <div class="container">
+                <div class="navbar-inner d-flex">
+                    <span class="menu-button d-inline-flex menu-open">
+                        {{> icons/menu}}
+                    </span>
+                    <ul class="navbar-nav m-auto text-center main-menu d-none d-xl-flex">
+                    {{navigation}}
+                    </ul>
+                    <span class="search-button d-inline-flex search-open">
+                       {{> icons/search}}
+                    </span>
+                </div>
+            </div>
+        </nav>
+    </div>
+    {{/match}}
+</header>

@@ -1,0 +1,58 @@
+{{!--
+  Posts Section - Primary
+  -------------
+  Displays a collection of up to 4 posts
+
+  Parameters:
+  * class: The class of the section
+  * posts: The posts to display
+--}}
+
+{{#if posts}}
+  <section class="col-span-1 md:col-span-3 {{class}}">
+    {{#match posts.length '=' 1}}
+      {{#foreach posts}}
+        {{> "post-card"
+          layout="row"
+          class="col-span-3"
+          featureImageClass="!aspect-[1.6] flex-1 mr-8"
+          titleClass="!text-h1"
+          contentClass="flex-1"
+          excerptClass="!line-clamp-4"
+        }}
+      {{/foreach}}
+    {{else}}
+      <div class="relative grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+        {{#foreach posts}}
+          {{#if @first}}
+            {{#if feature_image}}
+              {{> "post-card"
+                layout="column"
+                class="row-span-3 border-b border-b0 pb-4 md:border-r md:border-b-0 md:pr-8"
+                featureImageClass="!aspect-[1.4]"
+                tagsClass="hidden"
+              }}
+            {{else}}
+              {{> "post-card"
+                layout="row-reverse"
+                contentClass="flex-1"
+                featureImageClass="w-28 !h-28 flex-shrink-0"
+                titleClass="text-h4"
+                tagsClass="hidden"
+              }}
+            {{/if}}
+          {{else}}
+            {{> "post-card"
+              layout="row-reverse"
+              contentClass="flex-1"
+              featureImageClass="w-28 !h-28 flex-shrink-0"
+              titleClass="text-h4"
+              tagsClass="hidden"
+              class="nth-3:pt-4 nth-4:pt-4 nth-3:border-t nth-4:border-t border-b0"
+            }}
+          {{/if}}
+        {{/foreach}}
+      </div>
+    {{/match}}
+  </section>
+{{/if}}

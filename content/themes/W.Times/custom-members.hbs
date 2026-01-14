@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="{{@site.locale}}">
+	<head>
+		{{! Document Settings }}
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0 shrink-to-fit=no">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+		{{! Page Meta }}
+		<title>{{meta_title}}</title>
+		{{! Styles'n'Scripts }}
+		<style id="custom-bundle-css">
+            {{> custom-bundle-members-css}}
+        </style>
+		{{! Ghost outputs important style and meta data with this tag }}
+		{{ghost_head}}
+	</head>
+	<body class="{{body_class}}">
+		{{! insert header partial}}
+		{{> custom-header-members}}
+		{{{body}}}
+		{{! insert footer partial}}
+		{{> custom-footer}}
+		{{> members/notifications}}
+		{{! scripts}}
+		{{!-- The #block helper will pull in data from the #contentFor other template files. --}}
+		{{{block "scripts"}}}
+		<script>var apiKey = "{{>api_key}}";</script>
+		<script src="{{asset "js/app.bundle.min.js"}}"></script>
+        {{ghost_foot}}
+		<script src="https://static.elfsight.com/platform/platform.js" data-use-service-core defer></script>
+		<div class="elfsight-app-42cccf76-1b07-4f4a-b575-f3d5269c9b6f"></div>
+	</body>
+</html>
+

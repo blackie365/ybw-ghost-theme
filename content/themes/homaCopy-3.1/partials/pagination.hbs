@@ -1,0 +1,25 @@
+{{!--
+  Pagination
+  ---------
+  Simple "Load More" button for loading next page of posts.
+
+  Parameters: 
+  * class: The class of the pagination container
+--}}
+
+<div class="flex flex-col justify-center gap-4 w-fit mx-auto {{class}}">
+  {{#if next}}
+    <a href="{{page_url next}}" data-pagination-next hidden></a>
+    <button class="button flex items-center gap-2" data-pagination-load-more>
+      {{t "Load More"}}
+      <span aria-hidden="true" data-icon="arrow_right"></span>
+    </button>
+
+    <div data-pagination-status class="text-center text-muted hidden">
+      <div class="infinite-scroll-action">
+        <p class="infinite-scroll-last">{{t "You're all caught up."}}</p>
+        <p class="infinite-scroll-error">{{t "There was an error loading the next page."}}</p>
+      </div>
+    </div>
+  {{/if}}
+</div>

@@ -1,0 +1,25 @@
+{{!--
+  Site Logo
+  ---------
+  Displays site logo or title with optional dark mode variant.
+
+  Variables:
+  * @site.logo: Primary logo image
+  * @site.logo_dark: Dark mode logo variant
+  * @site.title: Fallback site name if no logo
+--}}
+
+<a href="{{@site.url}}" class="site-logo" aria-label="{{@site.title}} - {{t "Home"}}">
+  {{#if @site.logo}}
+    <img src="{{img_url @site.logo}}" alt="{{@site.title}}" loading="eager" class="logo"/>
+    {{#if @custom.logo_for_dark_color_scheme}}
+      <img src="{{img_url @custom.logo_for_dark_color_scheme}}" alt="{{@site.title}}" loading="eager" class="logo-dark" />
+    {{/if}}
+  {{else}}
+    {{#if @site.icon}}
+      <img src="{{img_url @site.icon}}" alt="{{@site.title}}" loading="eager"/>
+    {{else}}
+      <span class="site-title">{{@site.title}}</span>
+    {{/if}}
+  {{/if}}
+</a>

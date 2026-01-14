@@ -1,0 +1,37 @@
+{{!< default}}
+{{! The tag above means - insert everything in this file into the {body} of the default.hbs template }}
+<div class="main-content-area">
+    <div class="container">
+        <div class="single-post-wrap page-wrap">
+            <div class="post-head d-flex">
+                <div class="header-inner align-self-center">
+                    <h1 class="title">{{t "Welcome back!"}}</h1>
+                    <div class="members-page-subtitile">
+                        {{t "Sign into your account again for full access"}}
+                    </div>
+                </div>
+            </div>
+            <div class="post-content m-auto">
+                <form class="members-form" data-members-form="signin">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input data-members-email type="email" class="form-control" placeholder="{{t "Your email address"}}" required/>
+                            <div class="input-group-btn">
+                                <button class="btn btn-primary" type="submit">{{t "Send login link"}}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="messages-wrap text-center">
+                        <div class="message-success">
+                            <strong>{{t "Great!"}}</strong> {{t "Check your inbox and click the link to complete sign in"}}
+                        </div>
+                        <div class="message-error">
+                            <strong>{{t "Error!"}}</strong> {{t "Please enter a valid email address!"}}
+                        </div>
+                    </div>
+                </form>
+                <div class="alternate-link"><small>{{t "Don't have an account yet?"}} <a href="/signup/">{{t "Sign up"}}</a></small></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+---
+routes:
+  /signup/: signup
+  /signin/: signup
+  /account/: account
+  /signup/free/: signup-free
+  /upcoming-events/:
+    controller: channel
+    filter: tag:[events]
+collections:
+  /awards/:
+    permalink: /awards/{slug}/
+    template: custom-post
+    filter: tag:ybw_awards
+  /:
+    permalink: /{slug}/
+    template: index
+    filter: tag:-ybw_awards
+taxonomies:
+  tag: /tag/{slug}/
+  author: /author/{slug}/
+email_templates:
+  newsletter:
+    template:
+      - newsletter-custom
+      - newsletter
+    content_type: html

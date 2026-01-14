@@ -1,0 +1,31 @@
+{{!--
+  Overview page of all tags with their descriptions and recent posts.
+--}}
+
+{{!< default}}
+
+{{#get "tags" limit="all" include="count.posts,posts" order="count.posts desc"}}
+  {{#foreach tags}}
+    <section class="flex flex-col {{slug}} max-w-6xl mx-auto my-32">
+      <div class="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-8 pb-6 border-b border-b0 mb-8">
+        <div class="flex flex-col gap-2 md:max-w-xl">
+          <h2>{{name}}</h2>
+          {{#if description}}
+            <p>{{description}}</p>
+          {{/if}}
+        </div>
+        <div class="flex flex-col lg:self-end lg:ml-auto">
+          <div class="flex items-center gap-2 font-medium">{{plural count.posts empty="" singular="1 post" plural="% posts"}}</div>
+          {{#match count.posts ">" 4}}
+            <a href="{{url}}" class="flex items-center gap-2 text-sm opacity-50">
+              <span class="hover:underline">{{t "View all"}}</span> <span data-icon="arrow_right"></span>
+            </a>
+          {{/match}}
+        </div>
+      </div>
+      {{#get "posts" filter="tag:{{slug}}" limit="4" include="authors,tags"}}
+        {{> "posts-group" title=name href=url posts=posts }}
+      {{/get}}
+    </section>
+  {{/foreach}}
+{{/get}}

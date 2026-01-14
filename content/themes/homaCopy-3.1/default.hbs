@@ -1,0 +1,48 @@
+{{!-- 
+  Base layout template that wraps all pages. Provides HTML structure,
+  header, footer, and common site components.
+--}}
+
+<!DOCTYPE html>
+<html lang="{{@site.locale}}" data-color-scheme="{{@custom.color_scheme}}">
+  <head>
+    <title>{{meta_title}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="view-transition" content="same-origin"> 
+
+    {{!-- Theme assets - use the {{asset}} helper to reference styles & scripts, this will take care of caching and cache-busting automatically --}}
+    <link rel="stylesheet" type="text/css" href="{{asset "build/style.css"}}">
+
+    {{#if @custom.enable_app_mode }}
+      <link rel="manifest" data-manifest />
+    {{/if}}
+
+    {{> "config"}}
+
+    {{!-- Scripts - handle responsive videos, infinite scroll, and navigation dropdowns --}}
+    <script type="module" src="{{asset "build/main.js"}}"></script>
+
+    {{!-- This tag outputs all your advanced SEO meta, structured data, and other important settings, it should always be the last tag before the closing head tag --}}
+    {{ghost_head}}
+
+  </head>
+  <body class=" {{body_class}}">
+    {{> "site-header"}}
+
+    <div class="container">
+      {{{body}}}
+    </div>
+
+    {{> "site-footer"}}
+
+
+    {{#if @custom.show_scroll_indicator}}
+      <scroll-indicator icon="arrow_up"></scroll-indicator>
+    {{/if}}
+
+    {{!-- Ghost outputs required functional scripts with this tag, it should always be the last thing before the closing body tag --}}
+    {{ghost_foot}}
+
+  </body>
+</html>

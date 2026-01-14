@@ -1,0 +1,33 @@
+{{#get "posts" limit="15" filter="tag:ybw_awards"}}
+<div class="col-lg-12">
+    <div class="row-post-section post-group">
+        <div class="post-group-title">
+			<hr>
+            {{!span>To book your ticket, scroll down.</span>!}}
+        </div>
+        <div class="row">
+            {{#foreach posts visibility="all"}}
+            <div class="col-lg-3 col-md-6 post-wrap">
+                {{#if feature_image}}
+                <a href="{{url}}">
+                    <div class="featured-image-wrap">
+                        <div class="featured-image">
+                            <img srcset="{{img_url feature_image size="s"}} 300w,
+                                        {{img_url feature_image size="m"}} 600w"
+                                sizes="(max-width: 991px) 600px, 300px"
+                                src="{{img_url feature_image size="m"}}"
+                                alt="{{title}}"
+                            />
+                        </div>
+                    </div>
+                </a>
+                {{/if}}
+                <h1 class="title h4"><a href="{{url}}">{{title}}</a></h1>
+                
+                <div class="excerpt">{{excerpt words="50"}}</div>
+            </div>
+            {{/foreach}}
+        </div>
+    </div>
+</div>
+{{/get}}

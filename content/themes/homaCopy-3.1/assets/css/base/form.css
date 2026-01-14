@@ -1,0 +1,48 @@
+/*
+  Forms
+  -----
+  Global form layout and structure.
+  Handles form groups and validation states.
+*/
+
+form, .form {
+  [data-content] {
+    display: none;
+    overflow: hidden;
+  }
+
+  [data-content="default"] {
+    display: block;
+  }
+
+  &.loading,
+  &.success,
+  &.error {
+    [data-content="default"] {
+      display: none;
+    }
+
+    button[type="submit"] {
+      opacity: .6;
+      pointer-events: none;
+    }
+  }
+
+  &.loading {
+    [data-content="loading"] {
+      display: block;
+    }
+  }
+
+  &.success {
+    [data-content="success"] {
+      display: block;
+    }
+  }
+
+  &.error {
+    [data-content="error"] {
+      display: block;
+    }
+  }
+}

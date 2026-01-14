@@ -1,0 +1,163 @@
+/*
+  Variables
+  ---------
+  Global CSS custom properties (variables).
+  
+  Categories:
+  * Colors: Theme colors and variants
+  * Typography: Font families, sizes, weights
+  * Spacing: Padding, margins, gaps
+  * Components: Buttons, inputs, cards
+  * Layout: Container sizes, breakpoints
+*/
+
+:root {
+  --rem-size: clamp(14px, 1vmax, 16px);
+
+  /* Font families */
+  --font-family-heading: inherit;
+  --font-family-body: inherit;
+  --font-family-monospace: "Fira Code", monospace;
+
+  /* Font sizes - ordered from largest to smallest */
+  --font-size-h1: 2.25rem;
+  --font-size-h2: 1.75rem;
+  --font-size-h3: 1.375rem;
+  --font-size-h4: 1.25rem;
+  --font-size-h5: 1.125rem;
+  --font-size-h6: 1rem;
+  --font-size-base: 1rem;
+  --font-size-s: 0.9rem;
+  --font-size-xs: 0.8rem;
+
+  /* Font weights */
+  --font-weight-heading: 600;
+  --font-weight-body: 400;
+  --font-weight-monospace: 400;
+
+  /* Letter spacing */
+  --letter-spacing-heading: -0.02em;
+  --letter-spacing-body: 0;
+  --letter-spacing-monospace: 0;
+
+  /* Line heights */
+  --line-height-h1: 1.05;
+  --line-height-h2: 1.15;
+  --line-height-h3: 1.25;
+  --line-height-h4: 1.33;
+  --line-height-h5: 1.33;
+  --line-height-h6: 1.42;
+  --line-height-base: 1.5;
+
+  --border-radius-0: 0;
+  --border-radius-1: 0;
+  --border-radius-2: 0;
+
+  --bg-color-0: #fff;
+  --bg-color-1: #f2f4f6;
+
+  --border-color-0: rgba(0, 0, 0, 0.075);
+
+  --text-color-0: #111111;
+  --text-color-1: #4b5563;
+  --text-color-2: #9ca3af;
+
+  --text-muted: #6b7280;
+
+  --site-logo-height: 2.5rem;
+  --site-header-height: 5rem;
+
+  --screen-height-without-header: calc(100dvh - var(--site-header-height));
+
+  --content-max-width: 100rem;
+  --content-padding-x: 4rem;
+  --content-grid-gap-x: 2rem;
+  --content-grid-gap-y: 4rem;
+  --post-content-max-width: 52rem;
+
+  --tag-color: var(--accent-color);
+
+  --button-padding: 0.5em 1em;
+  --button-height: 2.5em;
+  --button-border-radius: var(--border-radius-1);
+  --button-border: var(--accent-color);
+  --button-background-color: var(--accent-color);
+
+  --button-secondary-color: var(--text-color-0);
+  --button-secondary-background-color: var(--bg-color-1);
+  --button-secondary-border: 1px solid var(--border-color-0);
+
+  --input-font-size: 1rem;
+  --input-font-size-md: 0.875rem;
+  --input-padding: 0.5em 0.75em;
+  --input-height: 2.5em;
+  --input-border-radius: var(--border-radius-1);
+  --input-background-color: var(--bg-color-0);
+  --input-color: var(--text-color);
+  --input-border-color: var(--border-color-0);
+  --input-placeholder-color: var(--text-muted);
+  --input-ring-offset-width: 2px;
+  --input-ring-width: 2px;
+  --input-ring-color: var(--accent-color);
+  --input-disabled-opacity: 0.5;
+
+  --textarea-padding: 0.5rem 1rem;
+  --textarea-border-radius: var(--border-radius-1);
+
+  --mark-background-color: color-mix(
+      in srgb,
+      var(--accent-color) 20%,
+      transparent 80%
+    );
+  --pre-background-color: #f2f4f6;
+}
+
+@media (width <= 1200px) {
+  :root {
+    --content-padding-x: 2rem;
+  }
+}
+
+@media (width <= 768px) {
+  :root {
+    --content-padding-x: 1.25rem;
+  }
+}
+
+[data-color-scheme="dark"] {
+  --bg-color-0: rgba(20, 20, 20, 1);
+  --bg-color-1: color-mix(in srgb, var(--bg-color-0) 90%, white);
+
+  --border-color-0: color-mix(
+    in srgb,
+    rgba(255, 255, 255, 0.08) 98%,
+    var(--accent-color)
+  );
+
+  --text-color-0: #f8f8f8;
+  --text-color-1: #e1e1e6;
+  --text-color-2: #b4b4bd;
+  --text-muted: #9f9faa;
+
+  --tag-color: var(--text-color-1);
+
+  --input-background-color: color-mix(
+    in srgb,
+    var(--bg-color-1) 80%,
+    transparent
+  );
+  --input-border-color: rgba(255, 255, 255, 0.1);
+  --input-placeholder-color: var(--text-muted);
+  --input-ring-color: rgba(255, 255, 255, 0.5);
+  --input-ring-width: 1px;
+
+  --mark-background-color: color-mix(
+    in srgb,
+    var(--accent-color) 80%,
+    transparent 20%
+  );
+}
+
+:root {
+  transition: background-color 0.3s ease;
+}

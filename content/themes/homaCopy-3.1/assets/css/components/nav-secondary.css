@@ -1,0 +1,71 @@
+/*
+  Secondary Navigation
+  --------------------
+  Styles for the secondary navigation component (<secondary-nav>).
+  Handles responsive grid layouts and item animations.
+*/
+secondary-nav {
+  display: block;
+  width: 100%;
+}
+
+secondary-nav nav {
+  width: 100%;
+}
+
+@keyframes secondary-nav-item-animation {
+  from {
+    opacity: 0;
+    transform: translateY(.25rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  secondary-nav nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  secondary-nav nav {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  }
+}
+
+/* Column customization - ensure enough space between columns */
+secondary-nav nav > div {
+  min-width: 0; /* Prevent overflow in flex containers */
+}
+
+secondary-nav a {
+  display: inline-block; /* Ensure hover works correctly */
+  animation: secondary-nav-item-animation 0.2s ease-out both;
+
+  &:nth-child(1) { animation-delay: 0.05s; }
+  &:nth-child(2) { animation-delay: 0.10s; }
+  &:nth-child(3) { animation-delay: 0.15s; }
+  &:nth-child(4) { animation-delay: 0.20s; }
+  &:nth-child(5) { animation-delay: 0.25s; }
+  &:nth-child(6) { animation-delay: 0.30s; }
+  &:nth-child(7) { animation-delay: 0.35s; }
+  &:nth-child(8) { animation-delay: 0.40s; }
+}
+
+secondary-nav a[target="_blank"]:after {
+  content: "";
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-left: 0.3em;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14'%3E%3C/path%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  background-color: currentColor;
+  opacity: 0.6;
+  vertical-align: middle;
+}

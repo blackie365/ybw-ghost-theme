@@ -1,0 +1,108 @@
+{{!--
+  Post Content
+  -----------
+  Main  template for single post view.
+  Includes content, author info, comments section,
+  and related posts.
+
+  Parameters:
+  - class: Additional classes for the main element
+--}}
+
+<main class="post-content col-span-3 {{class}}">
+  <div class="post-body prose">
+    {{content}}
+  </div>
+
+  {{#if access}}
+    {{#is 'post'}}
+      {{> "post-share" class="py-6 border-t border-b border-b0"}}
+
+      <h4 class="-mb-4">{{t "Written by"}}</h4>
+      <div class="flex flex-col gap-6">
+        {{#foreach authors}}
+          <div class="flex items-center gap-4">
+            <a href="{{url}}" class="shrink-0">
+              {{#if profile_image}}
+                <img src="{{profile_image}}" alt="{{name}}" class="w-24 h-24 rounded-full object-cover">
+              {{else}}
+                <div class="w-24 h-24 rounded-full bg-1"></div>
+              {{/if}}
+            </a>
+
+            <div class="flex flex-col gap-1 max-w-md">
+              <div class="flex items-center gap-2"> 
+                <a href="{{url}}" class="font-medium">{{name}}</a>
+                <div class="flex flex-1 items-center gap-2 text-sm opacity-50">
+                  {{> "author-social-links" itemClass="hover:underline"}}
+                </div>
+              </div>
+              <div class="text-sm text-muted line-clamp-2">{{bio}}</div>
+            </div> 
+          </div>
+        {{/foreach}}
+      </div>
+      {{#if comments}}
+        <accordion-component id="comments" class="border-t border-b0">
+          <div slot="target" class="flex items-center justify-between py-6 cursor-pointer rounded-md group">
+            <h4 class="hover:underline underline-offset-2">{{t "Comments"}}</h4>
+            <div class="flex items-center gap-2">
+              <span class="flex items-center gap-1 text-sm text-muted" data-icon="comment">
+                {{comment_count empty="0 comments" singular="comment" plural="comments" autowrap="span"}}
+              </span>
+              <span data-icon="chevron_down" class="text-muted transition-transform duration-200"></span>
+            </div>
+          </div>
+          <div slot="content" class="pt-2 pb-16">
+            {{comments title="" count=false}}
+          </div>
+        </accordion-component>
+      {{/if}}
+    {{/is}}
+  {{/if}}
+
+  {{#if @custom.show_post_suggestions}}
+    <div class="w-screen bg-1 relative left-1/2 -translate-x-1/2 py-16">
+      <div class="container">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {{#if primary_tag}}
+{{#get 'posts' limit='3' filter="id:-{{id}}+tag:{{primary_tag.slug}}+feature_image:-null" include="authors,tags" as |related_posts|}}
+            {{#foreach related_posts}}
+              {{> "post-card"
+                layout="row"
+                featureImageClass="w-28 h-28"
+                titleClass="!text-h5"
+                excerptClass="hidden"
+              }}
+            {{/foreach}}
+          {{/get}}
+{{else}}
+{{#get 'posts' limit='3' filter="id:-{{id}}+feature_image:-null" include="authors,tags" as |related_posts|}}
+            {{#foreach related_posts}}
+              {{> "post-card"
+                layout="row"
+                featureImageClass="w-28 h-28"
+                titleClass="!text-h5"
+                excerptClass="hidden"
+              }}
+            {{/foreach}}
+          {{/get}}
+{{/if}}
+
+
+          {{#get 'posts' limit='6' filter="id:-{{id}}+feature_image:-null" include="authors,tags" as |non_related_posts|}}
+            {{#foreach non_related_posts}}
+              {{> "post-card"
+                layout="row"
+                class="nth-[n+5]:hidden lg:nth-[n+5]:flex"
+                featureImageClass="w-28 h-28"
+                titleClass="!text-h5"
+                excerptClass="hidden"
+              }}
+            {{/foreach}}
+          {{/get}}
+        </div>
+      </div>
+    </div>  
+  {{/if}}
+</main>

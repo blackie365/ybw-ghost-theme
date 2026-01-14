@@ -1,0 +1,121 @@
+{{!--
+  Author Social Links
+  ---
+  Renders author social media icons. Uses direct properties for website, facebook, twitter;
+  `social_url` helper for others. Supports `itemClass` for custom styling of each link.
+
+  Parameters:
+  * itemClass (optional): CSS class to apply to each social link `<a>` tag.
+  * showUsername (optional): Whether to show the username
+--}}
+
+{{#if website}}
+  <a 
+    href="{{website}}" 
+    aria-label="Website" 
+    class="{{itemClass}}" 
+    target="_blank" rel="noopener noreferrer"
+  >
+    <div data-icon="globe" class="scale-95"></div>
+    {{#if showUsername}}{{website}}{{/if}}
+  </a>
+{{/if}}
+{{#if facebook}}
+  <a
+    href="https://facebook.com/{{facebook}}"
+    aria-label="Facebook"
+    class="{{itemClass}}"
+    target="_blank" rel="noopener noreferrer"
+  >
+    <div data-icon="facebook"></div>
+    {{#if showUsername}}{{facebook}}{{/if}}
+  </a>
+{{/if}}
+{{#if twitter}}
+  <a
+    href="https://x.com/{{twitter}}"
+    aria-label="Twitter"
+    class="{{itemClass}}"
+    target="_blank" rel="noopener noreferrer"
+  >
+    <div data-icon="x"></div>
+    {{#if showUsername}}{{twitter}}{{/if}}
+  </a>
+{{/if}}
+{{#if instagram}}
+  <a
+    href="{{instagram}}"
+    aria-label="Instagram"
+    class="{{itemClass}}"
+    target="_blank" rel="noopener noreferrer"
+  >
+    <div data-icon="instagram" class="scale-125"></div>
+    {{#if showUsername}}{{instagram}}{{/if}}
+  </a>
+{{/if}}
+{{#if tiktok}}
+  <a
+    href="{{tiktok}}"
+    aria-label="TikTok"
+    class="{{itemClass}}"
+    target="_blank" rel="noopener noreferrer"
+  >
+    <div data-icon="tiktok" class="scale-125"></div>
+    {{#if showUsername}}{{tiktok}}{{/if}}
+  </a>
+{{/if}}
+{{#if youtube}}
+  <a
+    href="{{youtube}}"
+    aria-label="YouTube"
+    class="{{itemClass}}"
+    target="_blank" rel="noopener noreferrer"
+  >
+    <div data-icon="youtube" class="scale-125"></div>
+    {{#if showUsername}}{{youtube}}{{/if}}
+  </a>
+{{/if}}
+{{#if linkedin}}
+  <a
+    href="{{linkedin}}"
+    aria-label="LinkedIn"
+    class="{{itemClass}}"
+    target="_blank" rel="noopener noreferrer"
+  >
+    <div class="scale-115" data-icon="linkedin"></div>
+    {{#if showUsername}}{{linkedin}}{{/if}}
+  </a>
+{{/if}}
+{{#if threads}}
+  <a
+    href="{{threads}}"
+    aria-label="Threads"
+    class="{{itemClass}}"
+    target="_blank" rel="noopener noreferrer"
+  >
+    <div class="scale-90" data-icon="threads"></div>
+    {{#if showUsername}}{{threads}}{{/if}}
+  </a>
+{{/if}}
+{{#if bluesky}}
+  <a
+    href="{{bluesky}}"
+    aria-label="Bluesky"
+    class="{{itemClass}}"
+    target="_blank" rel="noopener noreferrer"
+  >
+    <div class="scale-80" data-icon="bluesky"></div>
+    {{#if showUsername}}{{bluesky}}{{/if}}
+  </a>
+{{/if}}
+{{#if mastodon}}
+  <a
+    href="{{mastodon}}"
+    aria-label="Mastodon"
+    class="{{itemClass}}"
+    target="_blank" rel="noopener noreferrer"
+  >
+    <div class="scale-120" data-icon="mastodon"></div>
+    {{#if showUsername}}{{mastodon}}{{/if}}
+  </a>
+{{/if}}
