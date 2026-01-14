@@ -1,3 +1,9 @@
+{{!-- 
+    MEMBERS WIDGET FOR HOMEPAGE
+    Insert this code into your home.hbs or index.hbs template
+    Place it just above the authors section or wherever you want the widget
+--}}
+
 <style>
     .members-widget {
         margin: 60px 0;
@@ -123,7 +129,8 @@
 {{{{raw}}}}
 <script>
 (function() {
-    var apiUrl = 'https://getdata-bd3qt5x3dq-uc.a.run.app/getData?collection=myCollection';
+    // Use new API v2 with newest members
+    var apiUrl = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/getMembersV2?limit=4&sort=newest';
     
     function loadHomepageMembers() {
         fetch(apiUrl)
@@ -132,35 +139,39 @@
                 return response.json();
             })
             .then(function(result) {
-                if (result.status === 'success' && result.data && result.data.length > 0) {
-                    var members = result.data.slice(0, 4);
-                    var container = document.getElementById('homepageMembersWidget');
-                    container.innerHTML = '';
-                    
-                    members.forEach(function(member) {
-                        var firstName = member['First Name'] || '';
-                        var lastName = member['Last Name'] || '';
-                        var fullName = (firstName + ' ' + lastName).trim() || 'Member';
-                        var headline = member['Headline'] || '';
-                        var avatarUrl = member['Avatar URL'] || '';
-                        
-                        var initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
-                        var fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=B02376&color=fff&size=400';
-                        
-                        var memberThumb = document.createElement('a');
-                        memberThumb.className = 'member-thumb';
-                        memberThumb.href = '/members-directory/';
-                        
-                        memberThumb.innerHTML = 
-                            '<div class="member-thumb-image">' +
-                            '<img src="' + (avatarUrl || fallbackAvatar) + '" alt="' + fullName + '" loading="lazy" onerror="this.src=\'' + fallbackAvatar + '\'">' +
-                            '</div>' +
-                            '<div class="member-thumb-name">' + fullName + '</div>' +
-                            (headline ? '<div class="member-thumb-headline">' + headline + '</div>' : '');
-                        
-                        container.appendChild(memberThumb);
-                    });
+                var members = result.members || [];
+                var container = document.getElementById('homepageMembersWidget');
+                
+                if (members.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: #6b7280;">No members found</div>';
+                    return;
                 }
+                
+                container.innerHTML = '';
+                
+                members.forEach(function(member) {
+                    var firstName = member['First Name'] || '';
+                    var lastName = member['Last Name'] || '';
+                    var fullName = (firstName + ' ' + lastName).trim() || 'Member';
+                    var headline = member['Headline'] || '';
+                    var avatarUrl = member['Avatar URL'] || '';
+                    
+                    var initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+                    var fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=B02376&color=fff&size=400';
+                    
+                    var memberThumb = document.createElement('a');
+                    memberThumb.className = 'member-thumb';
+                    memberThumb.href = '/members-directory/';
+                    
+                    memberThumb.innerHTML = 
+                        '<div class="member-thumb-image">' +
+                        '<img src="' + (avatarUrl || fallbackAvatar) + '" alt="' + fullName + '" loading="lazy" onerror="this.src=\'' + fallbackAvatar + '\'">' +
+                        '</div>' +
+                        '<div class="member-thumb-name">' + fullName + '</div>' +
+                        (headline ? '<div class="member-thumb-headline">' + headline + '</div>' : '');
+                    
+                    container.appendChild(memberThumb);
+                });
             })
             .catch(function(error) {
                 console.error('Error loading homepage members:', error);
