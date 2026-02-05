@@ -323,16 +323,11 @@
     
     // Load posts from API
     function loadPosts() {
-        fetch(POSTS_API)
+        fetch(POSTS_API + '?_t=' + Date.now())  // Add cache buster
             .then(response => response.json())
             .then(data => {
                 if (data.posts && Array.isArray(data.posts)) {
-                    // Update allPosts with new data (preserves order and structure)
-                    const oldPostsMap = new Map(allPosts.map(p => [p.id, p]));
-                    allPosts = data.posts.map(newPost => ({
-                        ...oldPostsMap.get(newPost.id),
-                        ...newPost
-                    }));
+                    allPosts = data.posts;
                     
                     if (currentView === 'discussions') {
                         filterAndDisplayPosts();
