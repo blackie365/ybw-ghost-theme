@@ -1,0 +1,506 @@
+/**
+ * Member Portal
+ * Handles authentication, profile editing, and syncing with Firebase
+ */
+
+(function () {
+  const API_URL = 'https://getmembersv2-qljbqfyowq-uc.a.run.app';
+  const VERIFICATION_LINK_TTL = 15 * 60 * 1000; // 15 minutes
+  const VALIDATE_TOKEN_URL = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/validateToken';
+
+  // DOM Elements
+  const authSection = document.getElementById('authSection');
+  const authForm = document.getElementById('authForm');
+  const authSubmitBtn = document.getElementById('authSubmitBtn');
+  const authError = document.getElementById('authError');
+  const authSuccess = document.getElementById('authSuccess');
+  const verifyEmailSpan = document.getElementById('verifyEmail');
+
+  const editorSection = document.getElementById('editorSection');
+  const profileForm = document.getElementById('profileForm');
+  const saveBtn = document.getElementById('saveBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const formError = document.getElementById('formError');
+  const formSuccess = document.getElementById('formSuccess');
+
+  // Form fields
+  const firstName = document.getElementById('firstName');
+  const lastName = document.getElementById('lastName');
+  const email = document.getElementById('email');
+  const headline = document.getElementById('headline');
+  const location = document.getElementById('location');
+  const companyName = document.getElementById('companyName');
+  const jobTitle = document.getElementById('jobTitle');
+  const category = document.getElementById('category');
+  const bio = document.getElementById('bio');
+  const website = document.getElementById('website');
+  const linkedinUrl = document.getElementById('linkedinUrl');
+  const instagramUrl = document.getElementById('instagramUrl');
+  const facebookUrl = document.getElementById('facebookUrl');
+  const twitterUrl = document.getElementById('twitterUrl');
+  const profileImage = document.getElementById('profileImage');
+  const previewImageSmall = document.getElementById('previewImageSmall');
+  const imageUploadStatus = document.getElementById('imageUploadStatus');
+
+  // Preview elements
+  const previewAvatar = document.getElementById('previewAvatar');
+  const previewName = document.getElementById('previewName');
+  const previewHeadline = document.getElementById('previewHeadline');
+  const previewLocation = document.getElementById('previewLocation');
+  const previewCategory = document.getElementById('previewCategory');
+  const previewBio = document.getElementById('previewBio');
+  const previewWebsite = document.getElementById('previewWebsite');
+  const previewLinkedin = document.getElementById('previewLinkedin');
+  const previewInstagram = document.getElementById('previewInstagram');
+
+  // Character counters
+  const headlineCount = document.getElementById('headlineCount');
+  const bioCount = document.getElementById('bioCount');
+
+  // State
+  let currentMember = null;
+  let authToken = null;
+  let isLoading = false;
+
+  // Initialization
+  // Initialization
+  function init() {
+    // Check for token in URL query params
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    if (token) {
+      // Validate token and load profile
+      validateTokenAndLoadProfile(token);
+      return;
+    }
+
+    // Check if email is in URL hash (backward compatibility)
+    const hash = window.location.hash.substring(1); // Remove '#'
+    const params = new URLSearchParams(hash);
+    const memberEmail = params.get('email');
+
+    if (memberEmail) {
+      // User clicked verification link or manually entered email
+      loadMemberProfile(memberEmail, null);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Event listeners
+    authForm.addEventListener('submit', handleAuthSubmit);
+    profileForm.addEventListener('submit', handleSaveProfile);
+    cancelBtn.addEventListener('click', handleCancel);
+    if (profileImage) {
+      profileImage.addEventListener('change', handleImageUpload);
+    }
+
+    // Character counter listeners
+    headline.addEventListener('input', updateCounters);
+    bio.addEventListener('input', updateCounters);
+
+    // Preview sync listeners
+    [headline, location, companyName, jobTitle, category, bio, website, linkedinUrl, instagramUrl, facebookUrl, twitterUrl].forEach((field) => {
+      if (field) {
+        field.addEventListener('input', updatePreview);
+        field.addEventListener('change', updatePreview);
+      }
+    });
+  }
+
+  /**
+   * Show auth section
+   */
+  function showAuth() {
+    authSection.style.display = 'block';
+    editorSection.style.display = 'none';
+  }
+
+
+  /**
+   * Validate email format
+   */
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  /**
+   * Handle auth form submission
+   */
+  async function handleAuthSubmit(e) {
+    e.preventDefault();
+    const userEmail = document.getElementById('emailInput').value.trim();
+
+    // Validate email is not empty
+    if (!userEmail) {
+      showError(
+          authError,
+          '❌ Please enter your email address',
+      );
+      return;
+    }
+
+    // Validate email format
+    if (!isValidEmail(userEmail)) {
+      showError(
+          authError,
+          '❌ Please enter a valid email address (example: name@example.com)',
+      );
+      return;
+    }
+
+    authError.style.display = 'none';
+    authSubmitBtn.disabled = true;
+    authSubmitBtn.textContent = 'Sending verification email...';
+
+    // Send verification email
+    try {
+      const response = await fetch('https://sendmemberverification-qljbqfyowq-uc.a.run.app', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Show success message
+        if (verifyEmailSpan) verifyEmailSpan.textContent = userEmail;
+        authSuccess.style.display = 'block';
+        authForm.style.display = 'none';
+      } else {
+        showError(authError, '❌ ' + (data.error || 'Failed to send verification email'));
+      }
+    } catch (error) {
+      showError(authError, '❌ Network error. Please try again.');
+    } finally {
+      authSubmitBtn.disabled = false;
+      authSubmitBtn.textContent = 'Access Profile';
+    }
+  }
+
+  /**
+   * Load member profile from Firebase
+   */
+  async function loadMemberProfile(userEmail, token) {
+    try {
+      // Query members API to find by email
+      const response = await fetch(`${API_URL}?limit=200`);
+      if (!response.ok) throw new Error('Failed to fetch members');
+
+      const data = await response.json();
+      const members = data.members || [];
+      const member = members.find(
+        (m) => (m.email || m.Email || "").toLowerCase() === userEmail.toLowerCase()
+      );
+
+      if (!member) {
+        // Member not found - might be a new signup
+        // Create empty profile
+        currentMember = {
+          email: userEmail,
+          firstName: userEmail.split('@')[0],
+          lastName: '',
+          headline: '',
+          location: '',
+          companyName: '',
+          jobTitle: '',
+          category: '',
+          bio: '',
+          website: '',
+          linkedinUrl: '',
+          instagramUrl: '',
+          avatarUrl: generateFallbackAvatar(userEmail.split('@')[0], ''),
+        };
+      } else {
+        currentMember = member;
+      }
+
+      authToken = token;
+      showEditorSection();
+      populateForm();
+      updatePreview();
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      showError(authError, 'Failed to load profile. Please try again.');
+    }
+  }
+
+  /**
+   * Show editor section and hide auth
+   */
+  function showEditorSection() {
+    authSection.style.display = 'none';
+    editorSection.style.display = 'block';
+  }
+
+  /**
+   * Populate form with current member data
+   */
+  function populateForm() {
+    if (!currentMember) return;
+
+    firstName.value = currentMember.firstName || currentMember['First Name'] || '';
+    lastName.value = currentMember.lastName || currentMember['Last Name'] || '';
+    email.value = currentMember.email || currentMember.Email || '';
+    headline.value = currentMember.headline || currentMember.Headline || '';
+    location.value = currentMember.location || currentMember.Location || '';
+    companyName.value = currentMember.companyName || '';
+    jobTitle.value = currentMember.jobTitle || '';
+    category.value = currentMember.category || '';
+    bio.value = currentMember.bio || currentMember.Bio || '';
+    website.value = currentMember.website || currentMember.Website || '';
+    linkedinUrl.value = currentMember.linkedinUrl || currentMember['LinkedIn URL'] || '';
+    instagramUrl.value = currentMember.instagramUrl || currentMember['Instagram URL'] || '';
+    facebookUrl.value = currentMember.facebookUrl || currentMember['Facebook URL'] || '';
+    twitterUrl.value = currentMember.twitterUrl || currentMember['Twitter URL'] || '';
+    
+    // Display avatar image
+    const avatarUrl = currentMember.avatarUrl || currentMember['Avatar URL'] || '';
+    if (previewImageSmall && avatarUrl) {
+      previewImageSmall.src = avatarUrl;
+    }
+    if (previewAvatar && avatarUrl) {
+      previewAvatar.src = avatarUrl;
+    }
+
+    updateCounters();
+  }
+
+  /**
+   * Update character counters
+   */
+  function updateCounters() {
+    headlineCount.textContent = headline.value.length;
+    bioCount.textContent = bio.value.length;
+  }
+
+  /**
+   * Update preview as user types
+   */
+  function updatePreview() {
+    if (!currentMember) return;
+
+    const displayName = `${firstName.value} ${lastName.value}`.trim();
+    previewName.textContent = displayName || 'Your Name';
+
+    previewHeadline.textContent = headline.value || '';
+    previewLocation.textContent = location.value || '';
+    
+    if (category.value) {
+      previewCategory.textContent = category.value;
+      previewCategory.style.display = 'inline-block';
+    } else {
+      previewCategory.style.display = 'none';
+    }
+
+    previewBio.textContent = bio.value || '';
+
+    // Update links
+    updatePreviewLink(previewWebsite, website.value, 'Website');
+    updatePreviewLink(previewLinkedin, linkedinUrl.value, 'LinkedIn');
+    updatePreviewLink(previewInstagram, instagramUrl.value, 'Instagram');
+
+    // Update avatar
+    previewAvatar.src = currentMember.avatarUrl || generateFallbackAvatar(firstName.value, lastName.value);
+  }
+
+  /**
+   * Update individual preview link
+   */
+  function updatePreviewLink(linkElement, url, label) {
+    if (url && isValidUrl(url)) {
+      linkElement.href = url;
+      linkElement.textContent = label;
+      linkElement.style.display = 'inline-block';
+    } else {
+      linkElement.style.display = 'none';
+    }
+  }
+
+  /**
+   * Validate URL
+   */
+  function isValidUrl(string) {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /**
+   * Generate fallback avatar
+   */
+  function generateFallbackAvatar(firstName, lastName) {
+    const initials = `${(firstName[0] || '')}${(lastName[0] || '')}`.toUpperCase();
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=B02376&color=fff&size=400`;
+  }
+
+  /**
+   * Handle save profile
+   */
+  async function handleSaveProfile(e) {
+    e.preventDefault();
+
+    if (isLoading) return;
+    isLoading = true;
+
+    // Clear messages
+    formError.style.display = 'none';
+    formSuccess.style.display = 'none';
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="spinner"></span>Saving...';
+
+    try {
+      const profileData = {
+        headline: headline.value.trim(),
+        location: location.value.trim(),
+        companyName: companyName.value.trim(),
+        jobTitle: jobTitle.value.trim(),
+        category: category.value.trim(),
+        bio: bio.value.trim(),
+        website: website.value.trim(),
+        linkedinUrl: linkedinUrl.value.trim(),
+        instagramUrl: instagramUrl.value.trim(),
+        facebookUrl: facebookUrl.value.trim(),
+        twitterUrl: twitterUrl.value.trim(),
+      };
+
+      // Call update API
+      const response = await fetch('https://updatememberprofile-qljbqfyowq-uc.a.run.app', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {}),
+        },
+        body: JSON.stringify({
+          email: currentMember.email,
+          ...profileData,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update profile');
+      }
+
+      const result = await response.json();
+      
+      // Reload member data from Firebase to get all fields
+      if (currentMember && currentMember.email) {
+        await loadMemberProfile(currentMember.email, authToken);
+      }
+      // Success - data updated silently
+    } catch (error) {
+      console.error('Save error:', error);
+      showError(formError, error.message || 'Failed to save profile. Please try again.');
+    } finally {
+      isLoading = false;
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = 'Save Changes';
+    }
+  }
+
+  /**
+   * Handle cancel
+   */
+  function handleCancel() {
+    if (confirm('Discard changes?')) {
+      populateForm();
+      formError.style.display = 'none';
+      formSuccess.style.display = 'none';
+    }
+  }
+
+  /**
+   * Handle image upload
+   */
+  async function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showImageStatus('❌ Image too large. Max 5MB.', 'error');
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showImageStatus('❌ Please select an image file.', 'error');
+      return;
+    }
+
+    showImageStatus('Uploading...', 'pending');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('email', currentMember.email);
+
+      const response = await fetch('https://uploadmemberimage-qljbqfyowq-uc.a.run.app', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const result = await response.json();
+      if (result.imageUrl) {
+        currentMember.avatarUrl = result.imageUrl;
+        if (previewImageSmall) {
+          previewImageSmall.src = result.imageUrl;
+        }
+        if (previewAvatar) {
+          previewAvatar.src = result.imageUrl;
+        }
+        // Update main preview in right column
+        const mainPreviewImg = document.querySelector('.preview-avatar img');
+        if (mainPreviewImg) {
+          mainPreviewImg.src = result.imageUrl;
+        }
+        showImageStatus('✅ Image uploaded successfully', 'success');
+      }
+    } catch (error) {
+      console.error('Image upload error:', error);
+      showImageStatus(`❌ ${error.message}`, 'error');
+    }
+  }
+
+  /**
+   * Show image upload status
+   */
+  function showImageStatus(message, type) {
+    if (!imageUploadStatus) return;
+    imageUploadStatus.textContent = message;
+    if (type === 'success') {
+      imageUploadStatus.style.display = 'none';
+      return;
+    }
+    imageUploadStatus.style.display = 'block';
+    imageUploadStatus.style.backgroundColor = type === 'error' ? '#fee2e2' : '#fef3c7';
+    imageUploadStatus.style.color = type === 'error' ? '#991b1b' : '#92400e';
+    imageUploadStatus.style.borderRadius = '4px';
+  }
+
+  /**
+   * Show error message
+   */
+  function showError(element, message) {
+    element.textContent = message;
+    element.style.display = 'block';
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

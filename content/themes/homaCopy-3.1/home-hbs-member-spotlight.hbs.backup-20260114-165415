@@ -1,0 +1,586 @@
+<!-- Member Spotlight Carousel for Homepage -->
+<!-- Insert this near the top of home.hbs, after the main hero or before main content -->
+
+<section class="member-spotlight-section">
+    <div class="spotlight-container">
+        <div class="spotlight-header">
+            <h2 class="spotlight-title">Member Spotlight</h2>
+            <p class="spotlight-subtitle">Celebrating our inspiring Yorkshire businesswomen</p>
+        </div>
+        
+        <div class="spotlight-carousel">
+            <div class="spotlight-slides"></div>
+            
+            <button class="spotlight-nav spotlight-prev" aria-label="Previous member">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            
+            <button class="spotlight-nav spotlight-next" aria-label="Next member">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+            
+            <div class="spotlight-dots"></div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Member Spotlight Carousel Styles */
+.member-spotlight-section {
+    padding: 60px 20px;
+    background: var(--background-color, #ffffff);
+    border-bottom: 1px solid var(--border-color, #e5e5e5);
+}
+
+.spotlight-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.spotlight-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.spotlight-title {
+    font-family: var(--font-serif, 'Didoni URW D', Georgia, serif);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--text-color-0, #111111);
+    margin: 0 0 12px 0;
+}
+
+.spotlight-subtitle {
+    font-family: var(--font-sans, 'Eskorte Latin', sans-serif);
+    font-size: 1.125rem;
+    color: var(--text-color-1, #4b5563);
+    margin: 0;
+}
+
+.spotlight-carousel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--background-color, #ffffff);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.spotlight-slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.spotlight-slide {
+    min-width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 60px;
+    gap: 60px;
+}
+
+.spotlight-slide.active {
+    opacity: 1;
+}
+
+.spotlight-image-container {
+    flex-shrink: 0;
+    width: 300px;
+    height: 300px;
+}
+
+.spotlight-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.spotlight-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.spotlight-member-name {
+    font-family: var(--font-serif, 'Didoni URW D', Georgia, serif);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-color-0, #111111);
+    margin: 0 0 8px 0;
+}
+
+.spotlight-member-headline {
+    font-family: var(--font-sans, 'Eskorte Latin', sans-serif);
+    font-size: 1.25rem;
+    color: var(--text-color-1, #4b5563);
+    margin: 0 0 20px 0;
+}
+
+.spotlight-member-bio {
+    font-family: var(--font-body, 'Freight Text Pro', Georgia, serif);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-color-1, #4b5563);
+    margin: 0 0 24px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.spotlight-member-location {
+    font-size: 0.9375rem;
+    color: var(--text-color-2, #6b7280);
+    margin: 0 0 24px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.spotlight-member-location svg {
+    width: 16px;
+    height: 16px;
+}
+
+.spotlight-links {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.spotlight-view-profile {
+    display: inline-block;
+    padding: 12px 28px;
+    background: var(--text-color-0, #111111);
+    color: var(--background-color, #ffffff);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.spotlight-view-profile:hover {
+    background: var(--text-color-1, #4b5563);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.spotlight-social-links {
+    display: flex;
+    gap: 12px;
+}
+
+.spotlight-social-link {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color, #e5e5e5);
+    border-radius: 50%;
+    color: var(--text-color-1, #4b5563);
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.spotlight-social-link:hover {
+    background: var(--text-color-0, #111111);
+    color: var(--background-color, #ffffff);
+    border-color: var(--text-color-0, #111111);
+}
+
+.spotlight-social-link svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Navigation Buttons */
+.spotlight-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--text-color-0, #111111);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.spotlight-nav:hover {
+    background: var(--text-color-0, #111111);
+    color: var(--background-color, #ffffff);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.spotlight-prev {
+    left: 20px;
+}
+
+.spotlight-next {
+    right: 20px;
+}
+
+/* Navigation Dots */
+.spotlight-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.spotlight-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px solid var(--text-color-0, #111111);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.spotlight-dot.active {
+    background: var(--text-color-0, #111111);
+    width: 30px;
+    border-radius: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .spotlight-slide {
+        padding: 40px;
+        gap: 40px;
+    }
+    
+    .spotlight-image-container {
+        width: 250px;
+        height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .spotlight-title {
+        font-size: 2rem;
+    }
+    
+    .spotlight-slide {
+        flex-direction: column;
+        padding: 40px 24px;
+        gap: 30px;
+        text-align: center;
+    }
+    
+    .spotlight-image-container {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+    }
+    
+    .spotlight-member-name {
+        font-size: 1.75rem;
+    }
+    
+    .spotlight-member-headline {
+        font-size: 1.125rem;
+    }
+    
+    .spotlight-member-bio {
+        -webkit-line-clamp: 3;
+    }
+    
+    .spotlight-member-location {
+        justify-content: center;
+    }
+    
+    .spotlight-links {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .spotlight-view-profile {
+        text-align: center;
+    }
+    
+    .spotlight-social-links {
+        justify-content: center;
+    }
+    
+    .spotlight-nav {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .spotlight-prev {
+        left: 10px;
+    }
+    
+    .spotlight-next {
+        right: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .member-spotlight-section {
+        padding: 40px 16px;
+    }
+    
+    .spotlight-title {
+        font-size: 1.75rem;
+    }
+    
+    .spotlight-subtitle {
+        font-size: 1rem;
+    }
+}
+
+/* Dark Mode Support */
+[data-color-scheme="dark"] .spotlight-nav {
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--background-color, #ffffff);
+}
+
+[data-color-scheme="dark"] .spotlight-nav:hover {
+    background: var(--background-color, #ffffff);
+    color: var(--text-color-0, #111111);
+}
+
+[data-color-scheme="dark"] .spotlight-dot {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: var(--background-color, #ffffff);
+}
+
+[data-color-scheme="dark"] .spotlight-dot.active {
+    background: var(--background-color, #ffffff);
+}
+</style>
+
+{{{{raw}}}}
+<script>
+(function() {
+    'use strict';
+    
+    var apiUrl = 'https://getdata-bd3qt5x3dq-uc.a.run.app/getData?collection=myCollection';
+    var currentSlide = 0;
+    var slides = [];
+    var autoRotateInterval = null;
+    var ROTATION_DELAY = 6000; // 6 seconds
+    var NUM_SPOTLIGHT_MEMBERS = 8; // Show 8 featured members
+    
+    function init() {
+        fetchMembers();
+    }
+    
+    function fetchMembers() {
+        fetch(apiUrl)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data && data.data) {
+                    // Filter members with complete profiles
+                    var eligibleMembers = data.data.filter(function(member) {
+                        return member['Avatar URL'] && 
+                               member['First Name'] && 
+                               member['Headline'] && 
+                               member['Bio'];
+                    });
+                    
+                    // Shuffle and take first N members
+                    shuffleArray(eligibleMembers);
+                    slides = eligibleMembers.slice(0, NUM_SPOTLIGHT_MEMBERS);
+                    
+                    renderCarousel();
+                    startAutoRotate();
+                }
+            })
+            .catch(function(error) {
+                console.error('Error loading member spotlight:', error);
+            });
+    }
+    
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+    
+    function renderCarousel() {
+        var slidesContainer = document.querySelector('.spotlight-slides');
+        var dotsContainer = document.querySelector('.spotlight-dots');
+        
+        if (!slidesContainer || !dotsContainer) return;
+        
+        // Clear existing content
+        slidesContainer.innerHTML = '';
+        dotsContainer.innerHTML = '';
+        
+        // Render slides
+        slides.forEach(function(member, index) {
+            var slide = createSlide(member, index);
+            slidesContainer.appendChild(slide);
+            
+            // Create dot
+            var dot = document.createElement('button');
+            dot.className = 'spotlight-dot' + (index === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Go to slide ' + (index + 1));
+            dot.addEventListener('click', function() {
+                goToSlide(index);
+            });
+            dotsContainer.appendChild(dot);
+        });
+        
+        // Add navigation listeners
+        var prevBtn = document.querySelector('.spotlight-prev');
+        var nextBtn = document.querySelector('.spotlight-next');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                goToSlide(currentSlide - 1);
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                goToSlide(currentSlide + 1);
+            });
+        }
+    }
+    
+    function createSlide(member, index) {
+        var slide = document.createElement('div');
+        slide.className = 'spotlight-slide' + (index === 0 ? ' active' : '');
+        
+        var firstName = member['First Name'] || '';
+        var lastName = member['Last Name'] || '';
+        var fullName = firstName + ' ' + lastName;
+        var headline = member['Headline'] || '';
+        var bio = member['Bio'] || '';
+        var location = member['Location'] || '';
+        var avatarUrl = member['Avatar URL'] || '';
+        var website = member['Website'] || '';
+        var linkedIn = member['LinkedIn URL'] || '';
+        
+        // Truncate bio to ~150 characters
+        if (bio.length > 150) {
+            bio = bio.substring(0, 150) + '...';
+        }
+        
+        var imageHtml = '<div class="spotlight-image-container">' +
+            '<img src="' + avatarUrl + '" alt="' + fullName + '" class="spotlight-image" loading="lazy">' +
+            '</div>';
+        
+        var locationHtml = location ? 
+            '<p class="spotlight-member-location">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+            '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path>' +
+            '<circle cx="12" cy="10" r="3"></circle>' +
+            '</svg>' +
+            location +
+            '</p>' : '';
+        
+        var socialLinksHtml = '';
+        if (website || linkedIn) {
+            socialLinksHtml = '<div class="spotlight-social-links">';
+            
+            if (website) {
+                socialLinksHtml += '<a href="' + website + '" target="_blank" rel="noopener noreferrer" class="spotlight-social-link" aria-label="Visit website">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+                    '<circle cx="12" cy="12" r="10"></circle>' +
+                    '<line x1="2" y1="12" x2="22" y2="12"></line>' +
+                    '<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>' +
+                    '</svg>' +
+                    '</a>';
+            }
+            
+            if (linkedIn) {
+                socialLinksHtml += '<a href="' + linkedIn + '" target="_blank" rel="noopener noreferrer" class="spotlight-social-link" aria-label="View LinkedIn">' +
+                    '<svg viewBox="0 0 24 24" fill="currentColor">' +
+                    '<path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>' +
+                    '</svg>' +
+                    '</a>';
+            }
+            
+            socialLinksHtml += '</div>';
+        }
+        
+        slide.innerHTML = imageHtml +
+            '<div class="spotlight-content">' +
+            '<h3 class="spotlight-member-name">' + fullName + '</h3>' +
+            '<p class="spotlight-member-headline">' + headline + '</p>' +
+            locationHtml +
+            '<p class="spotlight-member-bio">' + bio + '</p>' +
+            '<div class="spotlight-links">' +
+            '<a href="/members-directory/" class="spotlight-view-profile">View Profile</a>' +
+            socialLinksHtml +
+            '</div>' +
+            '</div>';
+        
+        return slide;
+    }
+    
+    function goToSlide(index) {
+        // Wrap around
+        if (index < 0) {
+            index = slides.length - 1;
+        } else if (index >= slides.length) {
+            index = 0;
+        }
+        
+        currentSlide = index;
+        
+        var slidesContainer = document.querySelector('.spotlight-slides');
+        if (slidesContainer) {
+            slidesContainer.style.transform = 'translateX(-' + (index * 100) + '%)';
+        }
+        
+        // Update dots
+        var dots = document.querySelectorAll('.spotlight-dot');
+        dots.forEach(function(dot, i) {
+            if (i === index) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+        
+        // Reset auto-rotate timer
+        resetAutoRotate();
+    }
+    
+    function startAutoRotate() {
+        autoRotateInterval = setInterval(function() {
+            goToSlide(currentSlide + 1);
+        }, ROTATION_DELAY);
+    }
+    
+    function resetAutoRotate() {
+        if (autoRotateInterval) {
+            clearInterval(autoRotateInterval);
+        }
+        startAutoRotate();
+    }
+    
+    // Initialize on DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
+{{{{/raw}}}}

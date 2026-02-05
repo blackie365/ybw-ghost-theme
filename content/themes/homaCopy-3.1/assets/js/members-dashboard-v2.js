@@ -2,7 +2,6 @@
     const POSTS_API = 'https://getmemberposts-qljbqfyowq-uc.a.run.app/posts';
     const MEMBERS_API = 'https://getmembersv2-qljbqfyowq-uc.a.run.app';
     const CREATE_POST_API = 'https://creatememberpost-qljbqfyowq-uc.a.run.app';
-    const OFFERS_API = 'https://getpartners-qljbqfyowq-uc.a.run.app/active';
     
     let currentView = 'discussions';
     let currentFilter = 'all';
@@ -20,6 +19,224 @@
         setupFilterButtons();
         setupLoadMore();
     });
+    
+    // Setup navigation - intercept clicks for in-dashboard views
+    function setupNavigation() {
+        document.querySelectorAll('.nav-item').forEach(link => {
+            const href = link.getAttribute('href');
+            
+            // Keep external links (profile, directory)
+            if (href === '/member-portal/' || href === '/members-directory/') {
+                return; // Normal link behavior
+            }
+            
+            // Intercept dashboard views
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if (href === '/members-community/?new=true') {
+                    switchView('create-post');
+                } else if (href === '/members-community/') {
+                    switchView('discussions');
+                } else if (href === '/member-offers/') {
+                    switchView('offers');
+                }
+                
+                // Update active state
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    }
+    
+    // Switch between views
+    function switchView(view) {
+        currentView = view;
+        const mainContent = document.querySelector('.dashboard-main');
+        
+        if (view === 'discussions') {
+            renderDiscussionsView();
+        } else if (view === 'offers') {
+            renderOffersView();
+        } else if (view === 'create-post') {
+            renderCreatePostView();
+        }
+    }
+    
+    // Render discussions view (default)
+    function renderDiscussionsView() {
+        const mainContent = document.querySelector('.dashboard-main');
+        mainContent.innerHTML = `
+            <div class="feed-header">
+                <h2 class="feed-title">Recent Discussions</h2>
+                <div class="feed-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="announcements">Announcements</button>
+                    <button class="filter-btn" data-filter="questions">Questions</button>
+                    <button class="filter-btn" data-filter="events">Events</button>
+                </div>
+            </div>
+            <div id="postsContainer" class="posts-container">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading discussions...</p>
+                </div>
+            </div>
+            <div class="load-more-container">
+                <button id="loadMorePosts" class="btn-load-more" style="display: none;">
+                    Load More Discussions
+                </button>
+            </div>
+        `;
+        
+        // Re-setup after DOM update
+        setupFilterButtons();
+        setupLoadMore();
+        filterAndDisplayPosts();
+    }
+    
+    // Render offers view
+    function renderOffersView() {
+        const mainContent = document.querySelector('.dashboard-main');
+        mainContent.innerHTML = `
+            <div class="feed-header">
+                <h2 class="feed-title">Member Offers</h2>
+                <p style="margin: 8px 0 0 0; color: var(--text-color-2, #6b7280); font-size: 0.95rem;">
+                    Exclusive deals and offers from our members
+                </p>
+            </div>
+            <div id="offersContainer" class="posts-container">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>Loading offers...</p>
+                </div>
+            </div>
+        `;
+        
+        loadOffers();
+    }
+    
+    // Render create post view
+    function renderCreatePostView() {
+        const mainContent = document.querySelector('.dashboard-main');
+        mainContent.innerHTML = `
+            <div class="feed-header">
+                <h2 class="feed-title">Create New Post</h2>
+            </div>
+            <div class="create-post-form">
+                <form id="newPostForm">
+                    <div class="form-group">
+                        <label for="postTitle" class="form-label">Title</label>
+                        <input type="text" id="postTitle" class="form-input" placeholder="Give your post a title..." required maxlength="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postCategory" class="form-label">Category</label>
+                        <select id="postCategory" class="form-input" required>
+                            <option value="">Select a category</option>
+                            <option value="announcements">Announcements</option>
+                            <option value="questions">Questions</option>
+                            <option value="events">Events</option>
+                            <option value="general">General Discussion</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="postContent" class="form-label">Content</label>
+                        <textarea id="postContent" class="form-input" rows="8" placeholder="Share your thoughts..." required></textarea>
+                    </div>
+                    
+                    <div id="postError" class="form-error" style="display: none;"></div>
+                    <div id="postSuccess" class="form-success" style="display: none;"></div>
+                    
+                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <button type="button" class="btn-secondary" onclick="switchView('discussions')">Cancel</button>
+                        <button type="submit" class="btn-primary" id="submitPostBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                            Publish Post
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
+        
+        // Setup form submission
+        document.getElementById('newPostForm').addEventListener('submit', handlePostSubmit);
+    }
+    
+    // Handle post submission
+    function handlePostSubmit(e) {
+        e.preventDefault();
+        
+        const title = document.getElementById('postTitle').value.trim();
+        const category = document.getElementById('postCategory').value;
+        const content = document.getElementById('postContent').value.trim();
+        const errorDiv = document.getElementById('postError');
+        const successDiv = document.getElementById('postSuccess');
+        const submitBtn = document.getElementById('submitPostBtn');
+        
+        // Validate
+        if (!title || !category || !content) {
+            errorDiv.textContent = 'Please fill in all fields';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        // Disable button
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Publishing...';
+        errorDiv.style.display = 'none';
+        
+        // Submit to API
+        fetch(CREATE_POST_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, category, content })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                successDiv.textContent = 'Post published successfully!';
+                successDiv.style.display = 'block';
+                
+                // Redirect to discussions after 1 second
+                setTimeout(() => {
+                    switchView('discussions');
+                    loadPosts(); // Reload posts
+                }, 1000);
+            } else {
+                throw new Error(data.message || 'Failed to create post');
+            }
+        })
+        .catch(error => {
+            errorDiv.textContent = error.message;
+            errorDiv.style.display = 'block';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Publish Post';
+        });
+    }
+    
+    // Load offers
+    function loadOffers() {
+        const container = document.getElementById('offersContainer');
+        
+        // For now, show placeholder - you can connect to actual offers API
+        container.innerHTML = `
+            <div class="offers-grid">
+                <div class="offer-card">
+                    <div class="offer-content">
+                        <h3 class="offer-title">Member Offers Coming Soon</h3>
+                        <p style="color: var(--text-color-2, #6b7280); margin: 12px 0;">
+                            This section will showcase exclusive offers and discounts from our members.
+                        </p>
+                        <p style="color: var(--text-color-2, #6b7280); font-size: 0.9rem;">
+                            Have an offer to share? Contact us at <a href="mailto:hello@yorkshirebusinesswoman.co.uk" style="color: #B02376;">hello@yorkshirebusinesswoman.co.uk</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
     
     // Setup filter buttons
     function setupFilterButtons() {
@@ -56,12 +273,17 @@
             .then(data => {
                 if (data.status === 'success' && data.data) {
                     allPosts = data.data;
-                    filterAndDisplayPosts();
+                    if (currentView === 'discussions') {
+                        filterAndDisplayPosts();
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error loading posts:', error);
-                showError('postsContainer', 'Failed to load discussions');
+                const container = document.getElementById('postsContainer');
+                if (container) {
+                    showError('postsContainer', 'Failed to load discussions');
+                }
             });
     }
     
@@ -284,4 +506,7 @@
             `;
         }
     }
+    
+    // Expose switchView globally for button clicks
+    window.switchView = switchView;
 })();
