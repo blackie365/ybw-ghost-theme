@@ -372,6 +372,25 @@
         }
         
         container.innerHTML = posts.map(post => createPostHTML(post)).join('');
+        attachPostClickHandlers();
+    }
+    
+    // Attach click handlers to posts
+    function attachPostClickHandlers() {
+        const postItems = document.querySelectorAll('.post-item');
+        postItems.forEach(item => {
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', function(e) {
+                // Don't navigate if clicking the link itself
+                if (e.target.tagName === 'A') {
+                    return;
+                }
+                const postId = this.querySelector('a').getAttribute('href').split('id=')[1];
+                if (postId) {
+                    window.location.href = `/members-community-post/?id=${postId}`;
+                }
+            });
+        });
     }
     
     // Append posts (for load more)
@@ -379,6 +398,7 @@
         const container = document.getElementById('postsContainer');
         const postsHTML = posts.map(post => createPostHTML(post)).join('');
         container.insertAdjacentHTML('beforeend', postsHTML);
+        attachPostClickHandlers();
     }
     
     // Create post HTML
