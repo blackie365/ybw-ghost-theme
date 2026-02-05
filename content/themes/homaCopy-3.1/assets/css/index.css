@@ -24,6 +24,7 @@
   @import "./components/carousel.css";
   @import "./components/post-card.css";
   @import "./components/post-content.css";
+  @import "./components/comments.css";
   @import "./components/scroll-indicator.css";
   @import "./components/social-icons.css";
 }
