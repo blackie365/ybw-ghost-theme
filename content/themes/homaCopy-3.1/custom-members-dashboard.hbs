@@ -1,6 +1,32 @@
 {{!< default}}
 
-<article class="post members-dashboard">
+<!-- Member Authentication Check -->
+<script>
+(function() {
+    // Check if member is logged in
+    fetch('/members/api/member/')
+        .then(response => {
+            if (!response.ok) {
+                // Not logged in - redirect to login/signup
+                window.location.href = '/#/portal/signin';
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data || !data.email) {
+                // No member data - redirect
+                window.location.href = '/#/portal/signin';
+            }
+        })
+        .catch(error => {
+            console.error('Authentication check failed:', error);
+            window.location.href = '/#/portal/signin';
+        });
+})();
+</script>
+
+<article class="post members-dashboard" style="display: none;" id="dashboardContent">
     <!-- Dashboard Header -->
     <div class="dashboard-header">
         <div class="container">

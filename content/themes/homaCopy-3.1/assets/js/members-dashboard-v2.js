@@ -25,14 +25,28 @@
     // Fetch current member email from Ghost
     function fetchMemberEmail() {
         fetch('/members/api/member/')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    window.location.href = '/#/portal/signin';
+                    return;
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data && data.email) {
                     currentMemberEmail = data.email;
+                    // Show dashboard content after auth is verified
+                    const dashboardContent = document.getElementById('dashboardContent');
+                    if (dashboardContent) {
+                        dashboardContent.style.display = 'block';
+                    }
+                } else {
+                    window.location.href = '/#/portal/signin';
                 }
             })
             .catch(error => {
                 console.error('Error fetching member email:', error);
+                window.location.href = '/#/portal/signin';
             });
     }
     
