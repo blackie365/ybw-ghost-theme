@@ -1,6 +1,38 @@
 {{!< default}}
 
-<article class="post member-portal-container">
+<!-- Member Authentication Check -->
+<script>
+(function() {
+    // Check if member is logged in to Ghost
+    fetch('/members/api/member/')
+        .then(response => {
+            if (!response.ok) {
+                // Not logged in - redirect to login/signup
+                window.location.href = '/#/portal/signin';
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data || !data.email) {
+                // No member data - redirect
+                window.location.href = '/#/portal/signin';
+            } else {
+                // Member is authenticated - show portal content
+                const portalContent = document.getElementById('portalContent');
+                if (portalContent) {
+                    portalContent.style.display = 'block';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Authentication check failed:', error);
+            window.location.href = '/#/portal/signin';
+        });
+})();
+</script>
+
+<article class="post member-portal-container" style="display: none;" id="portalContent">
     <div class="member-portal-wrapper">
         <!-- Portal Header -->
         <div class="portal-header">
