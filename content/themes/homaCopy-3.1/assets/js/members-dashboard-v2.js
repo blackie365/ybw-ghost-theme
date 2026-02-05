@@ -21,7 +21,18 @@
         loadMyStats();
         setupFilterButtons();
         setupLoadMore();
+        setupPageVisibilityRefresh();
     });
+    
+    // Refresh posts when page becomes visible (user returns from post detail)
+    function setupPageVisibilityRefresh() {
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && currentView === 'discussions') {
+                // Page is visible and user is on discussions view - refresh posts
+                loadPosts();
+            }
+        });
+    }
     
     // Fetch current member email from Ghost
     function fetchMemberEmail() {
@@ -316,7 +327,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.posts && Array.isArray(data.posts)) {
-                    allPosts = data.posts;
+                    // Update allPosts with new data (preserves order and structure)
+                    const oldPostsMap = new Map(allPosts.map(p => [p.id, p]));
+                    allPosts = data.posts.map(newPost => ({
+                        ...oldPostsMap.get(newPost.id),
+                        ...newPost
+                    }));
+                    
                     if (currentView === 'discussions') {
                         filterAndDisplayPosts();
                     }
