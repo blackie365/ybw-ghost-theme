@@ -238,7 +238,7 @@
         })
         .then(response => response.json())
         .then(data => {
-            if (data.status === 'success') {
+            if (data.success === true) {
                 successDiv.textContent = 'Post published successfully!';
                 successDiv.style.display = 'block';
                 
@@ -248,7 +248,7 @@
                     loadPosts(); // Reload posts
                 }, 1000);
             } else {
-                throw new Error(data.message || 'Failed to create post');
+                throw new Error(data.error || data.message || 'Failed to create post');
             }
         })
         .catch(error => {
