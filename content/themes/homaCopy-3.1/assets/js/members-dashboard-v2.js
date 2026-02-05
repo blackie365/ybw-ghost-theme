@@ -18,6 +18,7 @@
         loadPosts();
         loadNewMembers();
         loadCommunityStats();
+        loadMyStats();
         setupFilterButtons();
         setupLoadMore();
     });
@@ -479,6 +480,37 @@
         }).join('');
     }
     
+    // Load my stats (personal)
+    function loadMyStats() {
+        if (!currentMemberEmail) {
+            // Wait for email to be fetched
+            setTimeout(loadMyStats, 500);
+            return;
+        }
+        
+        // Get my posts count
+        fetch(POSTS_API)
+            .then(response => response.json())
+            .then(data => {
+                if (data.posts && Array.isArray(data.posts)) {
+                    const myPosts = data.posts.filter(post => 
+                        post.authorEmail === currentMemberEmail
+                    );
+                    document.getElementById('myPostsCount').textContent = myPosts.length;
+                    
+                    // Calculate my comments (from posts I've interacted with)
+                    // Note: This would need a comments API to be accurate
+                    // For now, showing 0 as placeholder
+                    document.getElementById('myCommentsCount').textContent = '0';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading my stats:', error);
+                document.getElementById('myPostsCount').textContent = '0';
+                document.getElementById('myCommentsCount').textContent = '0';
+            });
+    }
+    
     // Load community stats
     function loadCommunityStats() {
         // Get total members count
@@ -495,12 +527,12 @@
         fetch(POSTS_API)
             .then(response => response.json())
             .then(data => {
-                if (data.status === 'success' && data.data) {
-                    document.getElementById('totalPosts').textContent = data.data.length;
+                if (data.posts && Array.isArray(data.posts)) {
+                    document.getElementById('totalPosts').textContent = data.posts.length;
                     
                     // Calculate total comments
-                    const totalComments = data.data.reduce((sum, post) => {
-                        return sum + (post.commentsCount || 0);
+                    const totalComments = data.posts.reduce((sum, post) => {
+                        return sum + (post.commentCount || post.commentsCount || 0);
                     }, 0);
                     document.getElementById('totalComments').textContent = totalComments;
                 }
