@@ -9,9 +9,11 @@
     let displayedPosts = [];
     const POSTS_PER_PAGE = 10;
     let currentPage = 0;
+    let currentMemberEmail = null;
     
     // Load dashboard data on page load
     document.addEventListener('DOMContentLoaded', function() {
+        fetchMemberEmail();
         setupNavigation();
         loadPosts();
         loadNewMembers();
@@ -19,6 +21,20 @@
         setupFilterButtons();
         setupLoadMore();
     });
+    
+    // Fetch current member email from Ghost
+    function fetchMemberEmail() {
+        fetch('/members/api/member/')
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.email) {
+                    currentMemberEmail = data.email;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching member email:', error);
+            });
+    }
     
     // Setup navigation - intercept clicks for in-dashboard views
     function setupNavigation() {
@@ -182,6 +198,13 @@
             return;
         }
         
+        // Check if member email is available
+        if (!currentMemberEmail) {
+            errorDiv.textContent = 'Unable to identify member. Please refresh the page.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
         // Disable button
         submitBtn.disabled = true;
         submitBtn.textContent = 'Publishing...';
@@ -191,7 +214,12 @@
         fetch(CREATE_POST_API, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, category, content })
+            body: JSON.stringify({ 
+                email: currentMemberEmail,
+                title, 
+                category, 
+                content 
+            })
         })
         .then(response => response.json())
         .then(data => {
