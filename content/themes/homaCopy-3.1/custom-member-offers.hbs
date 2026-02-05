@@ -1,0 +1,216 @@
+{{!< default}}
+
+<article class="post">
+    <header class="post-header">
+        <section class="flex flex-col justify-center mx-auto max-w-lg items-center text-center gap-4 pb-10 pt-24">
+            <h1>Member Offers & Services</h1>
+            <p class="text-lg opacity-80">Exclusive offers and services from our YBW community members</p>
+        </section>
+    </header>
+
+    <!-- Filters -->\n    <section class="section">
+        <div class="max-w-6xl mx-auto mb-8">
+            <div class="flex flex-wrap gap-4 items-center justify-between mb-6">
+                <div class="flex flex-wrap gap-3">
+                    <select id="categoryFilter" class="input" style="min-width: 150px;">
+                        <option value="">All Categories</option>
+                        <option value="offer">Offers</option>
+                        <option value="opportunity">Opportunities</option>
+                        <option value="event">Events</option>
+                        <option value="networking">Networking</option>
+                    </select>
+                    
+                    <input 
+                        type="search" 
+                        id="postSearch" 
+                        placeholder="Search posts..." 
+                        class="input"
+                        style="min-width: 250px;"
+                    >
+                </div>
+                
+                <a href="/member-portal/" class="profile-btn profile-btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                    Member Login
+                </a>
+            </div>
+            
+            <div class="results-info">
+                <span id="postsInfo">Loading...</span>
+            </div>
+        </div>
+    </section>
+
+    <hr/>
+
+    <!-- Posts Grid -->
+    <section class="section">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="postsGrid">
+            <div class="text-center py-8 col-span-full">Loading offers...</div>
+        </div>
+        
+        <!-- Load More -->
+        <div class="text-center mt-12">
+            <button id="loadMoreBtn" class="load-more-btn" style="display: none;">
+                Load More
+            </button>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section bg-gray-50" style="margin-top: 4rem; padding: 3rem 0;">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-4">Want to share your offers?</h2>
+            <p class="text-lg mb-6 opacity-80">
+                Join Yorkshire Businesswoman and connect with hundreds of local businesswomen
+            </p>
+            <div class="flex gap-4 justify-center flex-wrap">
+                <a href="/member-portal/" class="profile-btn profile-btn-primary" style="display: inline-flex;">
+                    Login to Post
+                </a>
+                <a href="/about/" class="profile-btn profile-btn-secondary" style="display: inline-flex; background: white; border: 1px solid #ddd;">
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+</article>
+
+<style>
+    /* Post Card Styles */
+    .post-card {
+        background: var(--bg-color, white);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.2s;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .post-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .post-category-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        width: fit-content;
+    }
+    
+    .category-offer { background: #dbeafe; color: #1e40af; }
+    .category-opportunity { background: #dcfce7; color: #166534; }
+    .category-event { background: #fef3c7; color: #92400e; }
+    .category-networking { background: #f3e8ff; color: #6b21a8; }
+    
+    .post-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 12px 0;
+        color: var(--text-color-0, #15171A);
+        line-height: 1.3;
+    }
+    
+    .post-excerpt {
+        color: var(--text-color-1, #4b5563);
+        margin-bottom: 16px;
+        line-height: 1.6;
+        flex-grow: 1;
+    }
+    
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.875rem;
+        color: var(--text-color-2, #6b7280);
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color, #e5e7eb);
+    }
+    
+    .post-author {
+        font-weight: 500;
+        color: var(--text-color-1, #374151);
+    }
+    
+    .post-date {
+        margin-left: auto;
+    }
+    
+    .results-info {
+        text-align: center;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+        color: var(--color-midgrey, #738a94);
+    }
+    
+    .load-more-btn {
+        background: var(--accent-color, #15171A);
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .load-more-btn:hover {
+        opacity: 0.9;
+    }
+
+    .input {
+        padding: 10px 16px;
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 4px;
+        font-size: 1rem;
+        background: white;
+    }
+
+    .input:focus {
+        outline: none;
+        border-color: var(--accent-color, #B02376);
+    }
+
+    .profile-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .profile-btn-primary {
+        background: var(--accent-color, #B02376);
+        color: white;
+        border: none;
+    }
+
+    .profile-btn-primary:hover {
+        opacity: 0.9;
+    }
+
+    .profile-btn-secondary {
+        background: transparent;
+        color: var(--text-color-0, #15171A);
+        border: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .profile-btn-secondary:hover {
+        background: var(--bg-color-secondary, #f9fafb);
+    }
+</style>
+
+<script src="{{asset "js/member-offers-public.js"}}"></script>

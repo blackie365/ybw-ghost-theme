@@ -1,28 +1,41 @@
 {{! custom-awards-index.hbs }}
 {{!< default}}
 
+<style>
+  /* Break out of container for full-width header */
+  .awards-index .full-width-header {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+</style>
+
 <section class="awards-index">
-  {{!-- Full-width, deep hero with awards image --}}
-  <div class="w-screen relative left-1/2 -translate-x-1/2 -mt-8">
+  {{!-- Full-width header image --}}
+  <div class="full-width-header -mt-8">
     <div
-      class="min-h-[70vh] md:min-h-[80vh] bg-cover bg-center flex items-end"
-      style="background-image: url('https://yorkshirebusinesswoman.co.uk/content/images/size/w2000/2025/12/YBW_Awards_070325_212.jpg');"
+      class="w-full bg-cover bg-center"
+      style="height: 50vh; background-image: url('{{#if page.feature_image}}{{img_url page.feature_image size="xxl"}}{{else}}https://yorkshirebusinesswoman.co.uk/content/images/size/w2000/2025/12/YBW_Awards_070325_212.jpg{{/if}}');"
     >
-      <div class="w-full bg-gradient-to-t from-black/75 via-black/45 to-transparent">
-        <div class="max-w-[var(--post-content-max-width)] mx-auto px-6 md:px-0 py-12 md:py-16 text-white">
-          <h1 class="!text-5xl leading-[1.15] mb-4">YBW Awards</h1>
-          <p class="opacity-90 text-lg max-w-2xl">
-            Celebrating outstanding women and businesses from the Yorkshire Businesswoman community.
-          </p>
-        </div>
-      </div>
     </div>
   </div>
-
+  
+  {{!-- Title and description below image --}}
+  <div class="max-w-[var(--post-content-max-width)] mx-auto px-6 md:px-0 py-12 md:py-16">
+    <h1 class="!text-5xl leading-[1.15] mb-4">{{#if page.title}}{{page.title}}{{else}}YBW Awards{{/if}}</h1>
+    {{#if page.custom_excerpt}}
+      <p class="text-lg max-w-2xl opacity-80">
+        {{page.custom_excerpt}}
+      </p>
+    {{/if}}
+  </div>
   {{!-- Awards grid: 1 / 2 / 3 / 4 columns, matching Events layout --}}
   <div class="mt-16 px-6 md:px-0 max-w-[var(--post-content-max-width)] mx-auto pb-16">
     {{#if posts}}
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12" data-posts>
         {{#foreach posts}}
           <article class="{{post_class}}">
             {{!-- Featured image, no rounded corners or zoom to match screenshot --}}

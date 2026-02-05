@@ -1,59 +1,174 @@
 {{!< default}}
-{{#post}}
-<article class="post {{post_class}}">
+
+<article class="post">
     <header class="post-header">
         <section class="flex flex-col justify-center mx-auto max-w-lg items-center justify-center text-center gap-4 pb-10 pt-24">
-            <h1>{{title}}</h1>
+            <h1>Members Directory</h1>
         </section>
     </header>
 
+    <!-- Search and Filters -->
+    <section class="section">
+        <div class="max-w-4xl mx-auto mb-8">
+            <div class="members-controls-wrapper">
+                <!-- Search Bar -->
+                <div class="members-control-item members-search">
+                    <input 
+                        type="search" 
+                        id="memberSearch" 
+                        placeholder="Search members by name..." 
+                        class="input"
+                    >
+                </div>
+                
+                <!-- Location Filter -->
+                <div class="members-control-item">
+                    <select id="locationFilter" class="input">
+                        <option value="">All Locations</option>
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+                
+                <!-- Keyword Search -->
+                <div class="members-control-item">
+                    <input 
+                        type="search" 
+                        id="keywordSearch" 
+                        placeholder="Search by keyword, business, service..." 
+                        class="input"
+                    >
+                </div>
+                
+                <!-- Featured Filter -->
+                <div class="members-control-item" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="featuredFilter" style="width: 18px; height: 18px; cursor: pointer;">
+                    <label for="featuredFilter" style="margin: 0; cursor: pointer; font-weight: 500;">Featured Only</label>
+                </div>
+                
+                <!-- Sort Filter -->
+                <div class="members-control-item">
+                    <select id="sortFilter" class="input">
+                        <option value="alphabetical">A-Z</option>
+                        <option value="newest">Newest First</option>
+                        <option value="featured">Featured</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Results Info -->
+            <div class="results-info">
+                <span id="resultsInfo">Loading...</span>
+            </div>
+        </div>
+    </section>
+
     <hr/>
 
-    <section class="section">
+    <!-- Members Grid -->
+    <section id="membersDirectorySection" class="section">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 gap-y-16" id="membersDirectoryList">
             <div class="text-center py-8 col-span-full">Loading members...</div>
         </div>
         
-        <div class="members-pagination">
-            <button onclick="loadMembersDirectory(currentMembersPage - 1)" id="membersPrevBtnBottom" disabled>Previous</button>
-            <span class="members-page-info" id="membersPageInfoBottom">Loading...</span>
-            <button onclick="loadMembersDirectory(currentMembersPage + 1)" id="membersNextBtnBottom">Next</button>
+        <!-- Load More Button -->
+        <div class="text-center mt-12">
+            <button id="loadMoreBtn" class="load-more-btn" style="display: none;">
+                Load More Members
+            </button>
+            <div id="loadingMore" class="text-gray-500" style="display: none;">
+                Loading more members...
+            </div>
+        </div>
+    </section>
+
+    <!-- Member Profile Section (shown when slug query param exists) -->
+    <section id="memberProfileSection" class="section" style="display: none;">
+        <div id="memberProfileContainer" class="member-profile-container">
+            <div class="text-center py-20">
+                <div class="loading-spinner"></div>
+                <p class="mt-4 text-gray-500">Loading member profile...</p>
+            </div>
         </div>
     </section>
 </article>
 
 <style>
-    .members-pagination {
-        text-align: center;
-        margin: 40px 0;
+    /* Search and Filter Controls */
+    .members-controls-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
     }
     
-    .members-pagination button {
-        background: #15171A;
-        color: white;
+    @media (min-width: 768px) {
+        .members-controls-wrapper {
+            flex-direction: row;
+            align-items: stretch;
+        }
+        
+        .members-search {
+            flex: 2 1 300px !important;
+            min-width: 300px !important;
+            max-width: none !important;
+        }
+        
+        .members-control-item:not(.members-search) {
+            flex: 0 0 12rem;
+        }
+    }
+    
+    .members-control-item {
+        min-width: 0;
+        flex-shrink: 1;
+    }
+    
+    .members-control-item input,
+    .members-control-item select {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        box-sizing: border-box !important;
+    }
+    
+    .members-control-item select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        padding-right: 2.5rem;
+    }
+    
+    /* Results Info */
+    .results-info {
+        text-align: center;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+        color: var(--color-midgrey, #738a94);
+    }
+    
+    /* Load More Button Styling */
+    .load-more-btn {
+        background: var(--accent-color, var(--color-darkgrey, #15171A));
+        color: var(--bg-color, white);
         border: none;
-        padding: 12px 28px;
-        margin: 0 6px;
+        padding: 12px 32px;
         border-radius: 4px;
-        font-size: 0.875rem;
+        font-size: 0.95rem;
         font-weight: 500;
         cursor: pointer;
-        transition: opacity 0.2s;
+        transition: all 0.2s;
+        font-family: var(--font-family-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
     }
     
-    .members-pagination button:hover:not(:disabled) {
+    .load-more-btn:hover:not(:disabled) {
         opacity: 0.9;
+        transform: translateY(-1px);
     }
     
-    .members-pagination button:disabled {
+    .load-more-btn:disabled {
         opacity: 0.4;
         cursor: not-allowed;
-    }
-    
-    .members-page-info {
-        display: inline-block;
-        margin: 0 20px;
-        font-size: 0.9rem;
     }
     
     .member-card {
@@ -78,6 +193,19 @@
     
     .member-card:hover .member-image img {
         transform: scale(1.02);
+    }
+    
+    .member-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: #B02376;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
     }
     
     .member-tag {
@@ -124,42 +252,33 @@
     }
     
     .read-more-btn {
-        background: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 18px;
+        background: #B02376;
+        color: #fff;
         border: none;
-        color: #B02376;
+        border-radius: 4px;
         font-size: 0.875rem;
-        text-decoration: underline;
+        font-weight: 600;
+        text-decoration: none;
         cursor: pointer;
-        padding: 0;
-        margin-bottom: 12px;
+        margin-bottom: 0;
         font-family: var(--font-family-body, 'Inter', sans-serif);
+        transition: transform 0.2s ease, opacity 0.2s ease;
     }
     
     .read-more-btn:hover {
-        color: #15171A;
+        opacity: 0.9;
+        transform: translateY(-1px);
+        color: #fff;
     }
     
     .member-links {
         display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
         margin-top: auto;
-    }
-    
-    .member-links a {
-        display: inline-block;
-        padding: 8px 16px;
-        background: #15171A;
-        color: white;
-        text-decoration: none;
-        font-size: 0.875rem;
-        font-weight: 500;
-        border-radius: 4px;
-        transition: opacity 0.2s;
-    }
-    
-    .member-links a:hover {
-        opacity: 0.9;
     }
     
     /* Use theme color variables for both modes */
@@ -182,129 +301,128 @@
     h1 {
         color: var(--text-color-0) !important;
     }
+
+    /* Profile Styles */
+    .member-profile-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        font-family: var(--font-family-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    }
+
+    .profile-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 24px;
+        border: 4px solid white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-name {
+        font-family: var(--font-family-heading, 'Noto Serif', serif);
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-color-0, #15171A);
+        margin: 0 0 8px 0;
+        line-height: 1.2;
+    }
+
+    .profile-headline {
+        font-size: 1.25rem;
+        color: var(--text-color-1, #4b5563);
+        margin-bottom: 16px;
+        font-weight: 500;
+    }
+
+    .profile-meta {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        color: var(--text-color-2, #6b7280);
+        font-size: 0.95rem;
+        margin-bottom: 24px;
+    }
+
+    .profile-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 40px;
+    }
+
+    .profile-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .profile-btn-primary {
+        background: var(--accent-color, #15171A);
+        color: white;
+    }
+
+    .profile-btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .profile-btn-secondary {
+        background: white;
+        color: var(--text-color-0, #15171A);
+        border: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .profile-btn-secondary:hover {
+        background: var(--bg-color-secondary, #f9fafb);
+    }
+
+    .profile-section {
+        margin-bottom: 40px;
+        padding-top: 40px;
+        border-top: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .profile-section-title {
+        font-family: var(--font-family-heading, 'Noto Serif', serif);
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color-0, #15171A);
+        margin-bottom: 20px;
+    }
+
+    .profile-bio {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text-color-1, #374151);
+    }
 </style>
 
-{{{{raw}}}}
-<script>
-(function() {
-    const membersApiUrl = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/getMembersV2';
-    const membersPageSize = 12;
-    window.currentMembersPage = 0;
-    window.currentSearch = '';
-    window.currentCategory = '';
-    window.currentSort = 'alphabetical';
-    
-    window.toggleBio = function(memberId) {
-        const bioDiv = document.getElementById('bio-' + memberId);
-        const btn = document.getElementById('btn-' + memberId);
-        
-        if (bioDiv && btn) {
-            if (bioDiv.classList.contains('truncated')) {
-                bioDiv.classList.remove('truncated');
-                btn.textContent = 'Read less';
-            } else {
-                bioDiv.classList.add('truncated');
-                btn.textContent = 'Read more';
-            }
-        }
-    };
-    
-    window.loadMembersDirectory = async function(page) {
-        try {
-            page = page || 0;
-            const membersDiv = document.getElementById('membersDirectoryList');
-            if (!membersDiv) return;
-            
-            membersDiv.innerHTML = '<div class="text-center py-8 col-span-full">Loading...</div>';
-            
-            // Fetch all data if not already loaded
-            if (allMembersData.length === 0) {
-                const response = await fetch(membersApiUrl);
-                if (!response.ok) {
-                    throw new Error('HTTP error! status: ' + response.status);
-                }
-                const result = await response.json();
-                if (result.status === 'success' && result.data) {
-                    allMembersData = result.data;
-                }
-            }
-            
-            page = parseInt(page) || 0;
-            window.currentMembersPage = page;
-            
-            const startIndex = page * membersPageSize;
-            const endIndex = startIndex + membersPageSize;
-            const pageMembers = allMembersData.slice(startIndex, endIndex);
-            const totalMembers = allMembersData.length;
-            
-            // Update pagination
-            const prevBtnBottom = document.getElementById('membersPrevBtnBottom');
-            const nextBtnBottom = document.getElementById('membersNextBtnBottom');
-            const pageInfoBottom = document.getElementById('membersPageInfoBottom');
-            
-            if (prevBtnBottom) prevBtnBottom.disabled = page === 0;
-            if (nextBtnBottom) nextBtnBottom.disabled = endIndex >= totalMembers;
-            if (pageInfoBottom) {
-                const start = startIndex + 1;
-                const end = Math.min(endIndex, totalMembers);
-                pageInfoBottom.textContent = 'Showing ' + start + ' - ' + end + ' of ' + totalMembers;
-            }
-
-            // Populate members
-            membersDiv.innerHTML = '';
-            pageMembers.forEach(function(member) {
-                const firstName = member['First Name'] || '';
-                const lastName = member['Last Name'] || '';
-                const fullName = (firstName + ' ' + lastName).trim() || 'Member';
-                const headline = member['Headline'] || '';
-                const location = member['Location'] || 'Yorkshire';
-                const bio = member['Bio'] || '';
-                const avatarUrl = member['Avatar URL'] || '';
-                const linkedinUrl = member['LinkedIn URL'] || '';
-                const websiteUrl = member['Website'] || '';
-                
-                const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
-                const fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=B02376&color=fff&size=600';
-                
-                const memberCard = document.createElement('article');
-                memberCard.className = 'post-card post-card--column member-card';
-                
-                let cardHTML = '<figure class="member-image relative">';
-                cardHTML += '<img src="' + (avatarUrl || fallbackAvatar) + '" alt="' + fullName + '" loading="lazy" onerror="this.src=\'' + fallbackAvatar + '\'">';
-                cardHTML += '</figure>';
-                cardHTML += '<div class="post-card-content">';
-                cardHTML += '<div class="member-tag">Members</div>';
-                cardHTML += '<h3 class="member-name mt-0">' + fullName + '</h3>';
-                if (headline) cardHTML += '<div class="member-headline">' + headline + '</div>';
-                cardHTML += '<div class="member-location">' + location + '</div>';
-                if (bio) {
-                    cardHTML += '<div class="member-bio truncated" id="bio-' + member.id + '">' + bio + '</div>';
-                    cardHTML += '<button class="read-more-btn" onclick="toggleBio(\'' + member.id + '\')" id="btn-' + member.id + '">Read more</button>';
-                }
-                cardHTML += '<div class="member-links">';
-                if (linkedinUrl) cardHTML += '<a href="' + linkedinUrl + '" target="_blank" rel="noopener noreferrer">LinkedIn</a>';
-                if (websiteUrl) cardHTML += '<a href="' + websiteUrl + '" target="_blank" rel="noopener noreferrer">Website</a>';
-                cardHTML += '</div></div>';
-                
-                memberCard.innerHTML = cardHTML;
-                membersDiv.appendChild(memberCard);
-            });
-        } catch (error) {
-            console.error('Error loading members:', error);
-            const membersDiv = document.getElementById('membersDirectoryList');
-            if (membersDiv) {
-                membersDiv.innerHTML = '<div class="text-center py-8 col-span-full">Error loading members. Please try again later.</div>';
-            }
-        }
-    };
-    
-    // Initial load
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() { loadMembersDirectory(0); });
-    } else {
-        loadMembersDirectory(0);
-    }
-})();
-</script>
-{{{{/raw}}}}
-{{/post}}
+<script src="{{asset "js/members-directory.js"}}"></script>

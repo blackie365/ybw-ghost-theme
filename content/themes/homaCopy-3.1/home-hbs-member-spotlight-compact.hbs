@@ -1,0 +1,390 @@
+<!-- Compact Member Spotlight Carousel (25% width max) -->
+<!-- Insert this in home.hbs sidebar or as a vertical widget -->
+
+<section class="member-spotlight-compact">
+    <div class="spotlight-compact-header">
+        <h3 class="spotlight-compact-title">Member Spotlight</h3>
+    </div>
+    
+    <div class="spotlight-compact-carousel">
+        <div class="spotlight-compact-slides"></div>
+        
+        <div class="spotlight-compact-nav">
+            <button class="spotlight-compact-prev" aria-label="Previous">‹</button>
+            <div class="spotlight-compact-dots"></div>
+            <button class="spotlight-compact-next" aria-label="Next">›</button>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Compact Member Spotlight - Max 25% width */
+.member-spotlight-compact {
+    max-width: 350px;
+    margin: 0 auto 40px;
+    padding: 24px;
+    background: var(--background-color, #ffffff);
+    border: 1px solid var(--border-color, #e5e5e5);
+    border-radius: 8px;
+}
+
+.spotlight-compact-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--accent-color, #B02376);
+}
+
+.spotlight-compact-title {
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color-0, #111111);
+    margin: 0;
+}
+
+.spotlight-compact-carousel {
+    position: relative;
+    overflow: hidden;
+}
+
+.spotlight-compact-slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.spotlight-compact-slide {
+    min-width: 100%;
+    text-align: center;
+    padding: 0 8px;
+}
+
+.spotlight-compact-image {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.spotlight-compact-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.spotlight-compact-name {
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-color-0, #111111);
+    margin: 0 0 6px 0;
+}
+
+.spotlight-compact-headline {
+    font-size: 0.875rem;
+    color: var(--text-color-1, #4b5563);
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.spotlight-compact-bio {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--text-color-1, #4b5563);
+    margin: 0 0 16px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.spotlight-compact-location {
+    font-size: 0.8125rem;
+    color: var(--text-color-2, #6b7280);
+    margin: 0 0 16px 0;
+}
+
+.spotlight-compact-links {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.spotlight-compact-link {
+    padding: 6px 16px;
+    background: var(--text-color-0, #111111);
+    color: var(--background-color, #ffffff);
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.spotlight-compact-link:hover {
+    opacity: 0.85;
+}
+
+.spotlight-compact-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.spotlight-compact-prev,
+.spotlight-compact-next {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border-color, #e5e5e5);
+    background: var(--background-color, #ffffff);
+    color: var(--text-color-0, #111111);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: all 0.2s;
+}
+
+.spotlight-compact-prev:hover,
+.spotlight-compact-next:hover {
+    background: var(--text-color-0, #111111);
+    color: var(--background-color, #ffffff);
+    border-color: var(--text-color-0, #111111);
+}
+
+.spotlight-compact-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.spotlight-compact-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-color, #e5e5e5);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 0;
+}
+
+.spotlight-compact-dot.active {
+    background: var(--accent-color, #B02376);
+    width: 24px;
+    border-radius: 4px;
+}
+
+/* Dark mode support */
+[data-color-scheme="dark"] .member-spotlight-compact {
+    border-color: var(--border-color, #333333);
+}
+
+[data-color-scheme="dark"] .spotlight-compact-prev,
+[data-color-scheme="dark"] .spotlight-compact-next {
+    border-color: var(--border-color, #333333);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .member-spotlight-compact {
+        max-width: 100%;
+    }
+    
+    .spotlight-compact-image {
+        width: 150px;
+        height: 150px;
+    }
+}
+</style>
+
+{{{{raw}}}}
+<script>
+(function() {
+    'use strict';
+    
+    var apiUrl = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/getMembersV2';
+    var currentSlide = 0;
+    var slides = [];
+    var autoRotateInterval = null;
+    var ROTATION_DELAY = 6000; // 6 seconds
+    var NUM_SPOTLIGHT_MEMBERS = 6; // Show 6 featured members
+    
+    function init() {
+        fetchMembers();
+    }
+    
+    function fetchMembers() {
+        // Use API v2 with newest sort and limit
+        var url = apiUrl + '?limit=' + NUM_SPOTLIGHT_MEMBERS + '&sort=newest';
+        
+        fetch(url)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data && data.members) {
+                    // Filter members with complete profiles
+                    var eligibleMembers = data.members.filter(function(member) {
+                        return member['Avatar URL'] && 
+                               member['First Name'] && 
+                               member['Headline'] && 
+                               member['Bio'];
+                    });
+                    
+                    // Shuffle for variety on each page load
+                    shuffleArray(eligibleMembers);
+                    slides = eligibleMembers.slice(0, NUM_SPOTLIGHT_MEMBERS);
+                    
+                    if (slides.length > 0) {
+                        renderCarousel();
+                        startAutoRotate();
+                    }
+                }
+            })
+            .catch(function(error) {
+                console.error('Error loading member spotlight:', error);
+            });
+    }
+    
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+    
+    function renderCarousel() {
+        var slidesContainer = document.querySelector('.spotlight-compact-slides');
+        var dotsContainer = document.querySelector('.spotlight-compact-dots');
+        
+        if (!slidesContainer || !dotsContainer) return;
+        
+        slidesContainer.innerHTML = '';
+        dotsContainer.innerHTML = '';
+        
+        slides.forEach(function(member, index) {
+            var slide = createSlide(member);
+            slidesContainer.appendChild(slide);
+            
+            var dot = document.createElement('button');
+            dot.className = 'spotlight-compact-dot' + (index === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Go to slide ' + (index + 1));
+            dot.addEventListener('click', function() {
+                goToSlide(index);
+            });
+            dotsContainer.appendChild(dot);
+        });
+        
+        var prevBtn = document.querySelector('.spotlight-compact-prev');
+        var nextBtn = document.querySelector('.spotlight-compact-next');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                goToSlide(currentSlide - 1);
+            });
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                goToSlide(currentSlide + 1);
+            });
+        }
+    }
+    
+    function createSlide(member) {
+        var slide = document.createElement('div');
+        slide.className = 'spotlight-compact-slide';
+        
+        var firstName = member['First Name'] || '';
+        var lastName = member['Last Name'] || '';
+        var fullName = firstName + ' ' + lastName;
+        var headline = member['Headline'] || '';
+        var bio = member['Bio'] || '';
+        var location = member['Location'] || '';
+        var avatarUrl = member['Avatar URL'] || '';
+        var website = member['Website'] || '';
+        var linkedIn = member['LinkedIn URL'] || '';
+        
+        // Truncate bio to ~100 characters
+        if (bio.length > 100) {
+            bio = bio.substring(0, 100) + '...';
+        }
+        
+        var initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+        var fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=B02376&color=fff&size=400';
+        
+        var html = '<div class="spotlight-compact-image">' +
+            '<img src="' + (avatarUrl || fallbackAvatar) + '" alt="' + fullName + '" loading="lazy" onerror="this.src=\'' + fallbackAvatar + '\'">' +
+            '</div>' +
+            '<h4 class="spotlight-compact-name">' + fullName + '</h4>';
+        
+        if (headline) html += '<p class="spotlight-compact-headline">' + headline + '</p>';
+        if (location) html += '<p class="spotlight-compact-location">' + location + '</p>';
+        if (bio) html += '<p class="spotlight-compact-bio">' + bio + '</p>';
+        
+        if (website || linkedIn) {
+            html += '<div class="spotlight-compact-links">';
+            if (website) html += '<a href="' + website + '" target="_blank" rel="noopener noreferrer" class="spotlight-compact-link">Website</a>';
+            if (linkedIn) html += '<a href="' + linkedIn + '" target="_blank" rel="noopener noreferrer" class="spotlight-compact-link">LinkedIn</a>';
+            html += '</div>';
+        }
+        
+        slide.innerHTML = html;
+        return slide;
+    }
+    
+    function goToSlide(index) {
+        if (index < 0) {
+            index = slides.length - 1;
+        } else if (index >= slides.length) {
+            index = 0;
+        }
+        
+        currentSlide = index;
+        
+        var slidesContainer = document.querySelector('.spotlight-compact-slides');
+        if (slidesContainer) {
+            slidesContainer.style.transform = 'translateX(-' + (index * 100) + '%)';
+        }
+        
+        var dots = document.querySelectorAll('.spotlight-compact-dot');
+        dots.forEach(function(dot, i) {
+            if (i === index) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+        
+        resetAutoRotate();
+    }
+    
+    function startAutoRotate() {
+        autoRotateInterval = setInterval(function() {
+            goToSlide(currentSlide + 1);
+        }, ROTATION_DELAY);
+    }
+    
+    function resetAutoRotate() {
+        if (autoRotateInterval) {
+            clearInterval(autoRotateInterval);
+        }
+        startAutoRotate();
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
+{{{{/raw}}}}

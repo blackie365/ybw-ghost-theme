@@ -142,6 +142,9 @@
   {{/get}}
 {{/if}}
 
+{{!-- Partners Banner Section --}}
+{{> "partners-banner"}}
+
 {{!-- Main Content Grid --}}
 <section class="section">
   <a href="/page/2" class="block mb-8"> 
@@ -156,202 +159,14 @@
     {{#foreach posts from="9"}}
       {{> "post-card"
         layout="column"
+        class="h-full flex flex-col"
+        featureImageClass="aspect-[4/3]"
       }}
     {{/foreach}}
   </div>
 </section>
 
 {{pagination class="mb-16"}}
-{{!-- 
-    MEMBERS WIDGET FOR HOMEPAGE
-    Insert this code into your home.hbs or index.hbs template
-    Place it just above the authors section or wherever you want the widget
---}}
-
-<style>
-    .members-widget {
-        margin: 60px 0;
-    }
-    
-    .members-widget-title {
-        font-family: var(--font-family-heading, 'Noto Serif', serif);
-        font-size: 2rem;
-        font-weight: 400;
-        color: var(--text-color, #15171A);
-        text-align: center;
-        margin-bottom: 40px;
-    }
-    
-    .members-widget-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 24px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
-    @media (max-width: 1024px) {
-        .members-widget-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    @media (max-width: 640px) {
-        .members-widget-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-    
-    .member-thumb {
-        text-align: center;
-        text-decoration: none;
-        color: inherit;
-        transition: transform 0.3s;
-    }
-    
-    .member-thumb:hover {
-        transform: translateY(-5px);
-    }
-    
-    .member-thumb-image {
-        width: 100%;
-        aspect-ratio: 1;
-        border-radius: 50%;
-        overflow: hidden;
-        margin-bottom: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .member-thumb-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .member-thumb-name {
-        font-family: var(--font-family-heading, 'Noto Serif', serif);
-        font-size: 1.1rem;
-        font-weight: 400;
-        color: var(--color-darkgrey, var(--text-color, #15171A)) !important;
-        margin-bottom: 4px;
-    }
-    
-    .member-thumb-headline {
-        font-size: 0.875rem;
-        color: var(--color-midgrey, #6b7280);
-        line-height: 1.4;
-        opacity: 0.8;
-    }
-    
-    /* Use theme color variables for both modes */
-    .member-thumb-name {
-        color: var(--text-color-0) !important;
-    }
-    
-    .member-thumb-headline {
-        color: var(--text-color-1) !important;
-    }
-    
-    .members-widget-title {
-        color: var(--text-color-0) !important;
-    }
-    
-    .members-widget-cta {
-        text-align: center;
-        margin-top: 40px;
-    }
-    
-    .members-widget-cta a {
-        display: inline-block;
-        padding: 12px 32px;
-        background: var(--accent-color, #15171A);
-        color: var(--bg-color, white);
-        text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 500;
-        border-radius: 4px;
-        transition: opacity 0.2s;
-    }
-    
-    .members-widget-cta a:hover {
-        opacity: 0.9;
-    }
-</style>
-
-<div class="members-widget">
-    <h2 class="members-widget-title">Meet Our Members</h2>
-    <div class="members-widget-grid" id="homepageMembersWidget">
-        <div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: #6b7280;">
-            Loading members...
-        </div>
-    </div>
-    <div class="members-widget-cta">
-        <a href="/members-directory/">View All Members</a>
-    </div>
-</div>
-
-{{{{raw}}}}
-<script>
-(function() {
-    // Use new API v2 with newest members
-    var apiUrl = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/getMembersV2?limit=4&sort=newest';
-    
-    function loadHomepageMembers() {
-        fetch(apiUrl)
-            .then(function(response) {
-                if (!response.ok) throw new Error('Failed to load members');
-                return response.json();
-            })
-            .then(function(result) {
-                var members = result.members || [];
-                var container = document.getElementById('homepageMembersWidget');
-                
-                if (members.length === 0) {
-                    container.innerHTML = '<div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: #6b7280;">No members found</div>';
-                    return;
-                }
-                
-                container.innerHTML = '';
-                
-                members.forEach(function(member) {
-                    var firstName = member['First Name'] || '';
-                    var lastName = member['Last Name'] || '';
-                    var fullName = (firstName + ' ' + lastName).trim() || 'Member';
-                    var headline = member['Headline'] || '';
-                    var avatarUrl = member['Avatar URL'] || '';
-                    
-                    var initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
-                    var fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=B02376&color=fff&size=400';
-                    
-                    var memberThumb = document.createElement('a');
-                    memberThumb.className = 'member-thumb';
-                    memberThumb.href = '/members-directory/';
-                    
-                    memberThumb.innerHTML = 
-                        '<div class="member-thumb-image">' +
-                        '<img src="' + (avatarUrl || fallbackAvatar) + '" alt="' + fullName + '" loading="lazy" onerror="this.src=\'' + fallbackAvatar + '\'">' +
-                        '</div>' +
-                        '<div class="member-thumb-name">' + fullName + '</div>' +
-                        (headline ? '<div class="member-thumb-headline">' + headline + '</div>' : '');
-                    
-                    container.appendChild(memberThumb);
-                });
-            })
-            .catch(function(error) {
-                console.error('Error loading homepage members:', error);
-                document.getElementById('homepageMembersWidget').innerHTML = 
-                    '<div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: #6b7280;">Unable to load members</div>';
-            });
-    }
-    
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadHomepageMembers);
-    } else {
-        loadHomepageMembers();
-    }
-})();
-</script>
-{{{{/raw}}}}
 
 {{!-- Authors List Section --}}
 {{#if @custom.show_authors_list_on_home_page}}

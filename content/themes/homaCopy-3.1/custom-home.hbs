@@ -1,234 +1,86 @@
+{{! custom-home.hbs - Awards Page }}
 {{!< default}}
 
-{{!-- The tag above means: insert everything in this file
-into the {{{body}}} of the default.hbs template --}}
-
-<div class="site-header-content">
-    {{#if @site.cover_image}}
-        {{!-- This is a responsive image, it loads different sizes depending on device
-        https://medium.freecodecamp.org/a-guide-to-responsive-images-with-ready-to-use-templates-c400bd65c433 --}}
-        <img class="site-header-cover"
-            srcset="{{img_url @site.cover_image size="s"}} 300w,
-                    {{img_url @site.cover_image size="m"}} 600w,
-                    {{img_url @site.cover_image size="l"}} 1000w,
-                    {{img_url @site.cover_image size="xl"}} 2000w"
-            sizes="100vw"
-            src="{{img_url @site.cover_image size="xl"}}"
-            alt="{{@site.title}}"
-        />
-    {{/if}}
-    <h1 class="site-title">
-        {{#if @site.logo}}
-            <img class="site-logo" src="{{@site.logo}}" alt="{{@site.title}}"/>
-        {{else}}
-            {{@site.title}}
-        {{/if}}
-    </h1>
-    {{#if @site.description}}
-        <h2 class="site-description">{{@site.description}}</h2>
-    {{/if}}
-</div>
-
-{{!-- The main content area --}}
-<main id="site-main" class="site-main outer">
-    <div class="inner posts">
-        <div class="post-feed">
-            {{#foreach posts}}
-                {{!-- The tag below includes the markup for each post - partials/post-card.hbs --}}
-                {{> "post-card"}}
-            {{/foreach}}
-        </div>
-    </div>
-</main>
-
-{{!-- Members Widget Section --}}
 <style>
-    .members-widget {
-        margin: 60px 0;
-    }
-    
-    .members-widget-title {
-        font-family: var(--font-family-heading, 'Noto Serif', serif);
-        font-size: 2rem;
-        font-weight: 400;
-        color: var(--text-color, #15171A);
-        text-align: center;
-        margin-bottom: 40px;
-    }
-    
-    .members-widget-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 24px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
-    @media (max-width: 1024px) {
-        .members-widget-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-    
-    @media (max-width: 640px) {
-        .members-widget-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-    
-    .member-thumb {
-        text-align: center;
-        text-decoration: none;
-        color: inherit;
-        transition: transform 0.3s;
-    }
-    
-    .member-thumb:hover {
-        transform: translateY(-5px);
-    }
-    
-    .member-thumb-image {
-        width: 100%;
-        aspect-ratio: 1;
-        border-radius: 50%;
-        overflow: hidden;
-        margin-bottom: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .member-thumb-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .member-thumb-name {
-        font-family: var(--font-family-heading, 'Noto Serif', serif);
-        font-size: 1.1rem;
-        font-weight: 400;
-        color: var(--color-darkgrey, var(--text-color, #15171A)) !important;
-        margin-bottom: 4px;
-    }
-    
-    .member-thumb-headline {
-        font-size: 0.875rem;
-        color: var(--color-midgrey, #6b7280);
-        line-height: 1.4;
-        opacity: 0.8;
-    }
-    
-    /* Use theme color variables for both modes */
-    .member-thumb-name {
-        color: var(--text-color-0) !important;
-    }
-    
-    .member-thumb-headline {
-        color: var(--text-color-1) !important;
-    }
-    
-    .members-widget-title {
-        color: var(--text-color-0) !important;
-    }
-    
-    .members-widget-cta {
-        text-align: center;
-        margin-top: 40px;
-    }
-    
-    .members-widget-cta a {
-        display: inline-block;
-        padding: 12px 32px;
-        background: var(--accent-color, #15171A);
-        color: var(--bg-color, white);
-        text-decoration: none;
-        font-size: 0.95rem;
-        font-weight: 500;
-        border-radius: 4px;
-        transition: opacity 0.2s;
-    }
-    
-    .members-widget-cta a:hover {
-        opacity: 0.9;
-    }
+  /* Break out of container for full-width header */
+  .awards-index .full-width-header {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
 </style>
 
-<div class="members-widget">
-    <h2 class="members-widget-title">Meet Our Members</h2>
-    <div class="members-widget-grid" id="homepageMembersWidget">
-        <div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: #6b7280;">
-            Loading members...
-        </div>
+<section class="awards-index">
+  {{!-- Full-width header image --}}
+  <div class="full-width-header -mt-8">
+    <div
+      class="w-full bg-cover bg-center"
+      style="height: 50vh; background-image: url('{{#if page.feature_image}}{{img_url page.feature_image size="xxl"}}{{else}}https://yorkshirebusinesswoman.co.uk/content/images/size/w2000/2025/12/YBW_Awards_070325_212.jpg{{/if}}');"
+    >
     </div>
-    <div class="members-widget-cta">
-        <a href="/members-directory/">View All Members</a>
-    </div>
-</div>
+  </div>
+  
+  {{!-- Title and description below image --}}
+  <div class="max-w-[var(--post-content-max-width)] mx-auto px-6 md:px-0 py-12 md:py-16">
+    <h1 class="!text-5xl leading-[1.15] mb-4">{{#if page.title}}{{page.title}}{{else}}YBW Awards{{/if}}</h1>
+    {{#if page.custom_excerpt}}
+      <p class="text-lg max-w-2xl opacity-80">
+        {{page.custom_excerpt}}
+      </p>
+    {{/if}}
+  </div>
+  {{!-- Awards grid: 1 / 2 / 3 / 4 columns, matching Events layout --}}
+  <div class="mt-16 px-6 md:px-0 max-w-[var(--post-content-max-width)] mx-auto pb-16">
+    {{#if posts}}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12" data-posts>
+        {{#foreach posts}}
+          <article class="{{post_class}}">
+            {{!-- Featured image, no rounded corners or zoom to match screenshot --}}
+            {{#if feature_image}}
+              <a href="{{url}}" class="block mb-4">
+                <img
+                  src="{{feature_image}}"
+                  alt="{{title}}"
+                  class="w-full aspect-[3/2] object-cover"
+                >
+              </a>
+            {{/if}}
 
-{{{{raw}}}}
-<script>
-(function() {
-    // Use new API v2 with featured members
-    var apiUrl = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/getMembersV2?limit=4&featured=true&sort=newest';
-    
-    function loadHomepageMembers() {
-        fetch(apiUrl)
-            .then(function(response) {
-                if (!response.ok) throw new Error('Failed to load members');
-                return response.json();
-            })
-            .then(function(result) {
-                var members = result.members || [];
-                var container = document.getElementById('homepageMembersWidget');
-                
-                if (members.length === 0) {
-                    container.innerHTML = '<div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: #6b7280;">No members found</div>';
-                    return;
-                }
-                
-                container.innerHTML = '';
-                
-                members.forEach(function(member) {
-                    var firstName = member['First Name'] || '';
-                    var lastName = member['Last Name'] || '';
-                    var fullName = (firstName + ' ' + lastName).trim() || 'Member';
-                    var headline = member['Headline'] || '';
-                    var avatarUrl = member['Avatar URL'] || '';
-                    
-                    var initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
-                    var fallbackAvatar = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(initials) + '&background=B02376&color=fff&size=400';
-                    
-                    var memberThumb = document.createElement('a');
-                    memberThumb.className = 'member-thumb';
-                    memberThumb.href = '/members-directory/';
-                    
-                    memberThumb.innerHTML = 
-                        '<div class="member-thumb-image">' +
-                        '<img src="' + (avatarUrl || fallbackAvatar) + '" alt="' + fullName + '" loading="lazy" onerror="this.src=\'' + fallbackAvatar + '\'">' +
-                        '</div>' +
-                        '<div class="member-thumb-name">' + fullName + '</div>' +
-                        (headline ? '<div class="member-thumb-headline">' + headline + '</div>' : '');
-                    
-                    container.appendChild(memberThumb);
-                });
-            })
-            .catch(function(error) {
-                console.error('Error loading homepage members:', error);
-                document.getElementById('homepageMembersWidget').innerHTML = 
-                    '<div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: #6b7280;">Unable to load members</div>';
-            });
-    }
-    
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadHomepageMembers);
-    } else {
-        loadHomepageMembers();
-    }
-})();
-</script>
-{{{{/raw}}}}
+            {{!-- Category label (like EVENTS in the screenshot) --}}
+            <div class="text-xs tracking-[0.2em] uppercase mb-2 opacity-70">
+              Awards
+            </div>
 
-{{!-- The #get helper below fetches additional posts from the Ghost API
-for pagination. This is completely optional, but helps with performance. --}}
-{{#get "posts" limit="all" as |all_posts|}}
-    {{pagination}}
-{{/get}}
+            {{!-- Title --}}
+            <h2 class="text-2xl font-semibold leading-snug mb-2">
+              <a href="{{url}}" class="hover:underline">
+                {{title}}
+              </a>
+            </h2>
+
+            {{!-- Excerpt --}}
+            {{#if custom_excerpt}}
+              <p class="text-sm opacity-80 mb-3">
+                {{custom_excerpt}}
+              </p>
+            {{/if}}
+
+            {{!-- Meta line (date / author) --}}
+            {{> "post-meta"}}
+          </article>
+        {{/foreach}}
+      </div>
+
+      <div class="mt-12">
+        {{pagination}}
+      </div>
+    {{else}}
+      <p class="opacity-80">
+        No awards have been published yet.
+      </p>
+    {{/if}}
+  </div>
+</section>

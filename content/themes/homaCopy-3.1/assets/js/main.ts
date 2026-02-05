@@ -26,6 +26,7 @@ import { Lightbox } from './lightbox.ts';
 import { SyntaxHighlighting } from './syntax-highlighting.ts';
 import { ProgressiveWebAppManager } from "./pwa-manager.ts";
 import { ColorSchemeManager } from './color-scheme-manager.ts'
+import './partners-banner.js';
 
 new ColorSchemeManager();
 new SiteHeader();

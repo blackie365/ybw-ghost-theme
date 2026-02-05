@@ -1,0 +1,195 @@
+{{!< default}}
+
+<article class="post">
+    <!-- Profile Container -->
+    <div id="memberProfileContainer" class="member-profile-container">
+        <div class="text-center py-20">
+            <div class="loading-spinner"></div>
+            <p class="mt-4 text-gray-500">Loading member profile...</p>
+        </div>
+    </div>
+</article>
+
+<style>
+    .member-profile-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        font-family: var(--font-family-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    }
+
+    .profile-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-bottom: 24px;
+        border: 4px solid white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-name {
+        font-family: var(--font-family-heading, 'Noto Serif', serif);
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-color-0, #15171A);
+        margin: 0 0 8px 0;
+        line-height: 1.2;
+    }
+
+    .profile-headline {
+        font-size: 1.25rem;
+        color: var(--text-color-1, #4b5563);
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .profile-job-company {
+        font-size: 1.1rem;
+        color: var(--text-color-2, #6b7280);
+        margin-bottom: 16px;
+        font-weight: 400;
+    }
+
+    .profile-meta {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        color: var(--text-color-2, #6b7280);
+        font-size: 0.95rem;
+        margin-bottom: 24px;
+    }
+
+    .profile-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 40px;
+    }
+
+    .profile-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .profile-btn-primary {
+        background: var(--accent-color, #15171A);
+        color: white;
+    }
+
+    .profile-btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .profile-btn-secondary {
+        background: white;
+        color: var(--text-color-0, #15171A);
+        border: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .profile-btn-secondary:hover {
+        background: var(--bg-color-secondary, #f9fafb);
+    }
+
+    .profile-section {
+        margin-bottom: 40px;
+        padding-top: 40px;
+        border-top: 1px solid var(--border-color, #e5e7eb);
+    }
+
+    .profile-section-title {
+        font-family: var(--font-family-heading, 'Noto Serif', serif);
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-color-0, #15171A);
+        margin-bottom: 20px;
+    }
+
+    .profile-bio {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text-color-1, #374151);
+    }
+
+    .profile-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .profile-tag {
+        background: var(--bg-color-secondary, #f3f4f6);
+        color: var(--text-color-1, #4b5563);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .company-logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background: var(--bg-color-secondary, #f9fafb);
+        border-radius: 8px;
+    }
+
+    .company-logo {
+        max-width: 300px;
+        max-height: 150px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid var(--accent-color, #15171A);
+        border-radius: 50%;
+        margin: 0 auto;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+    // Force reload of member-profile.js with timestamp
+    var script = document.createElement('script');
+    script.src = '{{asset "js/member-profile.js"}}?v=' + Date.now();
+    document.body.appendChild(script);
+</script>

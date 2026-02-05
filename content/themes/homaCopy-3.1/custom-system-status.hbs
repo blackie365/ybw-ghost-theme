@@ -1,0 +1,70 @@
+{{!< default}}
+<article class="post">
+  <header class="content-title">
+    <h1>System Status</h1>
+    <p>Live health checks for the YBW members platform</p>
+  </header>
+  <section id="status" style="font-family: system-ui, -apple-system, Segoe UI, Roboto; max-width: 760px;">
+    <div id="overall" style="padding:10px;border-radius:6px;background:#f3f4f6;margin-bottom:12px;">Checking…</div>
+    <div id="stats" style="padding:10px;border-radius:6px;background:#f9fafb;margin-bottom:12px;"></div>
+    <ul id="checks" style="list-style:none;padding:0;margin:0"></ul>
+    <div id="errors" style="margin-top:12px;"></div>
+  </section>
+</article>
+<script>
+(function(){
+  const overall = document.getElementById('overall');
+  const statsDiv = document.getElementById('stats');
+  const list = document.getElementById('checks');
+  const errorsDiv = document.getElementById('errors');
+  const ENDPOINT = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net/systemStatus';
+  function pill(ok){return '<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:12px;'+(ok?'background:#dcfce7;color:#166534;':'background:#fee2e2;color:#991b1b;')+'">'+(ok?'OK':'FAIL')+'</span>'}
+  fetch(ENDPOINT).then(r=>r.json()).then(d=>{
+    overall.innerHTML = (d.ok? 'All systems nominal ' : 'Issues detected ')+pill(d.ok)+
+      ' • Checked at '+new Date(d.timestamp).toLocaleString();
+    
+    // Member statistics
+    if (d.stats && d.stats.members) {
+      const m = d.stats.members;
+      let statsHtml = '<h3 style="margin:0 0 8px 0;font-size:14px;font-weight:600;">Member Statistics</h3>';
+      statsHtml += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">';
+      statsHtml += '<div><strong>Total:</strong> '+m.total+'</div>';
+      statsHtml += '<div><strong>Paid:</strong> '+m.paid+'</div>';
+      statsHtml += '<div><strong>Free:</strong> '+m.free+'</div>';
+      statsHtml += '</div>';
+      if (d.stats.lastSync) {
+        statsHtml += '<div style="margin-top:8px;font-size:13px;color:#6b7280;">Last sync: '+new Date(d.stats.lastSync).toLocaleString()+'</div>';
+      }
+      statsDiv.innerHTML = statsHtml;
+    }
+    
+    // Infrastructure checks
+    const items = [];
+    items.push('<li style="margin-bottom:4px;">Firestore: '+pill(!!d.checks.firestore)+'</li>');
+    items.push('<li style="margin-bottom:4px;">Storage: '+pill(!!d.checks.storage)+'</li>');
+    if (d.checks && d.checks.secrets){
+      items.push('<li style="margin-bottom:4px;">Secrets: ' +
+        (d.checks.secrets.GHOST_API_KEY?'GHOST_API_KEY ✓ ':'GHOST_API_KEY ✗ ') +
+        (d.checks.secrets.MAILGUN_API_KEY?'MAILGUN_API_KEY ✓ ':'MAILGUN_API_KEY ✗ ') +
+        (d.checks.secrets.MAILGUN_DOMAIN?'MAILGUN_DOMAIN ✓':'MAILGUN_DOMAIN ✗') +
+        '</li>');
+    }
+    list.innerHTML = items.join('');
+    
+    // Errors
+    if (d.errors && d.errors.length > 0) {
+      let errorHtml = '<div style="padding:10px;border-radius:6px;background:#fee2e2;color:#991b1b;">';
+      errorHtml += '<h3 style="margin:0 0 8px 0;font-size:14px;font-weight:600;">Errors Detected</h3>';
+      errorHtml += '<ul style="margin:0;padding-left:20px;">';
+      d.errors.forEach(err => {
+        errorHtml += '<li><strong>'+err.component+':</strong> '+err.message+'</li>';
+      });
+      errorHtml += '</ul></div>';
+      errorsDiv.innerHTML = errorHtml;
+    }
+  }).catch(e=>{
+    overall.innerHTML = 'Status check failed '+pill(false);
+    list.innerHTML = '<li>'+ (e && e.message? e.message : String(e)) +'</li>';
+  });
+})();
+</script>

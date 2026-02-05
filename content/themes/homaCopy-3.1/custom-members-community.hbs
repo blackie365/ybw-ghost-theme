@@ -1,0 +1,354 @@
+{{!< default}}
+
+<article class="post">
+    <header class="post-header">
+        <section class="flex flex-col justify-center mx-auto max-w-lg items-center text-center gap-4 pb-10 pt-24">
+            <h1>Members Community</h1>
+            <p class="text-lg opacity-80">Share opportunities, connect, and grow together</p>
+        </section>
+    </header>
+
+    <!-- Auth Check - show PIN login if not authenticated -->
+    <div id="authCheck" style="display: none;">
+        <section class="section">
+            <div class="max-w-2xl mx-auto text-center py-12">
+                <h2 class="text-2xl font-bold mb-4">Members Only</h2>
+                <p class="mb-6">Please log in to access the community.</p>
+                <a href="/member-portal/" class="profile-btn profile-btn-primary" style="display: inline-flex;">
+                    Login to Continue
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Community Content - shown when authenticated -->
+    <div id="communityContent" style="display: none;">
+        <!-- Filters and Create Button -->
+        <section class="section">
+            <div class="max-w-6xl mx-auto mb-8">
+                <div class="flex flex-wrap gap-4 items-center justify-between mb-6">
+                    <div class="flex flex-wrap gap-3">
+                        <select id="categoryFilter" class="input" style="min-width: 150px;">
+                            <option value="">All Categories</option>
+                            <option value="offer">Offers</option>
+                            <option value="opportunity">Opportunities</option>
+                            <option value="event">Events</option>
+                            <option value="networking">Networking</option>
+                        </select>
+                        
+                        <input 
+                            type="search" 
+                            id="postSearch" 
+                            placeholder="Search posts..." 
+                            class="input"
+                            style="min-width: 250px;"
+                        >
+                    </div>
+                    
+                    <button id="createPostBtn" class="profile-btn profile-btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Create Post
+                    </button>
+                </div>
+                
+                <div class="results-info">
+                    <span id="postsInfo">Loading...</span>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- Posts Grid -->
+        <section class="section">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="postsGrid">
+                <div class="text-center py-8 col-span-full">Loading posts...</div>
+            </div>
+            
+            <!-- Load More -->
+            <div class="text-center mt-12">
+                <button id="loadMoreBtn" class="load-more-btn" style="display: none;">
+                    Load More Posts
+                </button>
+            </div>
+        </section>
+    </div>
+</article>
+
+<!-- Create/Edit Post Modal -->
+<div id="postModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Create New Post</h2>
+            <button class="modal-close" id="closeModal">&times;</button>
+        </div>
+        
+        <form id="postForm">
+            <div class="form-group">
+                <label for="postTitle">Title *</label>
+                <input 
+                    type="text" 
+                    id="postTitle" 
+                    class="input" 
+                    placeholder="Enter a compelling title..." 
+                    required
+                    maxlength="200"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="postCategory">Category *</label>
+                <select id="postCategory" class="input" required>
+                    <option value="">Select a category</option>
+                    <option value="offer">Offer - Share a special deal or service</option>
+                    <option value="opportunity">Opportunity - Business or collaboration opportunity</option>
+                    <option value="event">Event - Announce an upcoming event</option>
+                    <option value="networking">Networking - Connect with other members</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="postContent">Content *</label>
+                <textarea 
+                    id="postContent" 
+                    class="input" 
+                    rows="8" 
+                    placeholder="Share your message with the community..." 
+                    required
+                ></textarea>
+                <small class="text-gray-500">Minimum 10 characters</small>
+            </div>
+            
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="postFeatured" style="width: auto;">
+                    <span>Make this post public (visible on Member Offers page)</span>
+                </label>
+                <small class="text-gray-500">Public posts can be seen by anyone visiting the site</small>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelPost">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submitPost">
+                    <span id="submitText">Publish Post</span>
+                    <span id="submitSpinner" style="display: none;">Publishing...</span>
+                </button>
+            </div>
+            
+            <div id="postError" class="error-message" style="display: none;"></div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Modal Styles */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 20px;
+    }
+    
+    .modal-content {
+        background: var(--bg-color, white);
+        border-radius: 8px;
+        max-width: 600px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px;
+        border-bottom: 1px solid var(--border-color, #e5e7eb);
+    }
+    
+    .modal-header h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: var(--text-color-0, #15171A);
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 32px;
+        color: var(--text-color-2, #6b7280);
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        line-height: 1;
+    }
+    
+    .modal-close:hover {
+        color: var(--text-color-0, #15171A);
+    }
+    
+    #postForm {
+        padding: 24px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--text-color-0, #15171A);
+    }
+    
+    .form-group textarea {
+        resize: vertical;
+        font-family: inherit;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 24px;
+    }
+    
+    .btn {
+        padding: 10px 24px;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background: var(--accent-color, #15171A);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        opacity: 0.9;
+    }
+    
+    .btn-secondary {
+        background: transparent;
+        color: var(--text-color-0, #15171A);
+        border: 1px solid var(--border-color, #e5e7eb);
+    }
+    
+    .btn-secondary:hover {
+        background: var(--bg-color-secondary, #f9fafb);
+    }
+    
+    .error-message {
+        background: #fee;
+        border: 1px solid #fcc;
+        color: #c00;
+        padding: 12px;
+        border-radius: 4px;
+        margin-top: 16px;
+    }
+    
+    /* Post Card Styles */
+    .post-card {
+        background: var(--bg-color, white);
+        border: 1px solid var(--border-color, #e5e7eb);
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.2s;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .post-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    
+    .post-category-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        width: fit-content;
+    }
+    
+    .category-offer { background: #dbeafe; color: #1e40af; }
+    .category-opportunity { background: #dcfce7; color: #166534; }
+    .category-event { background: #fef3c7; color: #92400e; }
+    .category-networking { background: #f3e8ff; color: #6b21a8; }
+    
+    .post-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 12px 0;
+        color: var(--text-color-0, #15171A);
+        line-height: 1.3;
+    }
+    
+    .post-excerpt {
+        color: var(--text-color-1, #4b5563);
+        margin-bottom: 16px;
+        line-height: 1.6;
+        flex-grow: 1;
+    }
+    
+    .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.875rem;
+        color: var(--text-color-2, #6b7280);
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color, #e5e7eb);
+    }
+    
+    .post-author {
+        font-weight: 500;
+        color: var(--text-color-1, #374151);
+    }
+    
+    .post-date {
+        margin-left: auto;
+    }
+    
+    .results-info {
+        text-align: center;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+        color: var(--color-midgrey, #738a94);
+    }
+    
+    .load-more-btn {
+        background: var(--accent-color, #15171A);
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .load-more-btn:hover {
+        opacity: 0.9;
+    }
+</style>
+
+<script src="{{asset "js/members-community.js"}}"></script>

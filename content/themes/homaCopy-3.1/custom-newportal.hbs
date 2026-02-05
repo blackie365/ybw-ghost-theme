@@ -1,0 +1,739 @@
+{{!< default}}
+
+<article class="post member-portal-container">
+    <div class="member-portal-wrapper">
+        <!-- Portal Header -->
+        <div class="portal-header">
+            <h1 class="portal-title">Edit Your Profile</h1>
+            <p class="portal-subtitle">Update your professional information and enhance your directory presence</p>
+        </div>
+
+        <!-- Authentication State: Sign In -->
+        <div id="authSection" class="auth-section">
+            <div class="auth-card">
+                <h2 class="auth-title">Sign In to Edit Your Profile</h2>
+                <p class="auth-description">Enter your email address to verify your membership and edit your profile</p>
+                
+                <form id="authForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="emailInput" class="form-label">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="emailInput" 
+                            name="email" 
+                            placeholder="your@email.com"
+                            required
+                            class="form-input"
+                        >
+                        <small class="form-help">The email you used to sign up</small>
+                    </div>
+
+                    <div id="authError" class="form-error" style="display: none;"></div>
+
+                    <button type="submit" id="authSubmitBtn" class="btn btn-primary btn-block">
+                        Access Profile
+                    </button>
+                </form>
+
+                <div class="auth-footer">
+                    <p>Need help? <a href="mailto:hello@yorkshirebusinesswoman.co.uk">Contact support</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile Form (shown after auth) -->
+        <div id="editorSection" class="editor-section" style="display: none;">
+            <div class="editor-layout">
+                <!-- Left Column: Form -->
+                <div class="editor-form-column">
+                    <form id="profileForm" class="profile-form">
+                        <!-- Profile Header -->
+                        <div class="form-section">
+                            <h2 class="section-title">Profile Information</h2>
+                            
+                            <!-- Name Fields -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <input 
+                                        type="text" 
+                                        id="firstName" 
+                                        class="form-input"
+                                    >
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <input 
+                                        type="text" 
+                                        id="lastName" 
+                                        class="form-input"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Email (Read-only) -->
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    class="form-input" 
+                                    readonly
+                                >
+                                <small class="form-help">Cannot be changed</small>
+                            </div>
+
+                            <!-- Profile Image -->
+                            <div class="form-group">
+                                <label for="profileImage" class="form-label">Profile Image</label>
+                                <div id="avatarPreview" style="margin-bottom: 12px;">
+                                    <img id="previewImageSmall" src="" alt="Profile" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                                </div>
+                                <input 
+                                    type="file" 
+                                    id="profileImage" 
+                                    class="form-input"
+                                    accept="image/*"
+                                >
+                                <small class="form-help">JPG or PNG, max 5MB</small>
+                                <div id="imageUploadStatus" style="display: none; margin-top: 8px; padding: 8px; border-radius: 4px;"></div>
+                            </div>
+
+                            <!-- Company Logo -->
+                            <div class="form-group">
+                                <label for="companyLogo" class="form-label">Company Logo</label>
+                                <div id="logoPreview" style="margin-bottom: 12px; display: none;">
+                                    <img id="previewLogoSmall" src="" alt="Company Logo" style="max-width: 200px; max-height: 100px; object-fit: contain;">
+                                </div>
+                                <input 
+                                    type="file" 
+                                    id="companyLogo" 
+                                    class="form-input"
+                                    accept="image/*"
+                                >
+                                <small class="form-help">JPG or PNG, max 2MB</small>
+                                <div id="logoUploadStatus" style="display: none; margin-top: 8px; padding: 8px; border-radius: 4px;"></div>
+                            </div>
+
+                            <!-- Headline -->
+                            <div class="form-group">
+                                <label for="headline" class="form-label">Professional Headline</label>
+                                <input 
+                                    type="text" 
+                                    id="headline" 
+                                    placeholder="e.g., Digital Marketing Manager at Acme Corp"
+                                    class="form-input"
+                                    maxlength="100"
+                                >
+                                <small class="form-help"><span id="headlineCount">0</span>/100 characters</small>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="form-group">
+                                <label for="location" class="form-label">Location</label>
+                                <input 
+                                    type="text" 
+                                    id="location" 
+                                    placeholder="e.g., Leeds, UK"
+                                    class="form-input"
+                                >
+                            </div>
+
+                            <!-- Company & Job Title -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="companyName" class="form-label">Company Name</label>
+                                    <input 
+                                        type="text" 
+                                        id="companyName" 
+                                        placeholder="Your company"
+                                        class="form-input"
+                                    >
+                                </div>
+                                <div class="form-group">
+                                    <label for="jobTitle" class="form-label">Job Title</label>
+                                    <input 
+                                        type="text" 
+                                        id="jobTitle" 
+                                        placeholder="Your position"
+                                        class="form-input"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="form-group">
+                                <label for="category" class="form-label">Category</label>
+                                <select id="category" class="form-input">
+                                    <option value="">Select a category</option>
+                                    <option value="Digital Marketing">Digital Marketing</option>
+                                    <option value="Design & Creative">Design & Creative</option>
+                                    <option value="Finance & Accounting">Finance & Accounting</option>
+                                    <option value="HR & Recruitment">HR & Recruitment</option>
+                                    <option value="Law & Compliance">Law & Compliance</option>
+                                    <option value="Technology">Technology</option>
+                                    <option value="Operations & Logistics">Operations & Logistics</option>
+                                    <option value="Sales & Business Development">Sales & Business Development</option>
+                                    <option value="Manufacturing & Engineering">Manufacturing & Engineering</option>
+                                    <option value="Food & Hospitality">Food & Hospitality</option>
+                                    <option value="Real Estate & Property">Real Estate & Property</option>
+                                    <option value="Healthcare & Wellness">Healthcare & Wellness</option>
+                                    <option value="Education & Training">Education & Training</option>
+                                    <option value="Retail & Consumer">Retail & Consumer</option>
+                                    <option value="Media & Publishing">Media & Publishing</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Bio Section -->
+                        <div class="form-section">
+                            <h2 class="section-title">About You</h2>
+
+                            <div class="form-group">
+                                <label for="bio" class="form-label">Bio</label>
+                                <textarea 
+                                    id="bio" 
+                                    placeholder="Tell members about yourself, your expertise, and what you do..."
+                                    class="form-input form-textarea"
+                                    maxlength="500"
+                                    rows="5"
+                                ></textarea>
+                                <small class="form-help"><span id="bioCount">0</span>/500 characters</small>
+                            </div>
+                        </div>
+
+                        <!-- Social Links Section -->
+                        <div class="form-section">
+                            <h2 class="section-title">Social & Web Links</h2>
+
+                            <div class="form-group">
+                                <label for="website" class="form-label">Website</label>
+                                <input 
+                                    type="url" 
+                                    id="website" 
+                                    placeholder="https://yourwebsite.com"
+                                    class="form-input"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="linkedinUrl" class="form-label">LinkedIn Profile</label>
+                                <input 
+                                    type="url" 
+                                    id="linkedinUrl" 
+                                    placeholder="https://linkedin.com/in/yourprofile"
+                                    class="form-input"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="instagramUrl" class="form-label">Instagram</label>
+                                <input 
+                                    type="url" 
+                                    id="instagramUrl" 
+                                    placeholder="https://instagram.com/yourprofile"
+                                    class="form-input"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="facebookUrl" class="form-label">Facebook</label>
+                                <input 
+                                    type="url" 
+                                    id="facebookUrl" 
+                                    placeholder="https://facebook.com/yourprofile"
+                                    class="form-input"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="twitterUrl" class="form-label">Twitter/X</label>
+                                <input 
+                                    type="url" 
+                                    id="twitterUrl" 
+                                    placeholder="https://twitter.com/yourprofile"
+                                    class="form-input"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-section form-actions">
+                            <button type="submit" id="saveBtn" class="btn btn-primary">
+                                Save Changes
+                            </button>
+                            <button type="button" id="cancelBtn" class="btn btn-secondary">
+                                Cancel
+                            </button>
+                        </div>
+
+                        <!-- Error Messages -->
+                        <div id="formError" class="form-error" style="display: none;"></div>
+                        <div id="formSuccess" class="alert alert-success" style="display: none;">
+                            Profile updated successfully! Your changes will appear in the directory within seconds.
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Column: Preview -->
+                <div class="editor-preview-column">
+                    <div class="preview-sticky">
+                        <h3 class="preview-title">Preview</h3>
+                        <p class="preview-subtitle">How your profile will look in the directory</p>
+                        
+                        <div class="preview-card">
+                            <div class="preview-avatar">
+                                <img id="previewAvatar" src="" alt="Your profile" />
+                            </div>
+                            <div class="preview-content">
+                                <h2 class="preview-name" id="previewName">Name</h2>
+                                <div class="preview-headline" id="previewHeadline"></div>
+                                <div class="preview-location" id="previewLocation"></div>
+                                <div class="preview-category-badge" id="previewCategory"></div>
+                                <p class="preview-bio" id="previewBio"></p>
+                                <div class="preview-links">
+                                    <a id="previewWebsite" href="#" target="_blank" class="preview-link" style="display: none;">Website</a>
+                                    <a id="previewLinkedin" href="#" target="_blank" class="preview-link" style="display: none;">LinkedIn</a>
+                                    <a id="previewInstagram" href="#" target="_blank" class="preview-link" style="display: none;">Instagram</a>
+                                    <a id="previewFacebook" href="#" target="_blank" class="preview-link" style="display: none;">Facebook</a>
+                                    <a id="previewTwitter" href="#" target="_blank" class="preview-link" style="display: none;">Twitter</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+
+<script>
+  // API Endpoints
+  const ENDPOINTS = {
+    getByEmail: 'https://us-central1-yorkshire-businesswoman.cloudfunctions.net/getMemberByEmail',
+    getMembers: 'https://us-central1-yorkshire-businesswoman.cloudfunctions.net/getMembersV2',
+    updateProfile: 'https://us-central1-yorkshire-businesswoman.cloudfunctions.net/updateMemberProfile',
+    uploadImage: 'https://us-central1-yorkshire-businesswoman.cloudfunctions.net/uploadMemberImage',
+  };
+
+  // DOM Elements - Form Inputs
+  const authSection = document.getElementById('authSection');
+  const authForm = document.getElementById('authForm');
+  const emailInput = document.getElementById('emailInput');
+  const authError = document.getElementById('authError');
+  const editorSection = document.getElementById('editorSection');
+  const profileForm = document.getElementById('profileForm');
+  const firstName = document.getElementById('firstName');
+  const lastName = document.getElementById('lastName');
+  const email = document.getElementById('email');
+  const headline = document.getElementById('headline');
+  const location = document.getElementById('location');
+  const companyName = document.getElementById('companyName');
+  const jobTitle = document.getElementById('jobTitle');
+  const category = document.getElementById('category');
+  const bio = document.getElementById('bio');
+  const website = document.getElementById('website');
+  const linkedinUrl = document.getElementById('linkedinUrl');
+  const instagramUrl = document.getElementById('instagramUrl');
+  const facebookUrl = document.getElementById('facebookUrl');
+  const twitterUrl = document.getElementById('twitterUrl');
+  const profileImage = document.getElementById('profileImage');
+  const previewImageSmall = document.getElementById('previewImageSmall');
+  const imageUploadStatus = document.getElementById('imageUploadStatus');
+
+  // DOM Elements - Preview
+  const previewName = document.getElementById('previewName');
+  const previewHeadline = document.getElementById('previewHeadline');
+  const previewLocation = document.getElementById('previewLocation');
+  const previewCategory = document.getElementById('previewCategory');
+  const previewBio = document.getElementById('previewBio');
+  const previewAvatar = document.getElementById('previewAvatar');
+  const previewWebsite = document.getElementById('previewWebsite');
+  const previewLinkedin = document.getElementById('previewLinkedin');
+  const previewInstagram = document.getElementById('previewInstagram');
+  const previewFacebook = document.getElementById('previewFacebook');
+  const previewTwitter = document.getElementById('previewTwitter');
+
+  // DOM Elements - Counters
+  const headlineCount = document.getElementById('headlineCount');
+  const bioCount = document.getElementById('bioCount');
+
+  // DOM Elements - Buttons
+  const saveBtn = document.getElementById('saveBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const formError = document.getElementById('formError');
+  const formSuccess = document.getElementById('formSuccess');
+
+  // State
+  let currentMember = null;
+  let authToken = null;
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', init);
+
+  function init() {
+    authForm.addEventListener('submit', handleAuthSubmit);
+    profileForm.addEventListener('submit', handleSaveProfile);
+    cancelBtn.addEventListener('click', handleCancel);
+    if (profileImage) {
+      profileImage.addEventListener('change', handleImageUpload);
+    }
+
+    headline.addEventListener('input', updateCounters);
+    bio.addEventListener('input', updateCounters);
+
+    [headline, location, companyName, jobTitle, category, bio, website, linkedinUrl, instagramUrl, facebookUrl, twitterUrl].forEach((field) => {
+      if (field) {
+        field.addEventListener('input', updatePreview);
+        field.addEventListener('change', updatePreview);
+      }
+    });
+  }
+
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  async function handleAuthSubmit(e) {
+    e.preventDefault();
+    const userEmail = emailInput.value.trim();
+
+    if (!userEmail) {
+      showError(authError, '❌ Please enter your email address');
+      return;
+    }
+
+    if (!isValidEmail(userEmail)) {
+      showError(authError, '❌ Please enter a valid email address');
+      return;
+    }
+
+    authError.style.display = 'none';
+    loadMemberProfile(userEmail);
+  }
+
+  async function loadMemberProfile(userEmail) {
+    try {
+      const response = await fetch(`${ENDPOINTS.getByEmail}?email=${encodeURIComponent(userEmail)}`);
+      
+      if (response.status === 404) {
+        currentMember = {
+          email: userEmail,
+          firstName: userEmail.split('@')[0],
+          lastName: '',
+          headline: '',
+          location: '',
+          companyName: '',
+          jobTitle: '',
+          category: '',
+          bio: '',
+          website: '',
+          linkedinUrl: '',
+          instagramUrl: '',
+          facebookUrl: '',
+          twitterUrl: '',
+          avatarUrl: '',
+        };
+      } else {
+        if (!response.ok) throw new Error('Failed to fetch member');
+        const data = await response.json();
+        currentMember = data.member || data;
+      }
+
+      if (!currentMember) {
+        currentMember = {
+          email: userEmail,
+          firstName: userEmail.split('@')[0],
+          lastName: '',
+          headline: '',
+          location: '',
+          companyName: '',
+          jobTitle: '',
+          category: '',
+          bio: '',
+          website: '',
+          linkedinUrl: '',
+          instagramUrl: '',
+          facebookUrl: '',
+          twitterUrl: '',
+          avatarUrl: '',
+        };
+      }
+
+      showEditorSection();
+      populateForm();
+      updatePreview();
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      showError(authError, 'Failed to load profile. Please try again.');
+    }
+  }
+
+  function showEditorSection() {
+    authSection.style.display = 'none';
+    editorSection.style.display = 'block';
+  }
+
+  function populateForm() {
+    if (!currentMember) return;
+
+    console.log('populateForm called with:', currentMember);
+
+    if (firstName) firstName.value = currentMember.firstName || '';
+    if (lastName) lastName.value = currentMember.lastName || '';
+    if (email) email.value = currentMember.email || '';
+    if (headline) headline.value = currentMember.headline || '';
+    if (location) location.value = currentMember.location || '';
+    if (companyName) companyName.value = currentMember.companyName || '';
+    if (jobTitle) jobTitle.value = currentMember.jobTitle || '';
+    if (category) category.value = currentMember.category || '';
+    if (bio) bio.value = currentMember.bio || '';
+    if (website) website.value = currentMember.website || '';
+    if (linkedinUrl) linkedinUrl.value = currentMember.linkedinUrl || '';
+    if (instagramUrl) instagramUrl.value = currentMember.instagramUrl || '';
+    if (facebookUrl) facebookUrl.value = currentMember.facebookUrl || '';
+    if (twitterUrl) twitterUrl.value = currentMember.twitterUrl || '';
+
+    if (previewAvatar && currentMember.avatarUrl) {
+      previewAvatar.src = currentMember.avatarUrl;
+    }
+    if (previewImageSmall && currentMember.avatarUrl) {
+      previewImageSmall.src = currentMember.avatarUrl;
+    }
+
+    updateCounters();
+  }
+
+  function updateCounters() {
+    headlineCount.textContent = headline.value.length;
+    bioCount.textContent = bio.value.length;
+  }
+
+  function updatePreview() {
+    if (!currentMember) return;
+
+    const displayName = `${firstName.value} ${lastName.value}`.trim();
+    previewName.textContent = displayName || 'Your Name';
+    previewHeadline.textContent = headline.value || '';
+    previewLocation.textContent = location.value || '';
+    
+    if (category.value) {
+      previewCategory.textContent = category.value;
+      previewCategory.style.display = 'inline-block';
+    } else {
+      previewCategory.style.display = 'none';
+    }
+
+    previewBio.textContent = bio.value || '';
+
+    if (website.value) {
+      previewWebsite.href = website.value;
+      previewWebsite.style.display = 'inline-block';
+    } else {
+      previewWebsite.style.display = 'none';
+    }
+
+    if (linkedinUrl.value) {
+      previewLinkedin.href = linkedinUrl.value;
+      previewLinkedin.style.display = 'inline-block';
+    } else {
+      previewLinkedin.style.display = 'none';
+    }
+
+    if (instagramUrl.value) {
+      previewInstagram.href = instagramUrl.value;
+      previewInstagram.style.display = 'inline-block';
+    } else {
+      previewInstagram.style.display = 'none';
+    }
+
+    if (facebookUrl.value) {
+      previewFacebook.href = facebookUrl.value;
+      previewFacebook.style.display = 'inline-block';
+    } else {
+      previewFacebook.style.display = 'none';
+    }
+
+    if (twitterUrl.value) {
+      previewTwitter.href = twitterUrl.value;
+      previewTwitter.style.display = 'inline-block';
+    } else {
+      previewTwitter.style.display = 'none';
+    }
+  }
+
+  async function handleSaveProfile(e) {
+    e.preventDefault();
+
+    if (!currentMember) {
+      showError(formError, 'Error: Member not loaded');
+      return;
+    }
+
+    const updatedProfile = {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      headline: headline.value,
+      location: location.value,
+      companyName: companyName.value,
+      jobTitle: jobTitle.value,
+      category: category.value,
+      bio: bio.value,
+      website: website.value,
+      linkedinUrl: linkedinUrl.value,
+      instagramUrl: instagramUrl.value,
+      facebookUrl: facebookUrl.value,
+      twitterUrl: twitterUrl.value,
+    };
+
+    try {
+      const response = await fetch(ENDPOINTS.updateProfile, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: currentMember.email,
+          profile: updatedProfile,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update profile');
+
+      const data = await response.json();
+      if (data.success) {
+        currentMember = { ...currentMember, ...updatedProfile };
+        showSuccess(formSuccess, 'Profile updated successfully!');
+        updatePreview();
+      } else {
+        showError(formError, 'Failed to save profile');
+      }
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      showError(formError, 'Error saving profile. Please try again.');
+    }
+  }
+
+  async function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      showImageStatus(imageUploadStatus, '❌ File is too large (max 5MB)', 'error');
+      return;
+    }
+
+    showImageStatus(imageUploadStatus, '⏳ Uploading...', 'info');
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('email', currentMember.email);
+
+    try {
+      const response = await fetch(ENDPOINTS.uploadImage, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const data = await response.json();
+      if (data.success) {
+        currentMember.avatarUrl = data.url;
+        if (previewImageSmall) previewImageSmall.src = data.url;
+        if (previewAvatar) previewAvatar.src = data.url;
+        showImageStatus(imageUploadStatus, '✅ Image uploaded!', 'success');
+      } else {
+        showImageStatus(imageUploadStatus, '❌ ' + (data.message || 'Upload failed'), 'error');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      showImageStatus(imageUploadStatus, '❌ Upload error', 'error');
+    }
+  }
+
+  function handleCancel() {
+    authSection.style.display = 'block';
+    editorSection.style.display = 'none';
+    authForm.reset();
+    formError.style.display = 'none';
+    formSuccess.style.display = 'none';
+  }
+
+  function showError(element, message) {
+    element.textContent = message;
+    element.style.display = 'block';
+  }
+
+  function showSuccess(element, message) {
+    element.textContent = message;
+    element.style.display = 'block';
+    setTimeout(() => {
+      element.style.display = 'none';
+    }, 5000);
+  }
+
+  function showImageStatus(element, message, type) {
+    element.textContent = message;
+    element.style.display = 'block';
+    element.className = 'image-upload-status ' + type;
+    if (type !== 'error') {
+      setTimeout(() => {
+        element.style.display = 'none';
+      }, 3000);
+    }
+  }
+</script>
+
+<style>
+.member-portal-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.portal-header { text-align: center; margin-bottom: 40px; }
+.portal-title { font-size: 2.5rem; margin-bottom: 10px; }
+.portal-subtitle { font-size: 1.1rem; color: #666; }
+.auth-section { display: flex; justify-content: center; margin: 40px 0; }
+.auth-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 400px; width: 100%; }
+.auth-title { font-size: 1.5rem; margin-bottom: 10px; }
+.auth-description { color: #666; margin-bottom: 20px; }
+.auth-form { margin: 20px 0; }
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-weight: 600; margin-bottom: 8px; }
+.form-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; font-family: inherit; }
+.form-textarea { resize: vertical; min-height: 120px; }
+.form-input:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,0.25); }
+.form-help { display: block; font-size: 0.85rem; color: #666; margin-top: 5px; }
+.form-error { color: #d32f2f; margin: 10px 0; padding: 10px; background: #ffebee; border-radius: 4px; }
+.alert { padding: 15px; border-radius: 4px; margin: 15px 0; }
+.alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #4caf50; }
+.btn { padding: 10px 20px; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; font-weight: 600; }
+.btn-primary { background: #007bff; color: white; }
+.btn-primary:hover { background: #0056b3; }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-secondary:hover { background: #545b62; }
+.btn-block { width: 100%; }
+.editor-layout { display: grid; grid-template-columns: 1fr 350px; gap: 40px; }
+.form-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+.section-title { font-size: 1.3rem; margin-bottom: 15px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.preview-card { background: white; padding: 20px; border-radius: 8px; }
+.preview-avatar { margin-bottom: 15px; }
+.preview-avatar img { width: 100%; border-radius: 8px; }
+.preview-name { font-size: 1.3rem; margin-bottom: 5px; }
+.preview-headline { color: #666; font-size: 0.95rem; margin-bottom: 5px; }
+.preview-location { color: #999; font-size: 0.85rem; margin-bottom: 10px; }
+.preview-category-badge { display: inline-block; background: #007bff; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; margin-bottom: 10px; }
+.preview-bio { margin: 10px 0; font-size: 0.95rem; line-height: 1.5; }
+.preview-link { display: inline-block; margin-right: 10px; margin-top: 8px; padding: 6px 12px; background: #f5f5f5; border-radius: 4px; text-decoration: none; color: #007bff; font-size: 0.85rem; }
+.form-actions { display: flex; gap: 10px; }
+.form-actions button { flex: 1; }
+.auth-footer { text-align: center; margin-top: 20px; color: #666; font-size: 0.95rem; }
+.auth-footer a { color: #007bff; text-decoration: none; }
+.image-upload-status { padding: 10px; border-radius: 4px; }
+.image-upload-status.success { background: #e8f5e9; color: #2e7d32; }
+.image-upload-status.error { background: #ffebee; color: #d32f2f; }
+.image-upload-status.info { background: #e3f2fd; color: #1976d2; }
+@media (max-width: 768px) {
+  .editor-layout { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .portal-title { font-size: 1.8rem; }
+}
+</style>
