@@ -101,9 +101,10 @@
                 <h2 class="feed-title">Recent Discussions</h2>
                 <div class="feed-filters">
                     <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="announcements">Announcements</button>
-                    <button class="filter-btn" data-filter="questions">Questions</button>
-                    <button class="filter-btn" data-filter="events">Events</button>
+                    <button class="filter-btn" data-filter="offer">Offers</button>
+                    <button class="filter-btn" data-filter="opportunity">Opportunities</button>
+                    <button class="filter-btn" data-filter="event">Events</button>
+                    <button class="filter-btn" data-filter="networking">Networking</button>
                 </div>
             </div>
             <div id="postsContainer" class="posts-container">
@@ -164,10 +165,10 @@
                         <label for="postCategory" class="form-label">Category</label>
                         <select id="postCategory" class="form-input" required>
                             <option value="">Select a category</option>
-                            <option value="announcements">Announcements</option>
-                            <option value="questions">Questions</option>
-                            <option value="events">Events</option>
-                            <option value="general">General Discussion</option>
+                            <option value="offer">Offer</option>
+                            <option value="opportunity">Opportunity</option>
+                            <option value="event">Event</option>
+                            <option value="networking">Networking</option>
                         </select>
                     </div>
                     
