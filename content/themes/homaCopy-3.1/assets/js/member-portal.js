@@ -167,7 +167,7 @@
       
       // Provide specific, helpful error messages
       if (error.message.includes('Member not found') || error.message.includes('404')) {
-        friendlyMessage = '❌ Email not found in our database. Please contact support at hello@yorkshirebusinesswoman.co.uk';
+        friendlyMessage = '❌ Email not found in our database. Please contact support at rob@topicuk.co.uk';
       } else if (error.message.includes('Rate limit') || error.message.includes('429')) {
         friendlyMessage = '⏱ Too many requests. Please wait a few minutes and try again.';
       } else if (error.message.includes('Invalid email')) {

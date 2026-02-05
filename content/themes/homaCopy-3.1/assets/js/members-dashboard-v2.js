@@ -272,7 +272,7 @@
                             This section will showcase exclusive offers and discounts from our members.
                         </p>
                         <p style="color: var(--text-color-2, #6b7280); font-size: 0.9rem;">
-                            Have an offer to share? Contact us at <a href="mailto:hello@yorkshirebusinesswoman.co.uk" style="color: #B02376;">hello@yorkshirebusinesswoman.co.uk</a>
+                            Have an offer to share? Contact us at <a href="mailto:rob@topicuk.co.uk" style="color: #B02376;">rob@topicuk.co.uk</a>
                         </p>
                     </div>
                 </div>
