@@ -314,8 +314,8 @@
         fetch(POSTS_API)
             .then(response => response.json())
             .then(data => {
-                if (data.status === 'success' && data.data) {
-                    allPosts = data.data;
+                if (data.posts && Array.isArray(data.posts)) {
+                    allPosts = data.posts;
                     if (currentView === 'discussions') {
                         filterAndDisplayPosts();
                     }
