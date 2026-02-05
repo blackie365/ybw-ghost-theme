@@ -1,5 +1,5 @@
 (function () {
-    const API_URL = 'https://getmembersv2-qljbqfyowq-uc.a.run.app/members';
+    const API_URL = 'https://getmembersv2-qljbqfyowq-uc.a.run.app';
     const LOCATIONS_URL = 'https://getlocations-qljbqfyowq-uc.a.run.app/locations';
     const PAGE_SIZE = 12;
 
@@ -226,7 +226,7 @@
     let currentLocation = '';
     let currentKeyword = '';
     let currentFeatured = false;
-    let currentSort = 'alphabetical';
+    let currentSort = 'newest';
     let isLoading = false;
     let hasMore = true;
     let allLoadedMembers = [];
@@ -354,6 +354,9 @@
         // Build API URL
         const offset = currentPage * PAGE_SIZE;
         let apiUrl = API_URL + '?limit=' + PAGE_SIZE + '&offset=' + offset;
+        
+        // Always require avatars (filter out members without Firebase Storage images)
+        apiUrl += '&requireAvatar=true';
 
         // Map sort values to API parameters
         if (currentSort === 'alphabetical') {
