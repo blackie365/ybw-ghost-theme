@@ -447,6 +447,7 @@
             const websiteUrl = member.website || member['Website'] || '';
             const category = member.category || 'Other';
             const featured = member.featured || false;
+            const isPremium = member.isPremium || false;
             const memberSlug = member.memberSlug || '';
             const profileLink = memberSlug ? '/members-directory/?slug=' + encodeURIComponent(memberSlug) : '#';
 
@@ -457,7 +458,7 @@
                 '&background=B02376&color=fff&size=600';
 
             const memberCard = document.createElement('article');
-            memberCard.className = 'member-card';
+            memberCard.className = 'member-card' + (isPremium ? ' premium-member' : '');
             memberCard.style.cssText = 'cursor: pointer; display: flex; flex-direction: column;';
             memberCard.addEventListener('click', function () {
                 if (profileLink && profileLink !== '#') {
@@ -467,6 +468,7 @@
 
             let cardHTML = '<figure class="member-image relative">';
             if (featured) cardHTML += '<div class="member-badge">Featured</div>';
+            if (isPremium) cardHTML += '<div class="premium-badge" title="Premium Member">⭐</div>';
             cardHTML += '<a href="' + profileLink + '" class="block w-full h-full">';
             cardHTML += `<img src="${avatarUrl || fallbackAvatar}" alt="${fullName}" loading="lazy" onerror="this.src='${fallbackAvatar}'">`;
             cardHTML += '</a>';
