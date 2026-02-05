@@ -383,6 +383,7 @@
     function createPostHTML(post) {
         const author = post.authorName || 'Anonymous';
         const avatar = post.authorAvatar || generateAvatarFallback(author);
+        const company = post.authorCompany || post.companyName || '';
         const headline = post.authorHeadline || '';
         const title = post.title || 'Untitled';
         const content = post.content || '';
@@ -398,6 +399,7 @@
                     <img src="${avatar}" alt="${author}" class="post-avatar" onerror="this.src='${generateAvatarFallback(author)}'">
                     <div class="post-author-info">
                         <h4>${author}</h4>
+                        ${company ? `<div class="post-author-company">${company}</div>` : ''}
                         <div class="post-meta">
                             ${createdAt}
                             ${category ? `<span class="post-category">${category}</span>` : ''}
