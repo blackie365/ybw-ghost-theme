@@ -126,6 +126,12 @@
                 </div>
             ` : '';
 
+            const avatarHtml = post.authorAvatar ? `
+                <img src="${post.authorAvatar}" alt="${escapeHtml(post.authorName)}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+            ` : `
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: #B02376; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.875rem;">${getInitials(post.authorName)}</div>
+            `;
+
             card.innerHTML = `
                 ${imageHtml}
                 <div class="post-card-content">
@@ -133,7 +139,10 @@
                     <h3 class="post-title">${escapeHtml(post.title)}</h3>
                     <p class="post-excerpt">${escapeHtml(excerpt)}</p>
                     <div class="post-meta">
-                        <span class="post-author">${escapeHtml(post.authorName)}</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            ${avatarHtml}
+                            <span class="post-author">${escapeHtml(post.authorName)}</span>
+                        </div>
                         <span class="post-date">${formattedDate}</span>
                     </div>
                 </div>
@@ -343,6 +352,16 @@
         const errorDiv = document.getElementById('postError');
         errorDiv.textContent = message;
         errorDiv.style.display = 'block';
+    }
+
+    // Get initials from name
+    function getInitials(name) {
+        if (!name) return '?';
+        const parts = name.split(' ');
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        return name.substring(0, 2).toUpperCase();
     }
 
     // Escape HTML to prevent XSS
