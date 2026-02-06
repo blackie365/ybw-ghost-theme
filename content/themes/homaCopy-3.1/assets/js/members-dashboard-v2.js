@@ -505,7 +505,10 @@
                 <a href="/members-directory/?slug=${slug}" class="member-item">
                     <img src="${avatar}" alt="${fullName}" class="member-avatar" onerror="this.src='${generateAvatarFallback(fullName)}'">
                     <div class="member-info">
-                        <div class="member-name">${fullName}</div>
+                        <div class="member-name">
+                            ${fullName}
+                            ${isPremium ? ' <span class="premium-star" title="Premium Member">★</span>' : ''}
+                        </div>
                         ${headline ? `<div class="member-headline">${headline}</div>` : ''}
                     </div>
                 </a>

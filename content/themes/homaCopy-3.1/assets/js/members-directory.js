@@ -468,6 +468,7 @@
 
             let cardHTML = '<figure class="member-image relative">';
             if (featured) cardHTML += '<div class="member-badge">Featured</div>';
+            if (isPremium) cardHTML += '<div class="premium-badge" title="Premium Member">★</div>';
             cardHTML += '<a href="' + profileLink + '" class="block w-full h-full">';
             cardHTML += `<img src="${avatarUrl || fallbackAvatar}" alt="${fullName}" loading="lazy" onerror="this.src='${fallbackAvatar}'">`;
             cardHTML += '</a>';
