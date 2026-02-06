@@ -10,7 +10,7 @@
     }
 
     // Render profile from slug
-    function renderProfile(member) {
+    function renderProfile(member, isOwnProfile) {
         const container = document.getElementById('memberProfileContainer');
         if (!member) {
             container.innerHTML = `
@@ -38,7 +38,8 @@
         const facebookUrl = member.facebookUrl || member['Facebook URL'] || '';
         const twitterUrl = member.twitterUrl || member['Twitter URL'] || '';
         const websiteUrl = member.website || member['Website'] || '';
-        const category = member.category || '';
+        const isPremium = member.isPremium || false;
+        const memberStatus = isPremium ? 'Premium Member' : 'Member';
         const joinDate = member.joinDate || member['Join Date'] || '';
         const logoUrl = member.logoUrl || '';
 
@@ -97,11 +98,11 @@
                             : ''
                     }
                     ${
-                        category
+                        memberStatus
                             ? `
                         <div class="profile-meta-item">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-                            ${category}
+                            ${memberStatus}
                         </div>
                     `
                             : ''
@@ -157,10 +158,16 @@
             }
 
             <div class="profile-section" style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-                <a href="/member-portal/" class="profile-btn profile-btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    Edit Profile
-                </a>
+                ${
+                    isOwnProfile
+                        ? `
+                        <a href="/member-portal/" class="profile-btn profile-btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            Edit Profile
+                        </a>
+                    `
+                        : ''
+                }
                 <a href="/members-directory/" class="profile-btn profile-btn-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                     Back to Member Directory
@@ -189,33 +196,72 @@
         if (divider) divider.style.display = 'none';
         if (firstSection) firstSection.style.display = 'none';
 
-        // Fetch member profile
-        const apiUrl = API_URL + '?slug=' + encodeURIComponent(slug);
-        console.log('Fetching profile from:', apiUrl);
-
-        fetch(apiUrl)
-            .then((response) => {
-                if (!response.ok) throw new Error('Network response was not ok');
+        // Fetch current member email
+        let currentMemberEmail = null;
+        fetch('/members/api/member/')
+            .then(response => {
+                if (!response.ok) return null;
                 return response.json();
             })
-            .then((data) => {
-                if (!data.members || data.members.length === 0) {
-                    console.error('No members found in response');
-                    renderProfile(null);
-                    return;
+            .then(currentMember => {
+                if (currentMember && currentMember.email) {
+                    currentMemberEmail = currentMember.email;
+                    console.log('Current member email:', currentMemberEmail);
                 }
-                // Find the member matching the slug
-                const member = data.members.find((m) => m.memberSlug === slug || m['memberSlug'] === slug);
-                if (!member) {
-                    console.error('No member found with slug:', slug);
-                    renderProfile(null);
-                    return;
-                }
-                renderProfile(member);
+
+                // Fetch member profile
+                const apiUrl = API_URL + '?slug=' + encodeURIComponent(slug);
+                console.log('Fetching profile from:', apiUrl);
+
+                fetch(apiUrl)
+                    .then((response) => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then((data) => {
+                        if (!data.members || data.members.length === 0) {
+                            console.error('No members found in response');
+                            renderProfile(null, false);
+                            return;
+                        }
+                        // Find the member matching the slug
+                        const member = data.members.find((m) => m.memberSlug === slug || m['memberSlug'] === slug);
+                        if (!member) {
+                            console.error('No member found with slug:', slug);
+                            renderProfile(null, false);
+                            return;
+                        }
+                        // Check if this is the current user's profile
+                        const normalizedCurrentEmail = currentMemberEmail ? currentMemberEmail.toLowerCase().trim() : null;
+                        const normalizedMemberEmail = member.email ? member.email.toLowerCase().trim() : null;
+                        const isOwnProfile = normalizedCurrentEmail && normalizedCurrentEmail === normalizedMemberEmail;
+                        console.log('Target member email:', member.email, '(normalized:', normalizedMemberEmail + ')');
+                        console.log('Is own profile:', isOwnProfile);
+                        renderProfile(member, isOwnProfile);
+                    })
+                    .catch((error) => {
+                        console.error('Error loading member:', error);
+                        renderProfile(null, false);
+                    });
             })
-            .catch((error) => {
-                console.error('Error loading member:', error);
-                renderProfile(null);
+            .catch(error => {
+                console.error('Error fetching current member:', error);
+                // Continue without current member info
+                const apiUrl = API_URL + '?slug=' + encodeURIComponent(slug);
+                fetch(apiUrl)
+                    .then((response) => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then((data) => {
+                        if (!data.members || data.members.length === 0) {
+                            renderProfile(null, false);
+                            return;
+                        }
+                        const member = data.members.find((m) => m.memberSlug === slug || m['memberSlug'] === slug);
+                        renderProfile(member || null, false);
+                    })
+                    .catch(() => renderProfile(null, false));
             });
 
         return true; // Slug found, showing profile
@@ -422,6 +468,14 @@
             });
     }
 
+    // Determine member status based on membership type
+    function getMemberStatus(member) {
+        if (member.isPremium) {
+            return 'Premium Member';
+        }
+        return 'Member';
+    }
+
     // Render members
     function renderMembers(members, isReset) {
         if (isReset) {
@@ -445,7 +499,7 @@
             const avatarUrl = member.avatarUrl || member['Avatar URL'] || '';
             const linkedinUrl = member.linkedinUrl || member['LinkedIn URL'] || '';
             const websiteUrl = member.website || member['Website'] || '';
-            const category = member.category || 'Other';
+            const memberStatus = getMemberStatus(member);
             const featured = member.featured || false;
             const isPremium = member.isPremium || false;
             const memberSlug = member.memberSlug || '';
@@ -474,7 +528,7 @@
             cardHTML += '</a>';
             cardHTML += '</figure>';
             cardHTML += '<div class="post-card-content">';
-            cardHTML += '<div class="member-tag">' + category + '</div>';
+            cardHTML += '<div class="member-tag">' + memberStatus + '</div>';
             cardHTML +=
                 '<h3 class="member-name mt-0"><a href="' +
                 profileLink +

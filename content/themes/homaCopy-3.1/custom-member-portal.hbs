@@ -4,21 +4,28 @@
 <script>
 (function() {
     // Check if member is logged in to Ghost
-    fetch('/members/api/member/')
+    fetch('/members/api/member/', {
+        credentials: 'same-origin'
+    })
         .then(response => {
+            console.log('Auth check response status:', response.status);
             if (!response.ok) {
                 // Not logged in - redirect to login/signup
+                console.log('Not authenticated, redirecting to signin');
                 window.location.href = '/#/portal/signin';
-                return;
+                return null;
             }
             return response.json();
         })
         .then(data => {
+            console.log('Auth check data:', data);
             if (!data || !data.email) {
                 // No member data - redirect
+                console.log('No member email found, redirecting to signin');
                 window.location.href = '/#/portal/signin';
             } else {
                 // Member is authenticated - show portal content
+                console.log('Member authenticated, showing portal content');
                 const portalContent = document.getElementById('portalContent');
                 if (portalContent) {
                     portalContent.style.display = 'block';

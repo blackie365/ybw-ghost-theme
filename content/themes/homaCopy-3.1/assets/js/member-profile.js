@@ -235,7 +235,10 @@
         // Fetch current member first
         fetchCurrentMember().then(currentMember => {
             if (currentMember) {
-                currentMemberEmail = currentMember.email;
+                // Ghost API returns the email in nested structure
+                currentMemberEmail = currentMember.email || (currentMember.member && currentMember.member.email) || null;
+                console.log('Current member email:', currentMemberEmail);
+                console.log('Full currentMember object:', currentMember);
             }
 
             const apiUrl = API_URL + '?slug=' + encodeURIComponent(slug);
@@ -257,7 +260,15 @@
                         return;
                     }
                     // Check if this is the current user's profile
-                    const isOwnProfile = currentMemberEmail && member.email === currentMemberEmail;
+                    // Try case-insensitive comparison and trim whitespace
+                    const normalizedCurrentEmail = currentMemberEmail ? currentMemberEmail.toLowerCase().trim() : null;
+                    const normalizedMemberEmail = member.email ? member.email.toLowerCase().trim() : null;
+                    const isOwnProfile = normalizedCurrentEmail && normalizedCurrentEmail === normalizedMemberEmail;
+                    console.log('Target member email:', member.email, '(normalized:', normalizedMemberEmail + ')');
+                    console.log('Current email:', currentMemberEmail, '(normalized:', normalizedCurrentEmail + ')');
+                    console.log('Is own profile:', isOwnProfile);
+                    console.log('Type of currentMemberEmail:', typeof currentMemberEmail);
+                    console.log('Type of member.email:', typeof member.email);
                     renderProfile(member, isOwnProfile);
                     fetch(API_URL + '?slug=' + encodeURIComponent(slug) + '&action=view', { method: 'POST' }).catch(console.error);
                 })

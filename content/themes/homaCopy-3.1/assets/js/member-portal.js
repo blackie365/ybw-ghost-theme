@@ -74,23 +74,45 @@
 
   // Initialization
   function init() {
-    // Check if email is in URL query (?email=...) or hash (#email=...)
-    const emailFromQuery = new URLSearchParams(
-        window.location.search,
-    ).get('email');
-    const emailFromHash = new URLSearchParams(
-        window.location.hash.substring(1),
-    ).get('email');
-    const memberEmail = (emailFromQuery || emailFromHash || '').trim();
+    // First, check if user is already logged in via Ghost
+    fetch('/members/api/member/', {
+      credentials: 'same-origin'
+    })
+      .then(response => {
+        if (response.ok) return response.json();
+        return null;
+      })
+      .then(data => {
+        if (data && data.email) {
+          // User is logged into Ghost - load their profile directly
+          console.log('User already logged in to Ghost, loading profile for:', data.email);
+          loadMemberProfile(data.email, null);
+          return;
+        }
+        
+        // Check if email is in URL query (?email=...) or hash (#email=...)
+        const emailFromQuery = new URLSearchParams(
+            window.location.search,
+        ).get('email');
+        const emailFromHash = new URLSearchParams(
+            window.location.hash.substring(1),
+        ).get('email');
+        const memberEmail = (emailFromQuery || emailFromHash || '').trim();
 
-    if (memberEmail) {
-      // User accessed via query or hash parameter
-      loadMemberProfile(memberEmail, null);
-      // Clean up URL to remove email parameter
-      const url = new URL(window.location);
-      url.searchParams.delete('email');
-      window.history.replaceState({}, document.title, url.pathname);
-    }
+        if (memberEmail) {
+          // User accessed via query or hash parameter
+          loadMemberProfile(memberEmail, null);
+          // Clean up URL to remove email parameter
+          const url = new URL(window.location);
+          url.searchParams.delete('email');
+          window.history.replaceState({}, document.title, url.pathname);
+        }
+      })
+      .catch(error => {
+        console.error('Error checking Ghost session:', error);
+        // Continue with normal flow if check fails
+      });
+    
 
     // Event listeners
     authForm.addEventListener('submit', handleAuthSubmit);
