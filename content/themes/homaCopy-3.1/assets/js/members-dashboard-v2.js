@@ -534,10 +534,11 @@
                     );
                     document.getElementById('myPostsCount').textContent = myPosts.length;
                     
-                    // Calculate my comments (from posts I've interacted with)
-                    // Note: This would need a comments API to be accurate
-                    // For now, showing 0 as placeholder
-                    document.getElementById('myCommentsCount').textContent = '0';
+                    // Calculate my comments count from my posts
+                    const myComments = myPosts.reduce((sum, post) => {
+                        return sum + (post.commentCount || post.commentsCount || 0);
+                    }, 0);
+                    document.getElementById('myCommentsCount').textContent = myComments;
                 }
             })
             .catch(error => {
