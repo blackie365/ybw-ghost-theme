@@ -196,12 +196,14 @@
         const postHeader = document.querySelector('.post-header');
         const divider = document.querySelector('hr');
         const firstSection = document.querySelector('.section:first-of-type');
+        const membersHeader = document.querySelector('.members-hub-header');
 
         if (directorySection) directorySection.style.display = 'none';
         if (profileSection) profileSection.style.display = 'block';
         if (postHeader) postHeader.style.display = 'none';
         if (divider) divider.style.display = 'none';
         if (firstSection) firstSection.style.display = 'none';
+        if (membersHeader) membersHeader.style.display = 'none';
 
         // Fetch current member email
         let currentMemberEmail = null;

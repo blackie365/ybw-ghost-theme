@@ -2,6 +2,7 @@
     const API_BASE = 'https://us-central1-newmembersdirectory130325.cloudfunctions.net';
     const POSTS_API = `${API_BASE}/getMemberPosts`;
     const CREATE_POST_API = `${API_BASE}/createMemberPost`;
+    const UPLOAD_IMAGE_API = 'https://uploadmemberimage-qljbqfyowq-uc.a.run.app';
     const PAGE_SIZE = 12;
 
     let currentPage = 0;
@@ -10,6 +11,7 @@
     let hasMore = true;
     let allPosts = [];
     let memberEmail = null;
+    let uploadedImageUrl = null;
 
     // Check authentication
     function checkAuth() {
@@ -118,13 +120,22 @@
                 year: 'numeric'
             });
 
+            const imageHtml = post.imageUrl ? `
+                <div class="post-card-image">
+                    <img src="${post.imageUrl}" alt="${escapeHtml(post.title)}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 4px 4px 0 0;">
+                </div>
+            ` : '';
+
             card.innerHTML = `
-                <div class="post-category-badge ${categoryClass}">${categoryLabel}</div>
-                <h3 class="post-title">${escapeHtml(post.title)}</h3>
-                <p class="post-excerpt">${escapeHtml(excerpt)}</p>
-                <div class="post-meta">
-                    <span class="post-author">${escapeHtml(post.authorName)}</span>
-                    <span class="post-date">${formattedDate}</span>
+                ${imageHtml}
+                <div class="post-card-content">
+                    <div class="post-category-badge ${categoryClass}">${categoryLabel}</div>
+                    <h3 class="post-title">${escapeHtml(post.title)}</h3>
+                    <p class="post-excerpt">${escapeHtml(excerpt)}</p>
+                    <div class="post-meta">
+                        <span class="post-author">${escapeHtml(post.authorName)}</span>
+                        <span class="post-date">${formattedDate}</span>
+                    </div>
                 </div>
             `;
 
@@ -168,11 +179,85 @@
         document.getElementById('postModal').style.display = 'flex';
         document.getElementById('postForm').reset();
         document.getElementById('postError').style.display = 'none';
+        uploadedImageUrl = null;
+        document.getElementById('postImagePreview').style.display = 'none';
+        document.getElementById('postImageStatus').style.display = 'none';
     }
 
     // Hide modal
     function hideModal() {
         document.getElementById('postModal').style.display = 'none';
+        uploadedImageUrl = null;
+    }
+
+    // Handle image upload
+    async function handleImageUpload(e) {
+        const file = e.target.files[0];
+        if (!file) {
+            uploadedImageUrl = null;
+            document.getElementById('postImagePreview').style.display = 'none';
+            return;
+        }
+
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showImageStatus('❌ Image too large. Max 5MB.', 'error');
+            uploadedImageUrl = null;
+            return;
+        }
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showImageStatus('❌ Please select an image file.', 'error');
+            uploadedImageUrl = null;
+            return;
+        }
+
+        showImageStatus('Uploading image...', 'pending');
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('email', memberEmail);
+
+            const response = await fetch(UPLOAD_IMAGE_API, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Upload failed');
+            }
+
+            const result = await response.json();
+            if (result.imageUrl) {
+                uploadedImageUrl = result.imageUrl;
+                // Show preview
+                const previewImg = document.getElementById('postImagePreviewImg');
+                previewImg.src = uploadedImageUrl;
+                document.getElementById('postImagePreview').style.display = 'block';
+                showImageStatus('✅ Image uploaded successfully', 'success');
+            }
+        } catch (error) {
+            console.error('Image upload error:', error);
+            showImageStatus(`❌ ${error.message}`, 'error');
+            uploadedImageUrl = null;
+        }
+    }
+
+    // Show image upload status
+    function showImageStatus(message, type) {
+        const statusDiv = document.getElementById('postImageStatus');
+        statusDiv.textContent = message;
+        if (type === 'success') {
+            statusDiv.style.display = 'none';
+            return;
+        }
+        statusDiv.style.display = 'block';
+        statusDiv.style.backgroundColor = type === 'error' ? '#fee2e2' : '#fef3c7';
+        statusDiv.style.color = type === 'error' ? '#991b1b' : '#92400e';
+        statusDiv.style.borderRadius = '4px';
     }
 
     // Submit post
@@ -206,19 +291,26 @@
         document.getElementById('submitPost').disabled = true;
 
         try {
+            const postData = {
+                email: memberEmail,
+                title: title,
+                category: category,
+                content: content,
+                status: 'published',
+                featured: featured
+            };
+
+            // Add image URL if one was uploaded
+            if (uploadedImageUrl) {
+                postData.imageUrl = uploadedImageUrl;
+            }
+
             const response = await fetch(CREATE_POST_API, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    email: memberEmail,
-                    title: title,
-                    category: category,
-                    content: content,
-                    status: 'published',
-                    featured: featured
-                })
+                body: JSON.stringify(postData)
             });
 
             const data = await response.json();
@@ -319,6 +411,12 @@
                     hideModal();
                 }
             });
+        }
+
+        // Image upload
+        const imageInput = document.getElementById('postImage');
+        if (imageInput) {
+            imageInput.addEventListener('change', handleImageUpload);
         }
 
         // Submit form

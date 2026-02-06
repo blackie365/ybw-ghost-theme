@@ -112,6 +112,15 @@
         // Content (preserve line breaks)
         document.getElementById('postBody').textContent = currentPost.content;
 
+        // Display image if it exists
+        if (currentPost.imageUrl) {
+            const imageContainer = document.getElementById('postImageContainer');
+            const postImage = document.getElementById('postImage');
+            postImage.src = currentPost.imageUrl;
+            postImage.alt = currentPost.title;
+            imageContainer.style.display = 'block';
+        }
+
         // Author info
         const authorAvatar = document.getElementById('authorAvatar');
         const initials = getInitials(currentPost.authorName);
