@@ -17,7 +17,7 @@
             .catch(() => null);
     }
 
-    function renderProfile(member) {
+    function renderProfile(member, isOwnProfile) {
         const container = document.getElementById('memberProfileContainer');
         if (!member) {
             container.innerHTML = `
@@ -126,7 +126,7 @@
 
                 <div class="profile-actions">
                     ${
-                        currentMemberEmail && member.email === currentMemberEmail
+                        isOwnProfile
                             ? `
                         <a href="/member-portal/" class="profile-btn profile-btn-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -228,7 +228,7 @@
         const slug = getSlug();
         if (!slug) {
             console.error('No member slug found');
-            renderProfile(null);
+            renderProfile(null, false);
             return;
         }
 
@@ -240,29 +240,31 @@
 
             const apiUrl = API_URL + '?slug=' + encodeURIComponent(slug);
             fetch(apiUrl)
-            .then((response) => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then((data) => {
-                if (!data.members || data.members.length === 0) {
-                    console.error('No members found in response');
-                    renderProfile(null);
-                    return;
-                }
-                const member = data.members.find((m) => m.memberSlug === slug || m['memberSlug'] === slug);
-                if (!member) {
-                    console.error('No member found with slug:', slug);
-                    renderProfile(null);
-                    return;
-                }
-                renderProfile(member);
-                fetch(API_URL + '?slug=' + encodeURIComponent(slug) + '&action=view', { method: 'POST' }).catch(console.error);
-            })
-            .catch((error) => {
-                console.error('Error loading member:', error);
-                renderProfile(null);
-            });
+                .then((response) => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then((data) => {
+                    if (!data.members || data.members.length === 0) {
+                        console.error('No members found in response');
+                        renderProfile(null, false);
+                        return;
+                    }
+                    const member = data.members.find((m) => m.memberSlug === slug || m['memberSlug'] === slug);
+                    if (!member) {
+                        console.error('No member found with slug:', slug);
+                        renderProfile(null, false);
+                        return;
+                    }
+                    // Check if this is the current user's profile
+                    const isOwnProfile = currentMemberEmail && member.email === currentMemberEmail;
+                    renderProfile(member, isOwnProfile);
+                    fetch(API_URL + '?slug=' + encodeURIComponent(slug) + '&action=view', { method: 'POST' }).catch(console.error);
+                })
+                .catch((error) => {
+                    console.error('Error loading member:', error);
+                    renderProfile(null, false);
+                });
         });
     }
 
