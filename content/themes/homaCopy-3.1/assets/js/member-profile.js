@@ -6,6 +6,17 @@
         return params.get('slug');
     }
 
+    let currentMemberEmail = null;
+
+    function fetchCurrentMember() {
+        return fetch('/members/api/member/')
+            .then(response => {
+                if (!response.ok) return null;
+                return response.json();
+            })
+            .catch(() => null);
+    }
+
     function renderProfile(member) {
         const container = document.getElementById('memberProfileContainer');
         if (!member) {
@@ -115,6 +126,16 @@
 
                 <div class="profile-actions">
                     ${
+                        currentMemberEmail && member.email === currentMemberEmail
+                            ? `
+                        <a href="/member-portal/" class="profile-btn profile-btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            Edit Profile
+                        </a>
+                    `
+                            : ''
+                    }
+                    ${
                         websiteUrl
                             ? `
                         <a href="${websiteUrl}" target="_blank" rel="noopener noreferrer" class="profile-btn profile-btn-primary">
@@ -211,8 +232,14 @@
             return;
         }
 
-        const apiUrl = API_URL + '?slug=' + encodeURIComponent(slug);
-        fetch(apiUrl)
+        // Fetch current member first
+        fetchCurrentMember().then(currentMember => {
+            if (currentMember) {
+                currentMemberEmail = currentMember.email;
+            }
+
+            const apiUrl = API_URL + '?slug=' + encodeURIComponent(slug);
+            fetch(apiUrl)
             .then((response) => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
@@ -236,6 +263,7 @@
                 console.error('Error loading member:', error);
                 renderProfile(null);
             });
+        });
     }
 
     if (document.readyState === 'loading') {
