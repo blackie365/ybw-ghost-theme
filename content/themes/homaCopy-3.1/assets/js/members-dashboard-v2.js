@@ -518,31 +518,50 @@
     
     // Load my stats (personal)
     function loadMyStats() {
-        if (!currentMemberEmail) {
-            // Wait for email to be fetched
-            setTimeout(loadMyStats, 500);
-            return;
-        }
-        
-        // Get my posts count
-        fetch(POSTS_API)
-            .then(response => response.json())
-            .then(data => {
-                if (data.posts && Array.isArray(data.posts)) {
-                    const myPosts = data.posts.filter(post => 
-                        post.authorEmail === currentMemberEmail
-                    );
-                    document.getElementById('myPostsCount').textContent = myPosts.length;
-                    
-                    // Calculate my comments count from my posts
-                    const myComments = myPosts.reduce((sum, post) => {
-                        return sum + (post.commentCount || post.commentsCount || 0);
-                    }, 0);
-                    document.getElementById('myCommentsCount').textContent = myComments;
+        // First fetch current member to get ID
+        fetch('/members/api/member/')
+            .then(response => response.ok ? response.json() : null)
+            .then(memberData => {
+                if (!memberData || !memberData.email) {
+                    // Retry if member data not available
+                    setTimeout(loadMyStats, 500);
+                    return;
                 }
+                
+                currentMemberEmail = memberData.email;
+                
+                // Get my posts count
+                fetch(POSTS_API)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.posts && Array.isArray(data.posts)) {
+                            // Filter by authorEmail (from Ghost member data)
+                            const myPosts = data.posts.filter(post => 
+                                post.authorEmail === currentMemberEmail || post.authorName === memberData.name
+                            );
+                            console.log('My email:', currentMemberEmail);
+                            console.log('My name:', memberData.name);
+                            console.log('My posts found:', myPosts.length);
+                            console.log('Sample post:', data.posts[0]);
+                            document.getElementById('myPostsCount').textContent = myPosts.length;
+                            
+                            // Calculate my comments count from my posts
+                            const myComments = myPosts.reduce((sum, post) => {
+                                console.log('Post:', post.title, 'Comments:', post.commentsCount || post.commentCount || 0);
+                                return sum + (post.commentCount || post.commentsCount || 0);
+                            }, 0);
+                            console.log('Total my comments:', myComments);
+                            document.getElementById('myCommentsCount').textContent = myComments;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading my stats:', error);
+                        document.getElementById('myPostsCount').textContent = '0';
+                        document.getElementById('myCommentsCount').textContent = '0';
+                    });
             })
             .catch(error => {
-                console.error('Error loading my stats:', error);
+                console.error('Error fetching member data:', error);
                 document.getElementById('myPostsCount').textContent = '0';
                 document.getElementById('myCommentsCount').textContent = '0';
             });
