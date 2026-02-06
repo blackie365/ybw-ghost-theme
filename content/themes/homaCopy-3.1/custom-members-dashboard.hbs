@@ -160,13 +160,16 @@
 /* Dashboard Layout */
 .members-dashboard {
     padding: 0;
-    max-width: none;
+    max-width: none !important;
     overflow-x: hidden;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
 }
 
 body.post .members-dashboard {
     overflow-x: hidden;
-    width: 100%;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
 }
 
 .dashboard-header {
@@ -178,7 +181,8 @@ body.post .members-dashboard {
 
 .dashboard-header .container {
     width: 100%;
-    padding: 0;
+    padding: 0 !important;
+    max-width: none !important;
 }
 
 @media (max-width: 768px) {
@@ -187,7 +191,8 @@ body.post .members-dashboard {
     }
     
     .dashboard-header .container {
-        padding: 0;
+        padding: 0 !important;
+        max-width: none !important;
     }
 }
 
