@@ -180,7 +180,7 @@
 
     // View single post (navigate to post page)
     function viewPost(postId) {
-        window.location.href = `/members-community/post/?id=${postId}`;
+        window.location.href = `/members-community-post/?id=${postId}`;
     }
 
     // Show create post modal
